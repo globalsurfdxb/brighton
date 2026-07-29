@@ -39,9 +39,9 @@ export default function Main() {
   return (
     <section className="bg-white pt-200 3xl:pt-[206px] pb-100 container">
       <div className="flex items-center justify-between items-start">
-        <h2 className="hero-title">
+        <h1 className="hero-title">
           {category === "interior" ? "Interior" : "Exterior"} Lighting
-        </h2>
+        </h1>
         <CategoryTabs active={category} onChange={setCategory} />
       </div>
 

@@ -40,41 +40,53 @@ export default function LenisProvider({
   const lockedRef = useRef(false);
   const pathname = usePathname();
 
-  useEffect(() => {
-    const lenis = new Lenis({ lerp: 0.1, syncTouch: true });
-    lenisRef.current = lenis;
+useEffect(() => {
+  const lenis = new Lenis({ lerp: 0.1, syncTouch: true });
+  lenisRef.current = lenis;
 
-    const raf = (time: number) => lenis.raf(time * 1000);
-    gsap.ticker.add(raf);
-    gsap.ticker.lagSmoothing(0);
-    lenis.on("scroll", ScrollTrigger.update);
+  const raf = (time: number) => lenis.raf(time * 1000);
+  gsap.ticker.add(raf);
+  gsap.ticker.lagSmoothing(0);
+  lenis.on("scroll", ScrollTrigger.update);
 
-    // apply whatever lock state was requested before Lenis existed
-    if (lockedRef.current) {
-      document.documentElement.style.overflow = "hidden";
-      lenis.stop();
-    } else {
+  if (lockedRef.current) {
+    document.documentElement.style.overflow = "hidden";
+    lenis.stop();
+  } else {
+    document.documentElement.style.overflow = "";
+  }
+
+  const failsafe = setTimeout(() => {
+    if (lenis.isStopped) {
+      console.warn("Lenis failsafe: force-unlocking stuck scroll");
+      lockedRef.current = false;
       document.documentElement.style.overflow = "";
-      // lenis starts running by default, nothing else needed
+      lenis.start();
     }
+  }, 5000);
 
-    const failsafe = setTimeout(() => {
-      if (lenis.isStopped) {
-        console.warn("Lenis failsafe: force-unlocking stuck scroll");
-        lockedRef.current = false;
-        document.documentElement.style.overflow = "";
-        lenis.start();
-      }
-    }, 5000);
+  // Auto re-measure whenever page height changes for ANY reason —
+  // Load More, images loading in, accordions expanding, etc.
+  let resizeRaf: number;
+  const ro = new ResizeObserver(() => {
+    cancelAnimationFrame(resizeRaf);
+    resizeRaf = requestAnimationFrame(() => {
+      lenis.resize();
+      ScrollTrigger.refresh();
+    });
+  });
+  ro.observe(document.body);
 
-    return () => {
-      clearTimeout(failsafe);
-      gsap.ticker.remove(raf);
-      lenis.off("scroll", ScrollTrigger.update);
-      lenis.destroy();
-      lenisRef.current = null;
-    };
-  }, []);
+  return () => {
+    ro.disconnect();
+    cancelAnimationFrame(resizeRaf);
+    clearTimeout(failsafe);
+    gsap.ticker.remove(raf);
+    lenis.off("scroll", ScrollTrigger.update);
+    lenis.destroy();
+    lenisRef.current = null;
+  };
+}, []);
 
 
   useEffect(() => {
