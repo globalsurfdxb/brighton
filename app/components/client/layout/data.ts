@@ -1,0 +1,100 @@
+export interface NavItem {
+  label: string;
+  href: string;
+  hasDropdown?: boolean;
+}
+
+export const navItems: NavItem[] = [
+  { label: "Interior", href: "/interior", hasDropdown: true },
+  { label: "Exterior", href: "/exterior", hasDropdown: true },
+  { label: "Projects", href: "/projects", hasDropdown: true },
+  { label: "Services", href: "/services", hasDropdown: true },
+  { label: "Resources", href: "/resources", hasDropdown: true },
+  { label: "Media", href: "/media", hasDropdown: true },
+  { label: "About", href: "/about", hasDropdown: true },
+];
+
+
+export interface FooterLink {
+  label: string;
+  href: string;
+}
+
+export interface FooterColumn {
+  title: string;
+  links: FooterLink[];
+}
+
+export const footerColumns: FooterColumn[] = [
+  {
+    title: "Products",
+    links: [
+      { label: "Interior Lighting", href: "/products/interior-lighting" },
+      { label: "Exterior Lighting", href: "/products/exterior-lighting" },
+    ],
+  },
+  {
+    title: "Resources",
+    links: [
+      { label: "Digital Catalogue", href: "/resources/digital-catalogue" },
+      { label: "Downloads Hub", href: "/resources/downloads-hub" },
+      { label: "Projects", href: "/resources/projects" },
+    ],
+  },
+  {
+    title: "About Brighton",
+    links: [
+      { label: "Overview", href: "/about/overview" },
+      { label: "Design Philosophy", href: "/about/design-philosophy" },
+      { label: "Technology", href: "/about/technology" },
+      { label: "Sustainability", href: "/about/sustainability" },
+    ],
+  },
+  {
+    title: "Services",
+    links: [
+      { label: "Technical Consulting", href: "/services/technical-consulting" },
+      { label: "Bespoke/Custom Solutions", href: "/services/bespoke-custom-solutions" },
+    ],
+  },
+  {
+    title: "Media Center",
+    links: [
+      { label: "News & Stories", href: "/media/news-and-stories" },
+      { label: "Blogs", href: "/media/blogs" },
+    ],
+  },
+  {
+    title: "Helpful",
+    links: [
+      { label: "Warranty", href: "/helpful/warranty" },
+      { label: "Newsletter", href: "/helpful/newsletter" },
+      { label: "Certificates", href: "/helpful/certificates" },
+    ],
+  },
+];
+
+export const footerAddress = {
+  line1: "63 St. James's Street, London, SW1A1LY,",
+  line2: "United Kingdom",
+};
+
+export const footerContact = {
+  phone: "+44 20 7139 5164",
+  email: "info@brightonlighting.co.uk",
+};
+
+export const footerSocials: FooterLink[] = [
+  { label: "LinkedIn", href: "https://linkedin.com" },
+  { label: "Facebook", href: "https://facebook.com" },
+  { label: "Instagram", href: "https://instagram.com" },
+  { label: "Youtube", href: "https://youtube.com" },
+];
+
+export const footerLegal = {
+  links: [
+    { label: "©2026 Brighton Lighting. All rights reserved", href: "#" },
+    { label: "Privacy Policy", href: "/privacy-policy" },
+    { label: "Cookie Policy", href: "/cookie-policy" },
+  ] as FooterLink[],
+};
