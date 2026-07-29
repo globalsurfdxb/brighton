@@ -13,20 +13,23 @@
 
 @font-face {
   font-family: "ITC Avant Book";
-  src: url("/assets/fonts/ITC-Avant-Book.woff2") format("opentype"),
-    url("/assets/fonts/ITC-Avant-Book.woff2") format("opentype");
+  src: url("/assets/fonts/ITC-Avant-Book.woff2") format("woff2");
   font-style: normal;
   font-display: swap;
+  ascent-override: 74%;
+  descent-override: 26%;
+  line-gap-override: 20%;
 }
 
 @font-face {
   font-family: "ITC Avant Medium";
-  src: url("/assets/fonts/ITC-Avant-Medium.woff2") format("opentype"),
-    url("/assets/fonts/ITC-Avant-Medium.woff2") format("opentype");
+  src: url("/assets/fonts/ITC-Avant-Medium.woff2") format("woff2");
   font-style: normal;
   font-display: swap;
+  ascent-override: 74%;
+  descent-override: 26%;
+  line-gap-override: 20%;
 }
-
 
 
 /* scrollbar hide */
