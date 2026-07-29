@@ -19,14 +19,14 @@ export default function SliderNavBtn({
       onClick={onClick}
       disabled={disabled}
       aria-label={direction === "prev" ? "Previous slide" : "Next slide"}
-      className="select-none flex items-center justify-center max-h-[42px] py-2 px-[29px] rounded-[50px] border border-secondary  disabled:opacity-40 disabled:cursor-not-allowed disabled:pointer-events-none"
+      className="select-none flex items-center justify-center max-h-[42px] py-2 px-5 lg:px-[29px] rounded-[50px] border border-secondary  disabled:opacity-40 disabled:cursor-not-allowed disabled:pointer-events-none"
     >
       <Image
         src="/assets/icons/right-arrow-black.svg"
         alt={direction === "prev" ? "Previous" : "Next"}
         width={19}
         height={19}
-        className={direction === "prev" ? "rotate-180" : ""}
+        className={`pointer-events-none ${direction === "prev" ? "rotate-180" : ""}`}
       />
     </button>
   );

@@ -300,3 +300,13 @@ body {
 @utility text-subtitle-2 {
   @apply text-16 leading-[100%] font-itc-medium tracking-[-0.01em];
 }
+
+@keyframes wiggle {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  50% {
+    transform: rotate(20deg);
+  }
+}

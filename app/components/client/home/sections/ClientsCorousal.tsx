@@ -17,7 +17,7 @@ function LogoItem({ image }: Logo) {
         alt={"client-logo"}
         width={160}
         height={50}
-        className="w-auto max-w-[160px] h-12.5 object-contain pointer-events-none"
+        className="pointer-events-none w-auto max-w-[160px] h-8 lg:h-12.5 object-contain pointer-events-none"
       />
     </div>
   );
@@ -67,7 +67,7 @@ function InfiniteRow({ items }: { items: Logo[] }) {
     <div className="overflow-hidden w-full">
       <div
         ref={trackRef}
-        className="flex items-center gap-[120px] w-max will-change-transform"
+        className="flex items-center gap-80 lg:gap-[120px] w-max will-change-transform"
       >
         {duplicated.map((item, index) => (
           <LogoItem key={`${index}`} {...item} />
@@ -83,8 +83,8 @@ export default function ClientsCorousal({ data, className }: { data: any, classN
 
   return (
     <section className={`w-full ${className}`}>
-      <div style={{ paddingLeft: inset }} className="flex items-center justify-center">
-        <span className="text-subtitle shrink-0 pr-140">
+      <div style={{ paddingLeft: inset }} className="flex flex-col lg:flex-row lg:items-center justify-center gap-6 lg:gap-140">
+        <span className="text-subtitle shrink-0">
           {label}
         </span>
         <InfiniteRow items={logos} />

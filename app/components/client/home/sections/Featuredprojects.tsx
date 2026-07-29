@@ -9,6 +9,7 @@ import "swiper/css";
 import { featuredProjectsData } from "../data";
 import { useContainerInset } from "@/app/hooks/useContainerInset";
 import AnimatedDivider from "../../animations/AnimatedDivider";
+import AnimatedDividerTwo from "../../animations/AnimatedDividerTwo";
 
 export default function FeaturedProjects() {
   const { sectionTitle, projects } = featuredProjectsData;
@@ -21,7 +22,7 @@ export default function FeaturedProjects() {
         <div className="cursor-grab">
           <Swiper
             // modules={[Autoplay]}
-            spaceBetween={30}
+            spaceBetween={15}
             slidesPerView={1.2}
             // autoplay={{
             //   delay: 4000,
@@ -32,13 +33,20 @@ export default function FeaturedProjects() {
             breakpoints={{
               640: {
                 slidesPerView: 1.5,
+                spaceBetween: 20,
               },
               1024: {
                 slidesPerView: 1.8,
+                spaceBetween: 20,
               },
               1400: {
                 slidesPerView: 2.1841,
+                spaceBetween: 24,
               },
+              1700: {
+                slidesPerView: 2.1841,
+                spaceBetween: 30,
+              }
             }}
             className="!overflow-visible"
           >
@@ -46,13 +54,13 @@ export default function FeaturedProjects() {
               <SwiperSlide key={index}>
                 <div className="flex flex-col group">
                   <h3 className="text-subtitle text-primary line-clamp-1">{title}</h3>
-                  <AnimatedDivider className="border-secondary mt-5 mb-40" hoverColor="#0A0A0A" />
+                  <AnimatedDividerTwo className="border-secondary mt-5 mb-40" hoverColor="#0A0A0A" />
                   <div className="relative w-full h-[280px] md:h-[360px] 2xl:h-[420px] 3xl:h-[520px] rounded-[10px] overflow-hidden">
                     <Image
                       src={image}
                       alt={title}
                       fill
-                      className="object-cover group-hover:scale-105 transition-all duration-500 ease-in-out"
+                      className="pointer-events-none object-cover group-hover:scale-105 transition-all duration-500 ease-in-out"
                     />
                     <div className="absolute top-5 right-5 rounded-full bg-black/50 px-[19px] py-[9.5px] flex justify-center items-center border border-secondary">
                       <span className="text-15 leading-none max-h-[11px] text-secondary font-itc-medium">{location}</span>

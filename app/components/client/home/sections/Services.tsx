@@ -14,7 +14,7 @@ export default function Services() {
       {/* Top bar */}
       <div className="bg-primary py-30 3xl:py-[35px]">
         <div className="container flex items-center">
-          <h2 className="section-title text-white">{sectionTitle}</h2>
+          <h2 className="section-title text-white leading-none">{sectionTitle}</h2>
         </div>
       </div>
 
@@ -24,7 +24,7 @@ export default function Services() {
           src={backgroundImage}
           alt={sectionTitle}
           fill
-          className="object-cover"
+          className="pointer-events-none object-cover"
           priority
         />
 
@@ -41,7 +41,7 @@ export default function Services() {
             <div
               key={service.title}
               className="relative flex items-start pt-70 min-[1850px]:pt-[72px]"
-              style={{ paddingLeft: inset }}
+              style={{ paddingLeft: inset, paddingRight: inset }}
             >
               <h3 className="text-subtitle text-white">{service.title}</h3>
 

@@ -14,7 +14,7 @@ export default function Footer() {
   return (
     <footer className="border-t border-black">
       <div className="container pt-100 pb-70">
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-x-6 gap-y-10">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-x-6 gap-y-5 lg:gap-y-10">
           {footerColumns.map((column) => (
             <div
               key={column.title}
@@ -78,7 +78,7 @@ export default function Footer() {
 
       <div className="bg-[#F8F8F8]">
         <div className="container flex flex-col sm:flex-row items-center pt-[27px] pb-[23px] text-subtitle-2 text-description-color">
-          <div className="flex gap-40 min-[1850px]:gap-[47px]">
+          <div className="flex flex-wrap gap-5 lg:gap-40 min-[1850px]:gap-[47px]">
             {footerLegal.links.map((link) => (
               <Link
                 key={link.label}

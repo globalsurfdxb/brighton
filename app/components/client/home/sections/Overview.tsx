@@ -5,7 +5,7 @@ import AnimatedDivider from "../../animations/AnimatedDivider";
 export default function Overview() {
   return (
     <section className="container pt-60 pb-100 overflow-hidden">
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-80">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-30 lg:gap-80">
         {overviewData.stats.map((stat) => (
           <div key={stat.label} className="flex flex-col">
             <div className="flex items-end justify-between">
@@ -15,9 +15,9 @@ export default function Overview() {
               <Image
                 src={stat.icon}
                 alt={stat.label}
-                width={50}
-                height={50}
-                className="w-auto h-auto pr-30 pb-[6px]"
+                width={35}
+                height={45}
+                className="pointer-events-none w-auto h-[28px] lg:h-[35px] 2xl:h-10 3xl:h-[45px] mr-30 3xl:mr-[28px] mb-[2px] object-contain"
               />
             </div>
             <AnimatedDivider className="border-secondary mt-4 mb-30" />

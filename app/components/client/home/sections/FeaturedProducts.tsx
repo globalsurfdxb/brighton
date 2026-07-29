@@ -11,6 +11,7 @@ import "swiper/css";
 import { featuredProductsData } from "../data";
 import SliderNavBtn from "../../common/Slidernavbtn";
 import AnimatedDivider from "../../animations/AnimatedDivider";
+import AnimatedDividerTwo from "../../animations/AnimatedDividerTwo";
 
 export default function FeaturedProducts() {
   const { sectionTitle, projects } = featuredProductsData;
@@ -44,18 +45,18 @@ export default function FeaturedProducts() {
   };
 
   return (
-    <section className="w-full py-16 3xl:py-24 bg-cream-background">
+    <section className="w-full py-16 3xl:py-24 bg-cream-background overflow-hidden">
       <div className="container">
         {/* Top row: title, progress line, nav buttons */}
-        <div className="flex items-center justify-between  mb-40">
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-5 mb-40">
           <h2 className="section-title">
             {sectionTitle}
           </h2>
 
-          <div className="flex items-center gap-80 min-[1850px]:gap-[87px]">
-            <div className="hidden sm:block w-[140px] h-[2px] bg-secondary relative overflow-hidden rounded-full">
+          <div className="flex items-center gap-80 min-[1850px]:gap-[87px] justify-between">
+            <div className="w-[140px] h-[2px] bg-secondary relative overflow-hidden rounded-full">
               <span
-                className="absolute left-0 top-0 h-px bg-description-color transition-all duration-400 rounded-full"
+                className="absolute left-0 top-0 h-[2px] bg-description-color transition-all duration-400 rounded-full"
                 style={{ width: `${progress * 100}%` }}
               />
             </div>
@@ -85,7 +86,7 @@ export default function FeaturedProducts() {
             }}
             onSlideChange={updateState}
             onProgress={updateState}
-            spaceBetween={30}
+            spaceBetween={15}
             speed={800}
             slidesPerView={1.2}
             // autoplay={{
@@ -110,6 +111,7 @@ export default function FeaturedProducts() {
                 spaceBetween: 30
               }
             }}
+            className="!overflow-visible lg:!overflow-hidden"
           >
             {projects.map((project , index) => (
               <SwiperSlide key={index}>
@@ -119,11 +121,11 @@ export default function FeaturedProducts() {
                       src={project.image}
                       alt={project.title}
                       fill
-                      className="object-cover group-hover:scale-105 transition-all duration-500 ease-in-out"
+                      className="pointer-events-none object-cover group-hover:scale-105 transition-all duration-500 ease-in-out"
                     />
                   </div>
                   <h3 className="text-subtitle text-primary line-clamp-1">{project.title}</h3>
-                  <AnimatedDivider className="border-secondary mt-2.5 mb-5" hoverColor="#0A0A0A" />
+                  <AnimatedDividerTwo className="border-secondary mt-2.5 mb-5" hoverColor="#0A0A0A" />
                   <p className="text-description-3 text-description-color">{project.label}</p>
                 </div>
               </SwiperSlide>
