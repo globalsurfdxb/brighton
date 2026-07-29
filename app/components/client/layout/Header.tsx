@@ -49,7 +49,7 @@ export default function Header() {
                 <Link
                   key={item.label}
                   href={item.href}
-                  className="flex items-center text-15 font-itc-medium uppercase gap-[7px] leading-none group"
+                  className="flex items-center text-15 font-itc-medium uppercase gap-[7px] leading-none group text-description-color hover:text-primary transition-all duration-500"
                 >
                   {item.label}
                   {item.hasDropdown && (

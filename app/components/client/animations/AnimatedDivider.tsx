@@ -27,7 +27,7 @@ export default function AnimatedDivider({
     >
       {hoverColor && (
         <div
-          className="absolute left-0 top-0 h-px w-full origin-left scale-x-0 transition-transform duration-500 ease-[cubic-bezier(0.65,0,0.35,1)] group-hover:scale-x-100"
+          className="absolute left-0 top-1/2 -translate-y-1/2 h-px w-full origin-left scale-x-0 transition-transform duration-500 ease-[cubic-bezier(0.65,0,0.35,1)] group-hover:scale-x-100"
           style={{ backgroundColor: hoverColor }}
         />
       )}
