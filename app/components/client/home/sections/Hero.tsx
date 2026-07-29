@@ -28,16 +28,17 @@ export default function Hero() {
           <h1 className="hero-title text-cream-background mb-5 max-w-[19ch]">
             {heroData.title}
           </h1>
-          <div className="w-full flex justify-between items-end">
+          <div className="w-full flex flex-col lg:flex-row justify-between lg:items-end gap-5">
             <p className="text-description text-secondary max-w-[77ch]">
               {heroData.description}
             </p>
-            <div className="flex items-center gap-4">
+            <div className="flex flex-col lg:flex-row lg:items-center gap-4">
               {heroData.buttons.map((button, index) => (
                 <CustomButton
                   key={index}
                   text={button.text}
                   link={button.link}
+                  btnClass="w-fit"
                 />
               ))}
             </div>

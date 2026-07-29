@@ -13,7 +13,7 @@ export default function AnimatedDivider({
   hoverColor,
 }: AnimatedDividerProps) {
   const ref = useRef<HTMLDivElement>(null);
-  const isInView = useInView(ref, { once: true, amount: 0.5 });
+  const isInView = useInView(ref, { once: true, amount: 0.3 });
 
   return (
     <div

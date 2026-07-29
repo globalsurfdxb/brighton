@@ -1,12 +1,12 @@
-import FeaturedProjects from "./sections/Featuredprojects";
+import FeaturedProjects from "./sections/FeaturedProjects";
 import FeaturedProducts from "./sections/FeaturedProducts";
 import Hero from "./sections/Hero";
 import Overview from "./sections/Overview";
 import ClientsCorousal from "./sections/ClientsCorousal";
-import { trustedByData, certifiedByData } from "./data";
+import { trustedByData, certifiedByData, homeCtaData } from "./data";
 import Services from "./sections/Services";
 import LatestNews from "./sections/LatestNews";
-import HomeCta from "./sections/HomeCta";
+import Cta from "./sections/Cta";
 
 const Index = () => {
   return (
@@ -19,7 +19,7 @@ const Index = () => {
       <Services />
       <ClientsCorousal data={certifiedByData} className="py-100" />
       <LatestNews />
-      <HomeCta />
+      <Cta data={homeCtaData} />
     </>
   );
 };
