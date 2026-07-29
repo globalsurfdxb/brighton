@@ -55,7 +55,7 @@ export default function Header() {
                   {item.hasDropdown && (
                     <Image
                       src="/assets/icons/plus.svg"
-                      className="pointer-events-none pb-[5px] group-hover:rotate-45 transition-all duration-300"
+                      className="pointer-events-none pb-1 group-hover:rotate-45 transition-all duration-300"
                       alt="plus"
                       width={11}
                       height={11}
