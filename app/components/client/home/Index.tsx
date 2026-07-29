@@ -6,7 +6,7 @@ import ClientsCorousal from "./sections/ClientsCorousal";
 import { trustedByData, certifiedByData, homeCtaData } from "./data";
 import Services from "./sections/Services";
 import LatestNews from "./sections/LatestNews";
-import Cta from "./sections/Cta";
+import Cta from "../common/Cta";
 
 const Index = () => {
   return (
