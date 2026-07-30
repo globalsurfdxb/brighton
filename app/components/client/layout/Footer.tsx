@@ -12,7 +12,7 @@ import { motion } from "framer-motion";
 
 export default function Footer() {
   return (
-    <footer className="border-t border-black">
+    <footer className="border-t border-black z-10 bg-white">
       <div className="container pt-100 pb-70">
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-x-6 gap-y-5 lg:gap-y-10">
           {footerColumns.map((column) => (
@@ -56,8 +56,8 @@ export default function Footer() {
           </div>
 
           <div className="col-span-2 lg:col-start-3 text-subtitle flex flex-col">
-            <Link className="w-fit" href={`tel:${footerContact.phone}`}>{footerContact.phone}</Link>
-            <Link className="w-fit" href={`mailto:${footerContact.email}`}>{footerContact.email}</Link>
+            <Link className="w-fit hover:text-description-color transition-colors duration-500" href={`tel:${footerContact.phone}`}>{footerContact.phone}</Link>
+            <Link className="w-fit hover:text-description-color transition-colors duration-500" href={`mailto:${footerContact.email}`}>{footerContact.email}</Link>
           </div>
 
           <div className="col-span-2 lg:col-start-5 flex flex-wrap gap-x-30 gap-y-2 text-description text-description-color">
