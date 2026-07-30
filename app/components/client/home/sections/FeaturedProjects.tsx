@@ -196,7 +196,7 @@ export default function FeaturedProjects({
 
 function ProjectCard({ project }: { project: any }) {
   return (
-    <div className="flex flex-col group">
+    <div className="flex flex-col group cursor-pointer">
       <h3 className="text-subtitle text-primary line-clamp-1">
         {project.title}
       </h3>

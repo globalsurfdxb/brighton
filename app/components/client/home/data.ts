@@ -31,12 +31,16 @@ export const overviewData = {
   cards: [
     {
       title: "Interior Lighting",
+      description: "From inground uplights to street lighting — engineered for architecture, landscape, and infrastructure.",
+      button: "Explore Interior",
       video: "/assets/videos/home/interior.mp4",
       poster: "/assets/images/home/overview/cards/1.jpg",
       imageAlt: "Interior Lighting",
     },
     {
       title: "Exterior Lighting",
+      description: "From recessed downlights to architectural profiles — engineered for spaces people live in.",
+      button: "Explore Exterior",
       video: "/assets/videos/home/exterior.mp4",
       poster: "/assets/images/home/overview/cards/2.jpg",
       imageAlt: "Exterior Lighting",

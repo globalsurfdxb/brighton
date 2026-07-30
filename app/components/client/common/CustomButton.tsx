@@ -19,7 +19,7 @@ export default function CustomButton({
   return (
 <Link
   href={link}
-  className={`btn-fill-center group flex items-center justify-center gap-4 max-h-10.5 rounded-[50px] border border-secondary px-5.5 py-3.5 text-white transition-colors duration-500 hover:text-black ${btnClass}`}
+  className={`btn-fill-center group/button flex items-center justify-center gap-4 max-h-10.5 rounded-[50px] border border-secondary px-5.5 py-3.5 text-white transition-colors duration-500 hover:text-black ${btnClass}`}
   style={{ "--fill-color": "#fff" } as React.CSSProperties}
 >
       <span
@@ -32,7 +32,7 @@ export default function CustomButton({
         alt="arrow-top-right"
         width={14}
         height={14}
-        className={`pointer-events-none transition-transform duration-500 group-hover:rotate-45 invert brightness-0 group-hover:invert-0 group-hover:brightness-100 ${imageClass}`}
+        className={`pointer-events-none transition-transform duration-500 group-hover/button:rotate-45 invert brightness-0 group-hover/button:invert-0 group-hover/button:brightness-100 ${imageClass}`}
       />
     </Link>
   );

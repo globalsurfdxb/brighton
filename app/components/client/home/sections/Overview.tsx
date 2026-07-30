@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { overviewData } from "../data";
 import AnimatedDivider from "../../animations/AnimatedDivider";
+import CustomButton from "../../common/CustomButton";
 
 export default function Overview() {
   return (
@@ -32,10 +33,10 @@ export default function Overview() {
         {overviewData.cards.map((card) => (
           <div
             key={card.title}
-            className="relative aspect-6/5 w-full overflow-hidden rounded-[10px] 3xl:aspect-auto min-[1800px]:h-[760px]"
+            className="group relative aspect-6/5 w-full overflow-hidden rounded-[10px] 3xl:aspect-auto min-[1800px]:h-[760px]"
           >
             <video
-              className="absolute inset-0 h-full w-full object-cover"
+              className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
               src={card.video}
               poster={card.poster}
               autoPlay
@@ -43,16 +44,44 @@ export default function Overview() {
               loop
               playsInline
             />
+
             <div
               style={{
                 background:
-                  "linear-gradient(180deg, rgba(0, 0, 0, 0.85) 0%, rgba(0, 0, 0, 0) 56.16%)",
+                  "linear-gradient(180deg, rgba(0,0,0,.85) 0%, rgba(0,0,0,0) 56.16%)",
               }}
-              className="absolute inset-0"
+              className="absolute inset-0 transition-all duration-500 group-hover:bg-black/35"
             />
-            <h3 className="absolute left-50 top-40 3xl:top-[45px] text-white text-subtitle">
-              {card.title}
-            </h3>
+
+            {/* Content */}
+            <div className="absolute inset-0 flex flex-col p-40 3xl:p-[45px]">
+              <h3 className="text-subtitle text-white">{card.title}</h3>
+
+              <div
+                className="
+    mt-[15px]
+    overflow-hidden
+  "
+              >
+                <div
+                  className="
+      translate-y-6
+      opacity-0
+      transition-all
+      duration-500
+      ease-out
+      group-hover:translate-y-0
+      group-hover:opacity-100
+    "
+                >
+                  <p className="text-description text-secondary mb-5 3xl:mb-[26px] max-w-[50ch]">
+                    {card.description}
+                  </p>
+
+                  <CustomButton text={card.button} link="#" btnClass="w-fit" />
+                </div>
+              </div>
+            </div>
           </div>
         ))}
       </div>
