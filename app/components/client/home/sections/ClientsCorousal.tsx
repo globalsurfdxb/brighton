@@ -4,6 +4,7 @@ import { useLayoutEffect, useRef } from "react";
 import gsap from "gsap";
 import Image from "next/image";
 import { useContainerInset } from "@/app/hooks/useContainerInset";
+import AnimatedTitle from "../../animations/AnimatedTitle";
 
 interface Logo {
   image: string;
@@ -77,16 +78,27 @@ function InfiniteRow({ items }: { items: Logo[] }) {
   );
 }
 
-export default function ClientsCorousal({ data, className }: { data: any, className?: string }) {
+export default function ClientsCorousal({
+  data,
+  className,
+}: {
+  data: any;
+  className?: string;
+}) {
   const { label, logos } = data;
   const inset = useContainerInset();
 
   return (
     <section className={`w-full ${className}`}>
-      <div style={{ paddingLeft: inset }} className="flex flex-col lg:flex-row lg:items-center justify-center gap-6 lg:gap-140">
-        <span className="text-subtitle shrink-0">
-          {label}
-        </span>
+      <div
+        style={{ paddingLeft: inset }}
+        className="flex flex-col lg:flex-row lg:items-center justify-center gap-6 lg:gap-140"
+      >
+        <AnimatedTitle
+          tag="span"
+          text={label}
+          className="text-subtitle shrink-0"
+        />
         <InfiniteRow items={logos} />
       </div>
     </section>

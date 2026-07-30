@@ -7,6 +7,7 @@ import { useContainerInset } from "@/app/hooks/useContainerInset";
 import { useLayoutEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import AnimatedTitle from "../../animations/AnimatedTitle";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -54,9 +55,11 @@ export default function Services() {
       {/* Top bar */}
       <div className="bg-primary py-30 3xl:py-[35px]">
         <div className="container flex items-center">
-          <h2 className="section-title text-white leading-none">
-            {sectionTitle}
-          </h2>
+          <AnimatedTitle
+            tag="h2"
+            text={sectionTitle}
+            className="section-title text-white leading-none"
+          />
         </div>
       </div>
 
@@ -96,12 +99,16 @@ export default function Services() {
           {services.map((service, index) => (
             <div
               key={service.title}
-              className="relative flex flex-col items-start pt-70 min-[1850px]:pt-[72px] cursor-pointer"
+              className="relative flex flex-col items-start pt-70 min-[1850px]:pt-[72px]"
               style={{ paddingLeft: inset, paddingRight: inset }}
               onMouseEnter={() => setHoveredIndex(index)}
               onMouseLeave={() => setHoveredIndex(0)}
             >
-              <h3 className="text-subtitle text-white">{service.title}</h3>
+              <AnimatedTitle
+                tag="h3"
+                text={service.title}
+                className="text-subtitle text-white"
+              />
 
               {/* Description — fades/slides in on hover of this column */}
               <p
@@ -114,9 +121,25 @@ export default function Services() {
                 {service.description}
               </p>
 
+              <div
+                className={`mt-5 transition-all duration-500 delay-150 ease-out xl:hidden ${
+                  hoveredIndex === index
+                    ? "opacity-100 translate-y-0"
+                    : "opacity-0 translate-y-4 pointer-events-none"
+                }`}
+              >
+                <Image
+                  src="/assets/icons/top-right-secondary-60.svg"
+                  alt="arrow"
+                  width={60}
+                  height={60}
+                  className="pointer-events-none w-auto h-8 h-10 xl:h-12 3xl:h-15"
+                />
+              </div>
+
               {/* Arrow icon — fades in on hover of this column */}
               <div
-                className={`absolute top-70 min-[1850px]:top-[72px] right-130 transition-all duration-300 ease-out ${
+                className={`absolute top-70 min-[1850px]:top-[72px] right-50 3xl:right-130 transition-all duration-300 ease-out cursor-pointer hidden xl:block ${
                   hoveredIndex === index
                     ? "opacity-100 translate-x-0"
                     : "opacity-0 -translate-x-5 translate-y-5 pointer-events-none"
@@ -128,7 +151,7 @@ export default function Services() {
                   alt="arrow"
                   width={60}
                   height={60}
-                  className="pointer-events-none"
+                  className="pointer-events-none w-auto h-12 3xl:h-15"
                 />
               </div>
 

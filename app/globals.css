@@ -85,6 +85,9 @@ input:-webkit-autofill:active {
 /* 28px → 18px at 420px, 28px at 1920px */
 --text-28: clamp(18px, 0.667vw + 15.2px, 28px);
 
+/* 25px → 13px at 420px, 25px at 1920px */
+--text-24: clamp(13px, 0.8vw + 8px, 24px);
+
 --text-20: clamp(12px, calc(0.5714vw + 9.714px), 20px);
 
 /* 19px → 14px at 420px, 19px at 1920px */
@@ -170,6 +173,7 @@ input:-webkit-autofill:active {
   --text-60: var(--text-60);
   --text-55: var(--text-55);
   --text-28: var(--text-28);
+  --text-24: var(--text-24);
   --text-20: var(--text-20);
   --text-19: var(--text-19);
   --text-18: var(--text-18);

@@ -1,5 +1,6 @@
 import { heroData } from "../data";
 import CustomButton from "../../common/CustomButton";
+import AnimatedTitle from "../../animations/AnimatedTitle";
 
 export default function Hero() {
   return (
@@ -24,9 +25,11 @@ export default function Hero() {
       />
 
       <div className="relative z-10 flex h-full flex-col justify-end container pb-130">
-        <h1 className="hero-title text-cream-background mb-5 max-w-[19ch]">
-          {heroData.title}
-        </h1>
+        <AnimatedTitle
+          tag="h1"
+          text={heroData.title}
+          className="hero-title text-cream-background mb-5 max-w-[20ch]"
+        />
         <div className="w-full flex flex-col lg:flex-row justify-between lg:items-end gap-5">
           <p className="text-description text-secondary max-w-[77ch]">
             {heroData.description}

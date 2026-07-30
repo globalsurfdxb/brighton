@@ -13,6 +13,8 @@ import AnimatedDividerTwo from "../../animations/AnimatedDividerTwo";
 import { useLayoutEffect } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { useContainerInset } from "@/app/hooks/useContainerInset";
+import AnimatedTitle from "../../animations/AnimatedTitle";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -25,6 +27,7 @@ export default function FeaturedProducts() {
   const [isBeginning, setIsBeginning] = useState(true);
   const [isEnd, setIsEnd] = useState(false);
   const [progress, setProgress] = useState(0);
+  const inset = useContainerInset();
 
   const updateState = (swiper: SwiperType) => {
     setIsBeginning(swiper.isBeginning);
@@ -53,28 +56,52 @@ export default function FeaturedProducts() {
     if (!sectionRef.current || !sliderRef.current) return;
 
     const ctx = gsap.context(() => {
+      const slides = sliderRef.current!.querySelectorAll(
+        ".featured-slide-inner",
+      );
+
+      // Initial state — container "closed" via clip-path, slightly zoomed
       gsap.set(sliderRef.current, {
-        xPercent: -40,
-        scale: 0.85,
-        borderRadius: "80px",
-        overflow: "hidden",
-        opacity: 0,
+        clipPath: "inset(0% 0% 100% 0%)",
+        scale: 1.06,
       });
 
-      gsap.to(sliderRef.current, {
-        xPercent: 0,
-        scale: 1,
-        borderRadius: "0px",
-        opacity: 1,
-        duration: 1.3,
-        ease: "power4.out",
+      // Cards start pushed back, tilted, and blurred
+      gsap.set(slides, {
+        opacity: 0,
+        y: 120,
+        rotateX: 20,
+        filter: "blur(8px)",
+        transformOrigin: "50% 100%",
+      });
+
+      const tl = gsap.timeline({
         scrollTrigger: {
           trigger: sectionRef.current,
-          start: "top 50%",
+          start: "top 75%",
           toggleActions: "play none none none",
           once: true,
         },
       });
+
+      tl.to(sliderRef.current, {
+        clipPath: "inset(0% 0% 0% 0%)",
+        scale: 1,
+        duration: 1.5,
+        ease: "power3.out",
+      }).to(
+        slides,
+        {
+          opacity: 1,
+          y: 0,
+          rotateX: 0,
+          filter: "blur(0px)",
+          duration: 1.1,
+          ease: "power4.out",
+          stagger: 0.08,
+        },
+        "<0.25",
+      );
     }, sectionRef);
 
     return () => ctx.revert();
@@ -85,10 +112,14 @@ export default function FeaturedProducts() {
       ref={sectionRef}
       className="w-full py-100 bg-cream-background overflow-hidden"
     >
-      <div className="container">
+      <div>
         {/* Top row: title, progress line, nav buttons */}
-        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-5 mb-40">
-          <h2 className="section-title">{sectionTitle}</h2>
+        <div className="container flex flex-col lg:flex-row lg:items-center justify-between gap-5 mb-40">
+          <AnimatedTitle
+            tag="h2"
+            text={sectionTitle}
+            className="section-title"
+          />
 
           <div className="flex items-center gap-80 min-[1850px]:gap-[87px] justify-between">
             <div className="w-[140px] h-[2px] bg-secondary relative overflow-hidden rounded-full">
@@ -114,7 +145,15 @@ export default function FeaturedProducts() {
         </div>
 
         {/* Slider */}
-        <div ref={sliderRef} className="cursor-grab">
+        <div
+          style={{
+            paddingLeft: inset,
+            paddingRight: inset,
+            perspective: "1200px",
+          }}
+          ref={sliderRef}
+          className="cursor-grab"
+        >
           <Swiper
             onSwiper={(swiper) => {
               swiperRef.current = swiper;
@@ -147,7 +186,7 @@ export default function FeaturedProducts() {
           >
             {projects.map((project, index) => (
               <SwiperSlide key={index}>
-                <div className="flex flex-col group">
+                <div className="flex flex-col group featured-slide-inner">
                   <div className="relative w-full h-[300px] md:h-[400px] 2xl:h-[450px] 3xl:h-[540px] rounded-[10px] overflow-hidden mb-30">
                     <Image
                       src={project.image}
