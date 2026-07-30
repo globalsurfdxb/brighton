@@ -35,49 +35,48 @@ export default function Overview() {
             key={card.title}
             className="group relative aspect-6/5 w-full overflow-hidden rounded-[10px] 3xl:aspect-auto min-[1800px]:h-[760px]"
           >
-            <video
-              className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
-              src={card.video}
-              poster={card.poster}
-              autoPlay
-              muted
-              loop
-              playsInline
-            />
+            {/* Video wrapper handles fit + clipping; scaling happens here, isolated */}
+            <div className="absolute inset-0 overflow-hidden">
+              <video
+                className="h-full w-full object-cover"
+                src={card.video}
+                poster={card.poster}
+                autoPlay
+                muted
+                loop
+                playsInline
+                preload="auto"
+              />
+            </div>
 
+            {/* Default gradient — fades out on hover */}
             <div
               style={{
                 background:
                   "linear-gradient(180deg, rgba(0,0,0,.85) 0%, rgba(0,0,0,0) 56.16%)",
               }}
-              className="absolute inset-0 transition-all duration-500 group-hover:bg-black/35"
+              className="absolute inset-0 transition-opacity duration-500 group-hover:opacity-0"
+            />
+
+            {/* Hover gradient — fades in on hover */}
+            <div
+              style={{
+                background:
+                  "linear-gradient(180deg, rgba(0, 0, 0, 0.85) 15.33%, rgba(0, 0, 0, 0) 89.87%)",
+              }}
+              className="absolute inset-0 opacity-0 transition-opacity duration-500 group-hover:opacity-100"
             />
 
             {/* Content */}
             <div className="absolute inset-0 flex flex-col p-40 3xl:p-[45px]">
               <h3 className="text-subtitle text-white">{card.title}</h3>
 
-              <div
-                className="
-    mt-[15px]
-    overflow-hidden
-  "
-              >
-                <div
-                  className="
-      translate-y-6
-      opacity-0
-      transition-all
-      duration-500
-      ease-out
-      group-hover:translate-y-0
-      group-hover:opacity-100
-    "
-                >
-                  <p className="text-description text-secondary mb-5 3xl:mb-[26px] max-w-[50ch]">
-                    {card.description}
-                  </p>
+              <div className="mt-[15px] overflow-hidden">
+                <p className="text-description text-secondary mb-5 3xl:mb-[26px] max-w-[50ch] translate-y-6 opacity-0 transition-all duration-500 ease-out delay-0 group-hover:translate-y-0 group-hover:opacity-100">
+                  {card.description}
+                </p>
 
+                <div className="translate-y-6 opacity-0 transition-all duration-500 ease-out delay-80 group-hover:translate-y-0 group-hover:opacity-100">
                   <CustomButton text={card.button} link="#" btnClass="w-fit" />
                 </div>
               </div>
