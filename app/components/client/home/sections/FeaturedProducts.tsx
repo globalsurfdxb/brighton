@@ -3,18 +3,23 @@
 import { useRef, useState } from "react";
 import Image from "next/image";
 import { Swiper, SwiperSlide } from "swiper/react";
-import { Autoplay } from "swiper/modules";
 import type { Swiper as SwiperType } from "swiper";
 
 import "swiper/css";
 
 import { featuredProductsData } from "../data";
 import SliderNavBtn from "../../common/Slidernavbtn";
-import AnimatedDivider from "../../animations/AnimatedDivider";
 import AnimatedDividerTwo from "../../animations/AnimatedDividerTwo";
+import { useLayoutEffect } from "react";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+
+gsap.registerPlugin(ScrollTrigger);
 
 export default function FeaturedProducts() {
   const { sectionTitle, projects } = featuredProductsData;
+  const sectionRef = useRef<HTMLElement>(null);
+  const sliderRef = useRef<HTMLDivElement>(null);
 
   const swiperRef = useRef<SwiperType | null>(null);
   const [isBeginning, setIsBeginning] = useState(true);
@@ -44,14 +49,46 @@ export default function FeaturedProducts() {
     setProgress(Math.min(Math.max(current, 0), 1));
   };
 
+  useLayoutEffect(() => {
+    if (!sectionRef.current || !sliderRef.current) return;
+
+    const ctx = gsap.context(() => {
+      gsap.set(sliderRef.current, {
+        xPercent: -40,
+        scale: 0.85,
+        borderRadius: "80px",
+        overflow: "hidden",
+        opacity: 0,
+      });
+
+      gsap.to(sliderRef.current, {
+        xPercent: 0,
+        scale: 1,
+        borderRadius: "0px",
+        opacity: 1,
+        duration: 1.3,
+        ease: "power4.out",
+        scrollTrigger: {
+          trigger: sectionRef.current,
+          start: "top 80%",
+          toggleActions: "play none none none",
+          once: true,
+        },
+      });
+    }, sectionRef);
+
+    return () => ctx.revert();
+  }, []);
+
   return (
-    <section className="w-full py-16 3xl:py-24 bg-cream-background overflow-hidden">
+    <section
+      ref={sectionRef}
+      className="w-full py-16 3xl:py-24 bg-cream-background overflow-hidden"
+    >
       <div className="container">
         {/* Top row: title, progress line, nav buttons */}
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-5 mb-40">
-          <h2 className="section-title">
-            {sectionTitle}
-          </h2>
+          <h2 className="section-title">{sectionTitle}</h2>
 
           <div className="flex items-center gap-80 min-[1850px]:gap-[87px] justify-between">
             <div className="w-[140px] h-[2px] bg-secondary relative overflow-hidden rounded-full">
@@ -77,9 +114,8 @@ export default function FeaturedProducts() {
         </div>
 
         {/* Slider */}
-        <div className="cursor-grab">
+        <div ref={sliderRef} className="cursor-grab">
           <Swiper
-            // modules={[Autoplay]}
             onSwiper={(swiper) => {
               swiperRef.current = swiper;
               updateState(swiper);
@@ -89,10 +125,6 @@ export default function FeaturedProducts() {
             spaceBetween={15}
             speed={800}
             slidesPerView={1.2}
-            // autoplay={{
-            //   delay: 4000,
-            //   disableOnInteraction: false,
-            // }}
             breakpoints={{
               640: {
                 slidesPerView: 2,
@@ -108,12 +140,12 @@ export default function FeaturedProducts() {
               },
               1700: {
                 slidesPerView: 4,
-                spaceBetween: 30
-              }
+                spaceBetween: 30,
+              },
             }}
             className="!overflow-visible lg:!overflow-hidden"
           >
-            {projects.map((project , index) => (
+            {projects.map((project, index) => (
               <SwiperSlide key={index}>
                 <div className="flex flex-col group">
                   <div className="relative w-full h-[300px] md:h-[400px] 2xl:h-[450px] 3xl:h-[540px] rounded-[10px] overflow-hidden mb-30">
@@ -124,9 +156,16 @@ export default function FeaturedProducts() {
                       className="pointer-events-none object-cover group-hover:scale-105 transition-all duration-500 ease-in-out"
                     />
                   </div>
-                  <h3 className="text-subtitle text-primary line-clamp-1">{project.title}</h3>
-                  <AnimatedDividerTwo className="border-secondary mt-2.5 mb-5" hoverColor="#0A0A0A" />
-                  <p className="text-description-3 text-description-color">{project.label}</p>
+                  <h3 className="text-subtitle text-primary line-clamp-1">
+                    {project.title}
+                  </h3>
+                  <AnimatedDividerTwo
+                    className="border-secondary mt-2.5 mb-5"
+                    hoverColor="#0A0A0A"
+                  />
+                  <p className="text-description-3 text-description-color">
+                    {project.label}
+                  </p>
                 </div>
               </SwiperSlide>
             ))}

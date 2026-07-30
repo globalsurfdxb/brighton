@@ -270,8 +270,16 @@ body {
 @media (min-width: 1700px) {
   .container { max-width: 1640px; }
 }
+
+@media screen and (min-width: 1800px) {
+  .container { max-width: 1740px; }
+}
+
+@media screen and (min-width: 1850px) {
+  .container { max-width: 1790px; }
+}
  
-@media (min-width: 1920px) {
+@media (min-width: 1900px) {
   .container { max-width: 1850px; }
 }
 
