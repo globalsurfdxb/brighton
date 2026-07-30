@@ -4,6 +4,7 @@ import { useLayoutEffect, useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { ElementType } from "react";
+import { useIntroComplete } from "@/app/hooks/useIntroComplete";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -19,9 +20,10 @@ export default function AnimatedTitle({
   tag = "h2",
 }: AnimatedTitleProps) {
   const rootRef = useRef<HTMLHeadingElement>(null);
+  const introComplete = useIntroComplete();
 
   useLayoutEffect(() => {
-    if (!rootRef.current) return;
+    if (!rootRef.current || !introComplete) return;
 
     const chars = rootRef.current.querySelectorAll(".animated-char");
 
@@ -59,7 +61,7 @@ export default function AnimatedTitle({
     }, rootRef);
 
     return () => ctx.revert();
-  }, []);
+  }, [introComplete]);
 
   const Tag = tag;
 
