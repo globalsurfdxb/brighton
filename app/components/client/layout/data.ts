@@ -5,13 +5,13 @@ export interface NavItem {
 }
 
 export const navItems: NavItem[] = [
-  { label: "Interior", href: "/interior", hasDropdown: true },
-  { label: "Exterior", href: "/exterior", hasDropdown: true },
-  { label: "Projects", href: "/projects", hasDropdown: true },
-  { label: "Services", href: "/services", hasDropdown: true },
-  { label: "Resources", href: "/resources", hasDropdown: true },
-  { label: "Media", href: "/media", hasDropdown: true },
-  { label: "About", href: "/about", hasDropdown: true },
+  { label: "Interior", href: "#", hasDropdown: true },
+  { label: "Exterior", href: "#", hasDropdown: true },
+  { label: "Projects", href: "#", hasDropdown: true },
+  { label: "Services", href: "#", hasDropdown: true },
+  { label: "Resources", href: "#", hasDropdown: true },
+  { label: "Media", href: "#", hasDropdown: true },
+  { label: "About", href: "#", hasDropdown: true },
 ];
 
 
@@ -75,8 +75,7 @@ export const footerColumns: FooterColumn[] = [
 ];
 
 export const footerAddress = {
-  line1: "63 St. James's Street, London, SW1A1LY,",
-  line2: "United Kingdom",
+  line: "63 St. James's Street, London, SW1A1LY, United Kingdom",
 };
 
 export const footerContact = {

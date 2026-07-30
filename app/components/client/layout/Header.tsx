@@ -68,7 +68,7 @@ export default function Header() {
 
           <div className="flex items-center gap-[10px]">
             <Link
-              href="/contact"
+              href="#"
               className="btn-fill-center hidden lg:flex items-center justify-center gap-4 rounded-[20px] bg-primary max-h-[36px] py-[11px] px-[19px] group border border-transparent hover:border-secondary transition-all duration-500"
             >
               <span className="text-15 font-itc-medium uppercase leading-none text-secondary group-hover:text-primary max-h-[11px]">

@@ -154,7 +154,7 @@ export const servicesData = {
     {
       title: "Technical Consulting",
       description:
-        "Expert guidance on lighting design, specification, and implementation for complex projects.",
+        "Supporting architects, designers, and consultants with specification-led guidance",
       image: "/assets/images/home/services/consulting.jpg",
     },
   ],
