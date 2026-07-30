@@ -70,7 +70,7 @@ export default function FeaturedProducts() {
         ease: "power4.out",
         scrollTrigger: {
           trigger: sectionRef.current,
-          start: "top 80%",
+          start: "top 50%",
           toggleActions: "play none none none",
           once: true,
         },
@@ -83,7 +83,7 @@ export default function FeaturedProducts() {
   return (
     <section
       ref={sectionRef}
-      className="w-full py-16 3xl:py-24 bg-cream-background overflow-hidden"
+      className="w-full py-100 bg-cream-background overflow-hidden"
     >
       <div className="container">
         {/* Top row: title, progress line, nav buttons */}
