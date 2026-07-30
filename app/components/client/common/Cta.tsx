@@ -71,7 +71,7 @@ export default function Cta({ data }: CtaProps) {
         }}
       />
       <div className="container relative z-10">
-        <div className="flex flex-col lg:flex-row lg:items-center justify-between max-w-[92%] 3xl:max-w-[75.13%] gap-5 lg:gap-0">
+        <div className="flex flex-col lg:flex-row lg:items-end justify-between max-w-[92%] 3xl:max-w-[1553px] gap-5 lg:gap-0">
           <div className="flex flex-col gap-30">
             <h2 className="section-title text-white">{data.title}</h2>
             <p className="text-description text-secondary">
