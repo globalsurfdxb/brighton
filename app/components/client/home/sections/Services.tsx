@@ -4,17 +4,20 @@ import Image from "next/image";
 import { motion } from "framer-motion";
 import { servicesData } from "../data";
 import { useContainerInset } from "@/app/hooks/useContainerInset";
-import { useLayoutEffect, useRef } from "react";
+import { useLayoutEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 gsap.registerPlugin(ScrollTrigger);
 
 export default function Services() {
-  const { sectionTitle, backgroundImage, services } = servicesData;
+  const { sectionTitle, services } = servicesData;
   const inset = useContainerInset();
   const sectionRef = useRef<HTMLElement>(null);
   const imageWrapperRef = useRef<HTMLDivElement>(null);
+
+  // idle state shows the first service's image by default
+  const [hoveredIndex, setHoveredIndex] = useState<number>(0);
 
   useLayoutEffect(() => {
     if (!sectionRef.current || !imageWrapperRef.current) return;
@@ -63,13 +66,22 @@ export default function Services() {
           ref={imageWrapperRef}
           className="absolute overflow-hidden will-change-[width,height]"
         >
-          <Image
-            src={backgroundImage}
-            alt={sectionTitle}
-            fill
-            className="pointer-events-none object-cover"
-            priority
-          />
+          {/* Stacked images crossfade based on hoveredIndex */}
+          {services.map((service, index) => (
+            <div
+              key={service.title}
+              className="absolute inset-0 transition-opacity duration-700 ease-out"
+              style={{ opacity: hoveredIndex === index ? 1 : 0 }}
+            >
+              <Image
+                src={service.image}
+                alt={service.title}
+                fill
+                className="pointer-events-none object-cover"
+                priority={index === 0}
+              />
+            </div>
+          ))}
         </div>
 
         <div
@@ -84,10 +96,41 @@ export default function Services() {
           {services.map((service, index) => (
             <div
               key={service.title}
-              className="relative flex items-start pt-70 min-[1850px]:pt-[72px]"
+              className="relative flex flex-col items-start pt-70 min-[1850px]:pt-[72px] cursor-pointer"
               style={{ paddingLeft: inset, paddingRight: inset }}
+              onMouseEnter={() => setHoveredIndex(index)}
+              onMouseLeave={() => setHoveredIndex(0)}
             >
               <h3 className="text-subtitle text-white">{service.title}</h3>
+
+              {/* Description — fades/slides in on hover of this column */}
+              <p
+                className={`text-description text-secondary mt-5 max-w-[40ch] transition-all duration-500 ease-out ${
+                  hoveredIndex === index
+                    ? "opacity-100 translate-y-0"
+                    : "opacity-0 translate-y-4 pointer-events-none"
+                }`}
+              >
+                {service.description}
+              </p>
+
+              {/* Arrow icon — fades in on hover of this column */}
+              <div
+                className={`absolute top-70 min-[1850px]:top-[72px] right-130 transition-all duration-300 ease-out ${
+                  hoveredIndex === index
+                    ? "opacity-100 translate-x-0"
+                    : "opacity-0 -translate-x-5 translate-y-5 pointer-events-none"
+                }`}
+                style={{ marginRight: inset }}
+              >
+                <Image
+                  src="/assets/icons/top-right-secondary-60.svg"
+                  alt="arrow"
+                  width={60}
+                  height={60}
+                  className="pointer-events-none"
+                />
+              </div>
 
               {index === 0 && (
                 <motion.span

@@ -81,7 +81,7 @@ export default function Cta({ data }: CtaProps) {
 
           <div className="lg:mb-2 w-fit">
             <Link href={data.button.href}>
-              <button className="btn-fill-center max-h-[80px] rounded-[50px] border border-secondary px-6 lg:px-12.5 py-3 lg:py-[29px] transition-colors duration-500 group w-full">
+              <button className="btn-fill-center cursor-pointer max-h-[80px] rounded-[50px] border border-secondary px-6 lg:px-12.5 py-3 lg:py-[29px] transition-colors duration-500 group w-full">
                 <span className="text-subtitle !leading-none text-white max-h-[21px] group-hover:text-primary">
                   {data.button.text}
                 </span>

@@ -144,10 +144,19 @@ export const certifiedByData = {
 
 export const servicesData = {
   sectionTitle: "Services",
-  backgroundImage: "/assets/images/home/services/bg.jpg",
   services: [
-    { title: "Bespoke/Custom Solutions" },
-    { title: "Technical Consulting" },
+    {
+      title: "Bespoke/Custom Solutions",
+      description:
+        "Tailored lighting solutions engineered to meet unique architectural, performance, and project requirements.",
+      image: "/assets/images/home/services/bespoke.jpg",
+    },
+    {
+      title: "Technical Consulting",
+      description:
+        "Expert guidance on lighting design, specification, and implementation for complex projects.",
+      image: "/assets/images/home/services/consulting.jpg",
+    },
   ],
 };
  

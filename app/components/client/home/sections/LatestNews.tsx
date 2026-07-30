@@ -4,7 +4,7 @@ import AnimatedDivider from "../../animations/AnimatedDivider";
 
 export function NewsCard({ image, title, date, category }: any) {
   return (
-    <div className="flex flex-col lg:flex-row gap-[30px] group">
+    <div className="flex flex-col lg:flex-row gap-[30px] group cursor-pointer">
       <div className="relative h-[230px] 3xl:h-[275px] w-auto shrink-0 aspect-348/275 rounded-[10px] overflow-hidden">
         <Image
           src={image}
