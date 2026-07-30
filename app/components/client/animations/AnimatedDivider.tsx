@@ -13,7 +13,7 @@ export default function AnimatedDivider({
   hoverColor,
 }: AnimatedDividerProps) {
   const ref = useRef<HTMLDivElement>(null);
-  const isInView = useInView(ref, { once: true, amount: 0 });
+  const isInView = useInView(ref, { once: true, amount: 0.3 });
 
   return (
     <div
@@ -22,7 +22,7 @@ export default function AnimatedDivider({
       style={{
         transform: isInView ? "scaleX(1)" : "scaleX(0)",
         transition:
-          "transform 0.8xs cubic-bezier(0.65, 0, 0.35, 1), border-color 0.3s ease",
+          "transform 0.8s cubic-bezier(0.65, 0, 0.35, 1), border-color 0.3s ease",
       }}
     >
       {hoverColor && (

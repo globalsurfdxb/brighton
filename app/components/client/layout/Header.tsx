@@ -69,7 +69,7 @@ export default function Header() {
           <div className="flex items-center gap-[10px]">
             <Link
               href="/contact"
-              className="hidden lg:flex items-center justify-center gap-4 rounded-[20px] bg-primary max-h-[36px] py-[11px] px-[19px] group hover:bg-white border border-transparent hover:border-secondary transition-all duration-500"
+              className="btn-fill-center hidden lg:flex items-center justify-center gap-4 rounded-[20px] bg-primary max-h-[36px] py-[11px] px-[19px] group border border-transparent hover:border-secondary transition-all duration-500"
             >
               <span className="text-15 font-itc-medium uppercase leading-none text-secondary group-hover:text-primary max-h-[11px]">
                 Contact
@@ -86,7 +86,8 @@ export default function Header() {
             <button
               type="button"
               aria-label="Search"
-              className="flex h-7 w-7 md:h-9 md:w-9 items-center justify-center rounded-full border border-secondary group cursor-pointer hover:bg-primary transition-all duration-500"
+              style={{ "--fill-color": "#0A0A0A" } as React.CSSProperties}
+              className="btn-fill-center flex h-7 w-7 md:h-9 md:w-9 items-center justify-center rounded-full border border-secondary group cursor-pointer transition-all duration-500"
             >
               <Image
                 src="/assets/icons/search.svg"

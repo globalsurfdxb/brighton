@@ -85,16 +85,16 @@ export const footerContact = {
 };
 
 export const footerSocials: FooterLink[] = [
-  { label: "LinkedIn", href: "https://linkedin.com" },
-  { label: "Facebook", href: "https://facebook.com" },
-  { label: "Instagram", href: "https://instagram.com" },
-  { label: "Youtube", href: "https://youtube.com" },
+  { label: "LinkedIn", href: "#" },
+  { label: "Facebook", href: "#" },
+  { label: "Instagram", href: "#" },
+  { label: "Youtube", href: "#" },
 ];
 
 export const footerLegal = {
   links: [
     { label: "©2026 Brighton Lighting. All rights reserved", href: "#" },
-    { label: "Privacy Policy", href: "/privacy-policy" },
-    { label: "Cookie Policy", href: "/cookie-policy" },
+    { label: "Privacy Policy", href: "#" },
+    { label: "Cookie Policy", href: "#" },
   ] as FooterLink[],
 };

@@ -99,6 +99,16 @@ export const featuredProjectsData = {
       image: "/assets/images/home/projects/3.jpg",
       location: "UAE",
     },
+        {
+      title: "Ava By Omniyat",
+      image: "/assets/images/home/projects/2.jpg",
+      location: "UAE",
+    },
+    {
+      title: "Project Name",
+      image: "/assets/images/home/projects/3.jpg",
+      location: "UAE",
+    },
   ],
 };
 
