@@ -18,7 +18,7 @@ function LogoItem({ image }: Logo) {
         alt={"client-logo"}
         width={160}
         height={50}
-        className="pointer-events-none w-auto max-w-[160px] h-8 lg:h-12.5 object-contain pointer-events-none"
+        className="select-none w-auto max-w-[160px] h-8 lg:h-12.5 object-contain pointer-events-none"
       />
     </div>
   );
