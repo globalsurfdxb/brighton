@@ -5,6 +5,7 @@ import CustomButton from "../../common/CustomButton";
 import AnimatedTitle from "../../animations/AnimatedTitle";
 import { motion } from "framer-motion";
 import { useIntroComplete } from "@/app/hooks/useIntroComplete";
+import SectionDescription from "../../animations/SectionDescription";
 
 const itemVariants = {
   hidden: { opacity: 0, y: 24 },
@@ -54,15 +55,17 @@ export default function Hero() {
           />
         </motion.div>
         <div className="w-full flex flex-col lg:flex-row justify-between lg:items-end gap-5">
-          <motion.p
+          <motion.div
             variants={itemVariants}
             initial="hidden"
             animate={introComplete ? "visible" : "hidden"}
             transition={{ delay: 0.9 }}
-            className="text-description text-secondary max-w-[77ch]"
           >
-            {heroData.description}
-          </motion.p>
+            <SectionDescription
+              text={heroData.description}
+              className="text-description text-secondary max-w-[77ch]"
+            />
+          </motion.div>
           <motion.div
             variants={itemVariants}
             initial="hidden"

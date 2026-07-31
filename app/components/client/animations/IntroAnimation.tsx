@@ -28,13 +28,13 @@ export default function IntroAnimation() {
     lock();
     document.documentElement.style.overflow = "hidden";
 
-const finish = () => {
-  unlock();
-  document.documentElement.style.overflow = "";
-  window.__introComplete = true;
-  window.dispatchEvent(new Event("introComplete"));
-  setShouldRender(false);
-};
+    const finish = () => {
+      unlock();
+      document.documentElement.style.overflow = "";
+      window.__introComplete = true;
+      window.dispatchEvent(new Event("introComplete"));
+      setShouldRender(false);
+    };
 
     const prefersReducedMotion = window.matchMedia(
       "(prefers-reduced-motion: reduce)",
@@ -122,23 +122,24 @@ const finish = () => {
         // 3. hold on the full lockup
         .to({}, { duration: 0.35 })
 
-        // 4. exit — logo fades/scales out, screen scales to 0 with an iris-close for polish
+        // 4. exit — logo fades/scales out while overlay slides down
         .to(
           svgRef.current,
-          { opacity: 0, scale: 0.2, duration: 0.85, ease: "power2.in" },
+          {
+            opacity: 0,
+            scale: 0.2,
+            duration: 0.5,
+            ease: "power2.in",
+          },
           "exit",
         )
         .to(
           overlayRef.current,
-          { scale: 0, opacity: 0, duration: 0.85, ease: "power4.in" },
-          "exit+=0.05",
-        )
-        .to(
-          overlayRef.current,
           {
-            clipPath: "circle(50% 50%)",
-            duration: 0.85,
-            ease: "power4.in",
+            y: "-110%",
+            duration: 1,
+            opacity: 0.4,
+            ease: "expo.inOut",
           },
           "exit+=0.05",
         );

@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { motion } from "framer-motion";
 import AnimatedTitle from "../animations/AnimatedTitle";
+import SectionDescription from "../animations/SectionDescription";
 
 interface CtaProps {
   data: {
@@ -41,18 +42,20 @@ export default function Cta({ data }: CtaProps) {
               text={data.title}
               className="section-title text-white"
             />
-            <motion.p
-            initial="hidden"
-            whileInView="show"
+            <motion.div
+              initial="hidden"
+              whileInView="show"
               viewport={{ once: true, amount: 0.4 }}
               transition={{
                 duration: 1,
                 ease: [0.22, 1, 0.36, 1],
               }}
-              className="text-description text-secondary"
             >
-              {data.description}
-            </motion.p>
+              <SectionDescription
+                text={data.description}
+                className="text-description text-secondary"
+              />
+            </motion.div>
           </div>
 
           <div className="lg:mb-2 w-fit">

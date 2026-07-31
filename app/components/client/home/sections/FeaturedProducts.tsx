@@ -59,6 +59,9 @@ export default function FeaturedProducts() {
       const slides = sliderRef.current!.querySelectorAll(
         ".featured-slide-inner",
       );
+      const slideImages = sliderRef.current!.querySelectorAll(
+        ".featured-slide-image",
+      );
 
       // Initial state — container "closed" via clip-path, slightly zoomed
       gsap.set(sliderRef.current, {
@@ -89,19 +92,34 @@ export default function FeaturedProducts() {
         scale: 1,
         duration: 1.5,
         ease: "power3.out",
-      }).to(
-        slides,
-        {
-          opacity: 1,
-          y: 0,
-          rotateX: 0,
-          filter: "blur(0px)",
-          duration: 1.1,
-          ease: "power4.out",
-          stagger: 0.08,
-        },
-        "<0.25",
-      );
+      })
+        .to(
+          slides,
+          {
+            opacity: 1,
+            y: 0,
+            rotateX: 0,
+            filter: "blur(0px)",
+            duration: 1.1,
+            ease: "power4.out",
+            stagger: 0.08,
+          },
+          "<0.25",
+        )
+        .to(
+          slideImages,
+          {
+            scale: 2,
+            duration: 0.3,
+            ease: "sine.inOut",
+            stagger: {
+              each: 0.12,
+              yoyo: true,
+              repeat: 1,
+            },
+          },
+          "-=0.6",
+        );
     }, sectionRef);
 
     return () => ctx.revert();
@@ -192,7 +210,7 @@ export default function FeaturedProducts() {
                       src={project.image}
                       alt={project.title}
                       fill
-                      className="pointer-events-none object-cover group-hover:scale-105 transition-all duration-500 ease-in-out"
+                      className="featured-slide-image pointer-events-none object-cover group-hover:scale-105 transition-all duration-500 ease-in-out"
                     />
                   </div>
                   <h3 className="text-subtitle text-primary line-clamp-1">

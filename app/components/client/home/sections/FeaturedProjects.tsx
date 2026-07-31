@@ -33,6 +33,7 @@ export default function FeaturedProjects({
   const { sectionTitle, projects } = data;
 
   const sectionRef = useRef<HTMLElement>(null);
+  const sliderRef = useRef<HTMLDivElement>(null);
   const swiperRef = useRef<SwiperType | null>(null);
 
   // Tracks whether pin/scrub mode is currently active (only >=1280px)
@@ -40,11 +41,58 @@ export default function FeaturedProjects({
 
   useLayoutEffect(() => {
     if (!animate) return;
-    if (!sectionRef.current) return;
+    if (!sectionRef.current || !sliderRef.current) return;
 
     const section = sectionRef.current;
+    const slider = sliderRef.current;
 
     const ctx = gsap.context(() => {
+      // --- Entry + pop animation (runs once, independent of breakpoint) ---
+      const cards = slider.querySelectorAll(".featured-project-card");
+
+      gsap.set(cards, {
+        opacity: 0,
+        y: 120,
+        rotateX: 20,
+        filter: "blur(8px)",
+        transformOrigin: "50% 100%",
+      });
+
+      const entryTl = gsap.timeline({
+        scrollTrigger: {
+          trigger: slider,
+          start: "top 85%",
+          toggleActions: "play none none none",
+          once: true,
+        },
+      });
+
+      entryTl
+        .to(cards, {
+          opacity: 1,
+          y: 0,
+          rotateX: 0,
+          filter: "blur(0px)",
+          duration: 1.1,
+          ease: "power4.out",
+          stagger: 0.08,
+        })
+        .to(
+          cards,
+          {
+            scale: 1.016,
+            duration: 0.6,
+            ease: "sine.inOut",
+            stagger: {
+              each: 0.1,
+              yoyo: true,
+              repeat: 1,
+            },
+          },
+          "-=0.6",
+        );
+
+      // --- Pin/scrub logic (only >=1280px) ---
       const mm = gsap.matchMedia();
 
       mm.add("(min-width: 1280px)", () => {
@@ -111,7 +159,7 @@ export default function FeaturedProjects({
           text={sectionTitle}
           className="section-title mb-40 pb-[6px]"
         />
-        <div className={isPinMode ? "" : "cursor-grab"}>
+        <div ref={sliderRef} className={isPinMode ? "" : "cursor-grab"}>
           <Swiper
             onSwiper={(s) => (swiperRef.current = s)}
             spaceBetween={15}
@@ -138,7 +186,7 @@ export default function FeaturedProjects({
 
 function ProjectCard({ project }: { project: any }) {
   return (
-    <div className="flex flex-col group cursor-pointer">
+    <div className="featured-project-card flex flex-col group cursor-pointer">
       <h3 className="text-subtitle text-primary line-clamp-1">
         {project.title}
       </h3>
