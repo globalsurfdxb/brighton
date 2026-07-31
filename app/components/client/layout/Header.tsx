@@ -160,8 +160,6 @@
 //   );
 // }
 
-
-
 "use client";
 
 import { useState } from "react";
@@ -366,57 +364,57 @@ export default function Header() {
             </div>
           </motion.div>
 
-<AnimatePresence>
-  {isSearchOpen && (
-<motion.div
-  initial={{ opacity: 0 }}
-  animate={{ opacity: 1 }}
-  exit={{ opacity: 0 }}
-  className="absolute right-0 top-full mt-2 min-w-[280px] -z-10"
->
-  {/* clip mask — nothing above this line is ever visible */}
-  <div className="overflow-hidden">
-    <motion.div
-      initial={{ scaleY: 0, opacity: 0, y: -24 }}
-      animate={{ scaleY: 1, opacity: 1, y: 0 }}
-      exit={{ scaleY: 0, opacity: 0, y: -24 }}
-      transition={{ type: "spring", stiffness: 260, damping: 18 }}
-      style={{ originY: 0 }}
-      className="w-full rounded-[50px] border border-secondary bg-primary"
-    >
-      <div className="px-4 py-2">
-        <input
-          type="text"
-          autoFocus
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          placeholder="Search..."
-          className="w-full outline-none text-15 leading-none font-itc-medium text-secondary placeholder:text-secondary"
-        />
-      </div>
-    </motion.div>
-  </div>
+          <AnimatePresence>
+            {isSearchOpen && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="absolute right-0 top-full mt-2 min-w-[280px] -z-10"
+              >
+                {/* clip mask — nothing above this line is ever visible */}
+                <div className="overflow-hidden">
+                  <motion.div
+                    initial={{ scaleY: 0, opacity: 0, y: -24 }}
+                    animate={{ scaleY: 1, opacity: 1, y: 0 }}
+                    exit={{ scaleY: 0, opacity: 0, y: -24 }}
+                    transition={{ type: "spring", stiffness: 260, damping: 18 }}
+                    style={{ originY: 0 }}
+                    className="w-full rounded-[50px] border border-secondary bg-primary"
+                  >
+                    <div className="px-4 py-2">
+                      <input
+                        type="text"
+                        autoFocus
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        placeholder="Search..."
+                        className="w-full outline-none text-15 leading-none font-itc-medium text-secondary placeholder:text-secondary"
+                      />
+                    </div>
+                  </motion.div>
+                </div>
 
-  {/* dropdown stays as-is below */}
-  <AnimatePresence>
-    {searchQuery.length > 0 && (
-      <motion.ul
-        initial={{ clipPath: "inset(0 0 100% 0)", opacity: 0 }}
-        animate={{ clipPath: "inset(0 0 0% 0)", opacity: 1 }}
-        exit={{ clipPath: "inset(0 0 100% 0)", opacity: 0 }}
-        transition={{ duration: 0.4, ease: [0.65, 0, 0.35, 1] }}
-        style={{ originY: 0 }}
-        className="w-full mt-[2px] rounded-[10px] border border-secondary bg-white overflow-hidden max-h-64 overflow-y-auto"
-      >
-        <li className="px-4 py-3 text-15 leading-none font-tasa text-primary hover:bg-primary hover:text-white transition-colors duration-500">
-          Result item
-        </li>
-      </motion.ul>
-    )}
-  </AnimatePresence>
-</motion.div>
-  )}
-</AnimatePresence>
+                {/* dropdown stays as-is below */}
+                <AnimatePresence>
+                  {searchQuery.length > 0 && (
+                    <motion.ul
+                      initial={{ clipPath: "inset(0 0 100% 0)", opacity: 0 }}
+                      animate={{ clipPath: "inset(0 0 0% 0)", opacity: 1 }}
+                      exit={{ clipPath: "inset(0 0 100% 0)", opacity: 0 }}
+                      transition={{ duration: 0.4, ease: [0.65, 0, 0.35, 1] }}
+                      style={{ originY: 0 }}
+                      className="w-full mt-[2px] rounded-[10px] border border-secondary bg-white overflow-hidden max-h-64 overflow-y-auto"
+                    >
+                      <li className="px-4 py-3 text-15 leading-none font-tasa text-primary hover:bg-primary hover:text-white transition-colors duration-500">
+                        Result item
+                      </li>
+                    </motion.ul>
+                  )}
+                </AnimatePresence>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
       </div>
     </motion.header>
