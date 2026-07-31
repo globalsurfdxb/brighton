@@ -9,9 +9,7 @@ declare global {
 }
 
 export function useIntroComplete() {
-  const [introComplete, setIntroComplete] = useState(
-    () => typeof window !== "undefined" && window.__introComplete === true,
-  );
+  const [introComplete, setIntroComplete] = useState(false);
 
   useEffect(() => {
     if (window.__introComplete) {

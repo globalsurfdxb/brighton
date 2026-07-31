@@ -91,7 +91,7 @@ export default function Footer() {
 
           <div className="col-span-2 lg:col-start-5 flex flex-wrap gap-x-30 gap-y-2 text-description text-description-color">
             <Link href={"#"}>
-              <button className="btn-fill-center cursor-pointer max-h-[80px] rounded-[50px] border border-secondary px-6 lg:px-[39.5px] py-3 lg:py-[27px] transition-colors duration-500 group w-full flex items-center justify-center gap-4 bg-primary">
+              <button className="btn-fill-center cursor-pointer max-h-[80px] rounded-[50px] border border-secondary px-6 lg:px-8 3xl:px-[39.5px] py-3 lg:py-6 3xl:py-[27px] transition-colors duration-500 group w-full flex items-center justify-center gap-4 bg-primary">
                 <span className="text-subtitle text-24 3xl:text-28  !leading-none text-white max-h-[21px] group-hover:text-primary">
                   Download Catalogue
                 </span>
@@ -111,7 +111,8 @@ export default function Footer() {
       <div className="bg-[#F8F8F8]">
         <div className="container flex flex-col sm:flex-row items-center pt-[27px] pb-[23px] text-subtitle-2 text-description-color">
           <div className="flex flex-wrap gap-5 lg:gap-40 min-[1850px]:gap-[47px]">
-            {footerLegal.links.map((link) => (
+            <span className="w-fit">{footerLegal.links[0].label}</span>
+            {footerLegal.links.slice(1).map((link) => (
               <Link
                 key={link.label}
                 href={link.href}
