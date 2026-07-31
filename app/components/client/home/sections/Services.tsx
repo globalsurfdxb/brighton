@@ -15,29 +15,30 @@
 //   const { sectionTitle, services } = servicesData;
 //   const inset = useContainerInset();
 //   const sectionRef = useRef<HTMLElement>(null);
-//   const imageWrapperRef = useRef<HTMLDivElement>(null);
+//   const imageRevealRef = useRef<HTMLDivElement>(null);
 
 //   // idle state shows the first service's image by default
 //   const [hoveredIndex, setHoveredIndex] = useState<number>(0);
 
 //   useLayoutEffect(() => {
-//     if (!sectionRef.current || !imageWrapperRef.current) return;
+//     if (!sectionRef.current || !imageRevealRef.current) return;
 
 //     const ctx = gsap.context(() => {
-//       gsap.set(imageWrapperRef.current, {
-//         width: 200,
-//         height: 200,
-//         xPercent: -50,
-//         yPercent: -50,
-//         left: "50%",
-//         top: "50%",
+//       // --- Entry animation ---
+//       gsap.set(imageRevealRef.current, {
+//         clipPath: "inset(0% 38% 0% 38%)",
+//         scale: 1.15,
+//         filter: "blur(14px)",
+//         opacity: 0,
 //       });
 
-//       gsap.to(imageWrapperRef.current, {
-//         width: "100%",
-//         height: "100%",
-//         duration: 1.2,
-//         ease: "power3.out",
+//       gsap.to(imageRevealRef.current, {
+//         clipPath: "inset(0% 0% 0% 0%)",
+//         scale: 1,
+//         filter: "blur(0px)",
+//         opacity: 1,
+//         duration: 1.6,
+//         ease: "power4.out",
 //         scrollTrigger: {
 //           trigger: sectionRef.current,
 //           start: "top bottom",
@@ -49,7 +50,6 @@
 
 //     return () => ctx.revert();
 //   }, []);
-
 //   return (
 //     <section ref={sectionRef} className="w-full bg-primary">
 //       {/* Top bar */}
@@ -65,10 +65,7 @@
 
 //       {/* Background image with center divider + two titles */}
 //       <div className="relative w-full h-[320px] md:h-[420px] xl:h-[500px] 2xl:h-[600px] 3xl:h-[750px]">
-//         <div
-//           ref={imageWrapperRef}
-//           className="absolute overflow-hidden will-change-[width,height]"
-//         >
+//         <div ref={imageRevealRef} className="absolute inset-0 overflow-hidden">
 //           {/* Stacked images crossfade based on hoveredIndex */}
 //           {services.map((service, index) => (
 //             <div
@@ -189,9 +186,12 @@ export default function Services() {
   const { sectionTitle, services } = servicesData;
   const inset = useContainerInset();
   const sectionRef = useRef<HTMLElement>(null);
-  const imageRevealRef = useRef<HTMLDivElement>(null);
+  const mediaWrapperRef = useRef<HTMLDivElement>(null); // outer, mouse tracking target
+  const imageRevealRef = useRef<HTMLDivElement>(null); // inner, gets translated
 
-  // idle state shows the first service's image by default
+  const xTo = useRef<gsap.QuickToFunc | null>(null);
+  const yTo = useRef<gsap.QuickToFunc | null>(null);
+
   const [hoveredIndex, setHoveredIndex] = useState<number>(0);
 
   useLayoutEffect(() => {
@@ -208,7 +208,7 @@ export default function Services() {
 
       gsap.to(imageRevealRef.current, {
         clipPath: "inset(0% 0% 0% 0%)",
-        scale: 1,
+        scale: 1.08, // resting scale gives headroom for parallax drift
         filter: "blur(0px)",
         opacity: 1,
         duration: 1.6,
@@ -220,10 +220,41 @@ export default function Services() {
           once: true,
         },
       });
+
+      // --- Parallax quickTo setters (slow, damped follow) ---
+      xTo.current = gsap.quickTo(imageRevealRef.current, "x", {
+        duration: 1.4,
+        ease: "power3.out",
+      });
+      yTo.current = gsap.quickTo(imageRevealRef.current, "y", {
+        duration: 1.4,
+        ease: "power3.out",
+      });
     }, sectionRef);
 
     return () => ctx.revert();
   }, []);
+
+const handleMediaMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+  if (window.innerWidth < 1280) return; // no 3D parallax below xl
+
+  const rect = e.currentTarget.getBoundingClientRect();
+  const relX = (e.clientX - rect.left) / rect.width - 0.6;
+  const relY = (e.clientY - rect.top) / rect.height - 0.6;
+
+  const maxX = 60;
+  const maxY = 60;
+
+  xTo.current?.(relX * maxX);
+  yTo.current?.(relY * maxY);
+};
+
+const handleMediaMouseLeave = () => {
+  if (window.innerWidth < 1280) return;
+  xTo.current?.(0);
+  yTo.current?.(0);
+};
+
   return (
     <section ref={sectionRef} className="w-full bg-primary">
       {/* Top bar */}
@@ -238,9 +269,13 @@ export default function Services() {
       </div>
 
       {/* Background image with center divider + two titles */}
-      <div className="relative w-full h-[320px] md:h-[420px] xl:h-[500px] 2xl:h-[600px] 3xl:h-[750px]">
+      <div
+        ref={mediaWrapperRef}
+        onMouseMove={handleMediaMouseMove}
+        onMouseLeave={handleMediaMouseLeave}
+        className="relative w-full h-[320px] md:h-[420px] xl:h-[500px] 2xl:h-[600px] 3xl:h-[750px] overflow-hidden"
+      >
         <div ref={imageRevealRef} className="absolute inset-0 overflow-hidden">
-          {/* Stacked images crossfade based on hoveredIndex */}
           {services.map((service, index) => (
             <div
               key={service.title}
