@@ -11,6 +11,9 @@ import {
 import { motion } from "framer-motion";
 import Image from "next/image";
 import AnimatedTitle from "../animations/AnimatedTitle";
+import Reveal from "../animations/RevealItemsOneByOneAnimation";
+import { moveUpV2 } from "../animations/motionVariants";
+import SectionDescription from "../animations/SectionDescription";
 
 export default function Footer() {
   return (
@@ -28,15 +31,17 @@ export default function Footer() {
                 tag="h3"
               />
               <ul className="flex flex-col">
-                {column.links.map((link) => (
-                  <li key={link.label}>
-                    <Link
-                      href={link.href}
-                      className="text-18 leading-[1.8888888889] font-itc-medium tracking-[-0.01em] text-description-color hover:text-primary transition-colors duration-500"
-                    >
-                      {link.label}
-                    </Link>
-                  </li>
+                {column.links.map((link, i) => (
+                  <Reveal key={i} variants={moveUpV2} delayRange={i * 0.08}>
+                    <li>
+                      <Link
+                        href={link.href}
+                        className="text-18 leading-[1.8888888889] font-itc-medium tracking-[-0.01em] text-description-color hover:text-primary transition-colors duration-500"
+                      >
+                        {link.label}
+                      </Link>
+                    </li>
+                  </Reveal>
                 ))}
               </ul>
             </div>
@@ -57,7 +62,7 @@ export default function Footer() {
 
         <div className="grid grid-cols-2 lg:grid-cols-6 gap-x-6 gap-y-8">
           <div className="col-span-2 text-description text-description-color hover:text-primary transition-colors duration-500 w-fit max-w-[35ch]">
-            <p>{footerAddress.line}</p>
+            <SectionDescription text={footerAddress.line} />
           </div>
 
           <div className="col-span-2 lg:col-start-3 text-subtitle flex flex-col">
@@ -75,16 +80,18 @@ export default function Footer() {
             </Link>
 
             <div className="flex flex-wrap gap-x-30 gap-y-2 text-description text-description-color mt-30">
-              {footerSocials.map((social) => (
-                <Link
-                  key={social.label}
-                  href={social.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="hover:text-black transition-colors duration-500 w-fit"
-                >
-                  {social.label}
-                </Link>
+              {footerSocials.map((social, i) => (
+                <Reveal key={i} variants={moveUpV2} delayRange={i * 0.1}>
+                  <Link
+                    key={social.label}
+                    href={social.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="hover:text-black transition-colors duration-500 w-fit"
+                  >
+                    {social.label}
+                  </Link>
+                </Reveal>
               ))}
             </div>
           </div>
@@ -108,13 +115,13 @@ export default function Footer() {
         </div>
       </div>
 
-      <div className="bg-[#F8F8F8]">
+      <div className="bg-[#F8F8F8] overflow-hidden">
         <div className="container flex flex-col sm:flex-row items-center pt-[27px] pb-[23px] text-subtitle-2 text-description-color">
           <div className="flex flex-wrap gap-5 lg:gap-40 min-[1850px]:gap-[47px]">
             <span className="w-fit">{footerLegal.links[0].label}</span>
-            {footerLegal.links.slice(1).map((link) => (
+            {footerLegal.links.slice(1).map((link, i) => (
               <Link
-                key={link.label}
+                key={i}
                 href={link.href}
                 className="hover:text-black transition-colors w-fit"
               >
