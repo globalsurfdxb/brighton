@@ -26,7 +26,10 @@ const itemVariants = {
   visible: {
     opacity: 1,
     y: 0,
-    transition: { duration: 0.5, ease: [0.65, 0, 0.35, 1] as [number, number, number, number] },
+    transition: {
+      duration: 0.5,
+      ease: [0.65, 0, 0.35, 1] as [number, number, number, number],
+    },
   },
 };
 
@@ -59,16 +62,16 @@ export default function Header() {
     >
       <div className="container">
         <div
-  className={`relative overflow-hidden rounded-[10px] transition-shadow duration-500 ${
-    introComplete ? "shadow-lg" : "shadow-none"
-  }`}
->
-<motion.div
-  className="absolute inset-0 origin-center bg-white"
-  initial={{ scaleX: 0 }}
-  animate={{ scaleX: introComplete ? 1 : 0 }}
-  transition={{ duration: 0.6, ease: [0.65, 0, 0.35, 1] }}
-/>
+          className={`relative overflow-hidden rounded-[10px] transition-shadow duration-500 ${
+            introComplete ? "shadow-lg" : "shadow-none"
+          }`}
+        >
+          <motion.div
+            className="absolute inset-0 origin-center bg-white"
+            initial={{ scaleX: 0 }}
+            animate={{ scaleX: introComplete ? 1 : 0 }}
+            transition={{ duration: 0.6, ease: [0.65, 0, 0.35, 1] }}
+          />
           <motion.div
             className="relative flex items-center justify-between px-3 lg:px-5 py-[10px] lg:py-[15px]"
             variants={containerVariants}
