@@ -61,6 +61,12 @@ export default function IntroAnimation() {
       const shiftToCenter = 90 - onCenterX; // viewBox is 180 wide
 
       gsap.set(overlayRef.current, {
+        position: "fixed",
+        top: 0,
+        left: 0,
+        width: "100vw",
+        height: "100vh",
+        borderRadius: 0,
         opacity: 1,
         clipPath: "circle(150% at 50% 50%)",
       });
@@ -113,36 +119,45 @@ export default function IntroAnimation() {
           onGroupRef.current,
           {
             x: 0,
-            duration: 0.9,
+            duration: 0.97,
             ease: "power3.out",
           },
-          "<-0.05", // ON starts a tiny bit earlier
+          "<-0.05",
         )
 
         // 3. hold on the full lockup
         .to({}, { duration: 0.35 })
 
-        // 4. exit — logo fades/scales out while overlay slides down
+        // 4. exit — logo fades/scales out, overlay morphs into the header's shape
         .to(
           svgRef.current,
           {
             opacity: 0,
             scale: 0.2,
-            duration: 0.5,
+            duration: 0.4,
             ease: "power2.in",
           },
           "exit",
-        )
-        .to(
-          overlayRef.current,
-          {
-            y: "-110%",
-            duration: 1,
-            opacity: 0.4,
-            ease: "expo.inOut",
-          },
-          "exit+=0.05",
         );
+
+      tl.to(
+        overlayRef.current,
+        {
+          top: () => window.__headerSurfaceEl?.getBoundingClientRect().top ?? 0,
+          left: () =>
+            window.__headerSurfaceEl?.getBoundingClientRect().left ?? 0,
+          width: () =>
+            window.__headerSurfaceEl?.getBoundingClientRect().width ??
+            window.innerWidth,
+          height: () =>
+            window.__headerSurfaceEl?.getBoundingClientRect().height ?? 80,
+          borderRadius: 10,
+          duration: 0.9,
+          ease: "expo.inOut",
+          onComplete: finish,
+        },
+        "exit+=0.1",
+      );
     }, overlayRef);
 
     return () => ctx.revert();

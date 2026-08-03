@@ -186,8 +186,8 @@ export default function Services() {
   const { sectionTitle, services } = servicesData;
   const inset = useContainerInset();
   const sectionRef = useRef<HTMLElement>(null);
-  const mediaWrapperRef = useRef<HTMLDivElement>(null); // outer, mouse tracking target
-  const imageRevealRef = useRef<HTMLDivElement>(null); // inner, gets translated
+  const mediaWrapperRef = useRef<HTMLDivElement>(null);
+  const imageRevealRef = useRef<HTMLDivElement>(null);
 
   const xTo = useRef<gsap.QuickToFunc | null>(null);
   const yTo = useRef<gsap.QuickToFunc | null>(null);
@@ -198,7 +198,7 @@ export default function Services() {
     if (!sectionRef.current || !imageRevealRef.current) return;
 
     const ctx = gsap.context(() => {
-      // --- Entry animation: cinematic clip-path + scale + blur reveal ---
+      // --- Entry animation ---
       gsap.set(imageRevealRef.current, {
         clipPath: "inset(0% 38% 0% 38%)",
         scale: 1.15,
@@ -208,7 +208,7 @@ export default function Services() {
 
       gsap.to(imageRevealRef.current, {
         clipPath: "inset(0% 0% 0% 0%)",
-        scale: 1.08, // resting scale gives headroom for parallax drift
+        scale: 1.08,
         filter: "blur(0px)",
         opacity: 1,
         duration: 1.6,
@@ -221,7 +221,7 @@ export default function Services() {
         },
       });
 
-      // --- Parallax quickTo setters (slow, damped follow) ---
+      // --- Parallax quickTo setters ---
       xTo.current = gsap.quickTo(imageRevealRef.current, "x", {
         duration: 1.4,
         ease: "power3.out",
