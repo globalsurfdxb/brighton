@@ -162,7 +162,6 @@
 
 "use client";
 
-import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import {
@@ -172,14 +171,18 @@ import {
   AnimatePresence,
 } from "framer-motion";
 import { navItems } from "./data";
-import { useIntroComplete } from "@/app/hooks/useIntroComplete";
+import {
+  useIntroComplete,
+  registerHeaderSurface,
+} from "@/app/hooks/useIntroComplete";
+import { useEffect, useRef, useState } from "react";
 
 const SCROLL_THRESHOLD = 100;
 
 const containerVariants = {
   hidden: {},
   visible: {
-    transition: { delayChildren: 0.6, staggerChildren: 0.1 },
+    transition: { delayChildren: 0.1, staggerChildren: 0.1 },
   },
 };
 
@@ -211,6 +214,13 @@ export default function Header() {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
 
+  const surfaceRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    registerHeaderSurface(surfaceRef.current);
+    return () => registerHeaderSurface(null);
+  }, []);
+
   useMotionValueEvent(scrollY, "change", (latest) => {
     const previous = scrollY.getPrevious() ?? 0;
     const diff = latest - previous;
@@ -241,15 +251,13 @@ export default function Header() {
         <div className="relative">
           {/* background surface — this is the only thing that expands */}
           <motion.div
+            ref={surfaceRef}
             aria-hidden
             className={`absolute inset-y-0 left-1/2 -translate-x-1/2 origin-center bg-white transition-[width,border-radius] duration-500 ease-in-out -z-10 ${
               isScrolled
                 ? "w-screen rounded-none shadow-lg"
                 : "w-full rounded-[10px]"
             }`}
-            initial={{ scaleX: 0 }}
-            animate={{ scaleX: introComplete ? 1 : 0 }}
-            transition={{ duration: 0.6, ease: [0.65, 0, 0.35, 1] }}
           />
 
           <motion.div

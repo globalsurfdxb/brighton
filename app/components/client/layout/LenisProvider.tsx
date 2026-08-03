@@ -40,8 +40,9 @@ export default function LenisProvider({
   const lockedRef = useRef(false);
   const pathname = usePathname();
 
-useEffect(() => {
-  const lenis = new Lenis({ lerp: 0.1, syncTouch: true });
+useEffect(() => { 
+  // const lenis = new Lenis({ lerp: 0.1, syncTouch: true });
+  const lenis = new Lenis({ lerp: 0.1 });
   lenisRef.current = lenis;
 
   const raf = (time: number) => lenis.raf(time * 1000);
