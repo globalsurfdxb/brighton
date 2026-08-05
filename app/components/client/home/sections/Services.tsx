@@ -235,25 +235,25 @@ export default function Services() {
     return () => ctx.revert();
   }, []);
 
-const handleMediaMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-  if (window.innerWidth < 1280) return; // no 3D parallax below xl
+  const handleMediaMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (window.innerWidth < 1280) return; // no 3D parallax below xl
 
-  const rect = e.currentTarget.getBoundingClientRect();
-  const relX = (e.clientX - rect.left) / rect.width - 0.6;
-  const relY = (e.clientY - rect.top) / rect.height - 0.6;
+    const rect = e.currentTarget.getBoundingClientRect();
+    const relX = (e.clientX - rect.left) / rect.width - 0.6;
+    const relY = (e.clientY - rect.top) / rect.height - 0.6;
 
-  const maxX = 60;
-  const maxY = 60;
+    const maxX = 60;
+    const maxY = 60;
 
-  xTo.current?.(relX * maxX);
-  yTo.current?.(relY * maxY);
-};
+    xTo.current?.(relX * maxX);
+    yTo.current?.(relY * maxY);
+  };
 
-const handleMediaMouseLeave = () => {
-  if (window.innerWidth < 1280) return;
-  xTo.current?.(0);
-  yTo.current?.(0);
-};
+  const handleMediaMouseLeave = () => {
+    if (window.innerWidth < 1280) return;
+    xTo.current?.(0);
+    yTo.current?.(0);
+  };
 
   return (
     <section ref={sectionRef} className="w-full bg-primary">
@@ -344,13 +344,22 @@ const handleMediaMouseLeave = () => {
               </div>
 
               {/* Arrow icon — fades in on hover of this column */}
-              <div
-                className={`absolute top-70 min-[1850px]:top-[72px] right-50 3xl:right-130 transition-all duration-300 ease-out cursor-pointer hidden xl:block ${
-                  hoveredIndex === index
-                    ? "opacity-100 translate-x-0"
-                    : "opacity-0 -translate-x-5 translate-y-5 pointer-events-none"
-                }`}
+              <motion.div
+                className="absolute top-70 min-[1850px]:top-[72px] right-50 3xl:right-130 cursor-pointer hidden xl:block"
                 style={{ marginRight: inset }}
+                initial={false}
+                animate={{
+                  opacity: hoveredIndex === index ? 1 : 0,
+                  x: hoveredIndex === index ? 0 : -20,
+                  y: hoveredIndex === index ? 0 : 20,
+                }}
+                transition={{
+                  type: "spring",
+                  stiffness: 200,
+                  damping: 11,
+                  mass: 0.9,
+                  delay: hoveredIndex === index ? 0.1 : 0,
+                }}
               >
                 <Image
                   src="/assets/icons/top-right-secondary-60.svg"
@@ -359,7 +368,7 @@ const handleMediaMouseLeave = () => {
                   height={60}
                   className="pointer-events-none w-auto h-12 3xl:h-15"
                 />
-              </div>
+              </motion.div>
 
               {index === 0 && (
                 <motion.span

@@ -17,10 +17,15 @@ export default function PillBtn({
     <button
       type="button"
       onClick={onClick}
-      className={`rounded-full border border-secondary  px-5 py-[15.5] text-15 leading-none font-itc-medium transition-colors duration-500 max-h-[42px] flex items-center justify-center uppercase cursor-pointer group ${
+      style={
+        {
+          "--fill-color": "var(--color-primary, #0A0A0A)",
+        } as React.CSSProperties
+      }
+      className={`btn-fill-center rounded-full border border-secondary px-5 py-[15.5] text-15 font-itc-medium leading-none transition-colors duration-500 max-h-[42px] flex items-center justify-center uppercase cursor-pointer group ${
         active
           ? "bg-primary text-white"
-          : "text-description-color hover:bg-primary hover:text-white"
+          : "text-description-color hover:text-white"
       }`}
     >
       <span className="max-h-[11px]">{label}</span>

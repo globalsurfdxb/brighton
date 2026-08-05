@@ -5,6 +5,8 @@ import { products, subcategories, categories } from "../data";
 import ProductCard from "./ProductCard";
 import SubCategoryTabs from "./SubCategoryTabs";
 import PillBtn from "../../common/PillBtn";
+import SectionTitle from "../../animations/SectionTitle";
+import AnimatedTitle from "../../animations/AnimatedTitle";
 
 export function CategoryTabs({ active, onChange }: any) {
   return (
@@ -39,9 +41,12 @@ export default function Main() {
   return (
     <section className="bg-white pt-200 3xl:pt-[206px] pb-100 container">
       <div className="flex items-center justify-between items-start">
-        <h1 className="hero-title">
-          {category === "interior" ? "Interior" : "Exterior"} Lighting
-        </h1>
+        <AnimatedTitle
+          key={`${category}`}
+          tag="h1"
+          className="hero-title"
+          text={`${category === "interior" ? "Interior" : "Exterior"} Lighting`}
+        />
         <CategoryTabs active={category} onChange={setCategory} />
       </div>
 
