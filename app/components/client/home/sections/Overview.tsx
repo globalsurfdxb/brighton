@@ -1,3 +1,4 @@
+
 import Image from "next/image";
 import { overviewData } from "../data";
 import AnimatedDivider from "../../animations/AnimatedDivider";
@@ -34,7 +35,7 @@ export default function Overview() {
         ))}
       </div>
 
-      <div className="mt-60 grid grid-cols-1 md:grid-cols-2 gap-30">
+      <div className="mt-60 grid grid-cols-1 md:grid-cols-2 gap-3.75 sm:gap-30">
         {overviewData.cards.map((card, index) => (
           <Reveal
             key={card.title}
@@ -43,7 +44,7 @@ export default function Overview() {
           >
             <div
               key={card.title}
-              className="group relative aspect-6/5 w-full overflow-hidden rounded-[10px] 3xl:aspect-auto min-[1800px]:h-[760px]"
+              className="group relative min-h-[325px] sm:min-h-[400px] md:min-h-auto md:aspect-6/5 w-full overflow-hidden rounded-[10px] 3xl:aspect-auto min-[1800px]:h-[760px]"
             >
               {/* Video wrapper handles fit + clipping; scaling happens here, isolated */}
               <div className="absolute inset-0 overflow-hidden">
@@ -59,13 +60,30 @@ export default function Overview() {
                 />
               </div>
 
-              {/* Default gradient — fades out on hover */}
+              {/* Default gradient desktop — fades out on hover */}
               <div
                 style={{
                   background:
                     "linear-gradient(180deg, rgba(0,0,0,.85) 0%, rgba(0,0,0,0) 56.16%)",
                 }}
-                className="absolute inset-0 transition-opacity duration-500 group-hover:opacity-0"
+                className="hidden 2xl:block absolute inset-0 transition-opacity duration-500 group-hover:opacity-0"
+              />
+
+              <div
+                style={{
+                  background:
+                    "linear-gradient(180deg, rgba(0,0,0,.85) 0%, rgba(0,0,0,0) 90.16%)",
+                }}
+                className="hidden md:block 2xl:hidden absolute inset-0 transition-opacity duration-500 group-hover:opacity-0"
+              />
+
+              {/* Default gradient mobile — fades out on hover */}
+              <div
+                style={{
+                  background:
+                    "linear-gradient(0deg, #000000 0%, rgba(0, 0, 0, 0) 49.85%)",
+                }}
+                className="md:hidden absolute inset-0"
               />
 
               {/* Hover gradient — fades in on hover */}
@@ -74,23 +92,23 @@ export default function Overview() {
                   background:
                     "linear-gradient(180deg, rgba(0, 0, 0, 0.85) 15.33%, rgba(0, 0, 0, 0) 89.87%)",
                 }}
-                className="absolute inset-0 opacity-0 transition-opacity duration-500 group-hover:opacity-100"
+                className="hidden md:block absolute inset-0 opacity-0 transition-opacity duration-500 group-hover:opacity-100"
               />
 
               {/* Content */}
-              <div className="absolute inset-0 flex flex-col p-40 3xl:p-[45px]">
+              <div className="absolute bottom-0 left-0 md:top-0 flex flex-col p-5 sm:p-40 3xl:p-[45px]">
                 <AnimatedTitle
                   tag="h3"
                   text={card.title}
                   className="text-subtitle text-white"
                 />
 
-                <div className="mt-[15px] overflow-hidden">
-                  <p className="text-description text-secondary mb-5 3xl:mb-[26px] max-w-[50ch] translate-y-6 opacity-0 transition-all duration-500 ease-out delay-0 group-hover:translate-y-0 group-hover:opacity-100">
+                <div className="mt-2.5 md:mt-3.75 overflow-hidden">
+                  <p className="text-description text-secondary 2xl:mb-5 3xl:mb-[26px] max-w-[50ch] 2xl:translate-y-6 2xl:opacity-0 transition-all duration-500 ease-out delay-0 2xl:group-hover:translate-y-0 2xl:group-hover:opacity-100">
                     {card.description}
                   </p>
 
-                  <div className="translate-y-6 opacity-0 transition-all duration-500 ease-out delay-80 group-hover:translate-y-0 group-hover:opacity-100">
+                  <div className="hidden xl:block translate-y-6 opacity-0 transition-all duration-500 ease-out delay-80 group-hover:translate-y-0 group-hover:opacity-100">
                     <CustomButton
                       text={card.button}
                       link="#"

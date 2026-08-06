@@ -83,7 +83,7 @@ export default function Services() {
     const relY = (e.clientY - rect.top) / rect.height - 0.6;
 
     const maxTranslate = 60;
-    const maxRotate = 5;
+    const maxRotate = 7;
 
     xTo.current?.(relX * maxTranslate);
     yTo.current?.(relY * maxTranslate);
@@ -103,7 +103,7 @@ export default function Services() {
   return (
     <section ref={sectionRef} className="w-full bg-primary">
       {/* Top bar */}
-      <div className="bg-primary py-30 3xl:py-[35px]">
+      <div className="bg-primary pt-10 pb-5 md:py-30 3xl:py-[35px]">
         <div className="container flex items-center">
           <AnimatedTitle
             tag="h2"
@@ -122,7 +122,7 @@ export default function Services() {
         }}
         onMouseMove={handleMediaMouseMove}
         onMouseLeave={handleMediaMouseLeave}
-        className="relative w-full h-[320px] md:h-[420px] xl:h-[500px] 2xl:h-[600px] 3xl:h-[750px] overflow-hidden"
+        className="hidden md:block relative w-full md:h-[420px] xl:h-[500px] 2xl:h-[600px] 3xl:h-[750px] overflow-hidden"
       >
         <div
           ref={imageRevealRef}
@@ -161,7 +161,7 @@ export default function Services() {
           {services.map((service, index) => (
             <div
               key={service.title}
-              className="relative flex flex-col items-start pt-70 min-[1850px]:pt-[72px]"
+              className="relative flex flex-col items-start pt-9 lg:pt-70 min-[1850px]:pt-[72px]"
               style={{ paddingLeft: inset, paddingRight: inset }}
               onMouseEnter={() => setHoveredIndex(index)}
               onMouseLeave={() => setHoveredIndex(0)}
@@ -174,7 +174,7 @@ export default function Services() {
 
               {/* Description — fades/slides in on hover of this column */}
               <p
-                className={`text-description text-secondary mt-5 max-w-[40ch] transition-all duration-500 ease-out ${
+                className={`text-description text-secondary mt-3 lg:mt-5 max-w-[40ch] transition-all duration-500 ease-out ${
                   hoveredIndex === index
                     ? "opacity-100 translate-y-0"
                     : "opacity-0 translate-y-4 pointer-events-none"
@@ -195,7 +195,7 @@ export default function Services() {
                   alt="arrow"
                   width={60}
                   height={60}
-                  className="pointer-events-none w-auto h-8 h-10 xl:h-12 3xl:h-15"
+                  className="pointer-events-none w-auto h-7 2xl:h-12 3xl:h-15"
                 />
               </div>
 
@@ -238,6 +238,42 @@ export default function Services() {
             </div>
           ))}
         </div>
+      </div>
+
+      {/* Mobile/tablet stacked layout — md+ uses the hover/reveal setup above */}
+      <div className="container md:hidden flex flex-col gap-10 pb-10">
+        {services.map((service) => (
+          <div key={service.title} className="flex flex-col">
+            <div className="relative w-full min-h-[238px] aspect-[335/220] rounded-[10px] overflow-hidden">
+              <Image
+                src={service.image}
+                alt={service.title}
+                fill
+                className="object-cover"
+              />
+            </div>
+
+            <div className="mt-5 flex flex-col items-start">
+              <AnimatedTitle
+                tag="h3"
+                text={service.title}
+                className="text-subtitle text-white"
+              />
+
+              <p className="text-description text-secondary mt-2.5 mb-2.5">
+                {service.description}
+              </p>
+
+              <Image
+                src="/assets/icons/right-top-arrow-white-small.svg"
+                alt="arrow"
+                width={14}
+                height={14}
+                className="pointer-events-none w-auto h-3.5"
+              />
+            </div>
+          </div>
+        ))}
       </div>
     </section>
   );

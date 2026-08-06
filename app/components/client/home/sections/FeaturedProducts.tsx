@@ -132,15 +132,15 @@ export default function FeaturedProducts() {
     >
       <div>
         {/* Top row: title, progress line, nav buttons */}
-        <div className="container flex flex-col lg:flex-row lg:items-center justify-between gap-5 mb-40">
+        <div className="container flex flex-col lg:flex-row lg:items-center justify-between gap-5 mb-5 sm:mb-40">
           <AnimatedTitle
             tag="h2"
             text={sectionTitle}
             className="section-title"
           />
 
-          <div className="flex items-center gap-80 min-[1850px]:gap-[87px] justify-between">
-            <div className="w-[140px] h-[2px] bg-secondary relative overflow-hidden rounded-full">
+          <div className="hidden lg:flex items-center gap-40 xl:gap-80 min-[1850px]:gap-[87px] justify-between">
+            <div className="w-[110px] xl:w-[140px] h-[2px] bg-secondary relative overflow-hidden rounded-full">
               <span
                 className="absolute left-0 top-0 h-[2px] bg-description-color transition-all duration-400 rounded-full"
                 style={{ width: `${progress * 100}%` }}
@@ -181,17 +181,21 @@ export default function FeaturedProducts() {
             onProgress={updateState}
             spaceBetween={15}
             speed={800}
-            slidesPerView={1.2}
+            slidesPerView={1.2687}
             breakpoints={{
               640: {
                 slidesPerView: 2,
+                spaceBetween: 20,
+              },
+              768: {
+                slidesPerView: 2.4,
                 spaceBetween: 20,
               },
               1024: {
                 slidesPerView: 3,
                 spaceBetween: 20,
               },
-              1400: {
+              1280: {
                 slidesPerView: 4,
                 spaceBetween: 24,
               },
@@ -205,7 +209,7 @@ export default function FeaturedProducts() {
             {projects.map((project, index) => (
               <SwiperSlide key={index}>
                 <div className="flex flex-col group featured-slide-inner">
-                  <div className="relative w-full h-[300px] md:h-[400px] 2xl:h-[450px] 3xl:h-[540px] rounded-[10px] overflow-hidden mb-30">
+                  <div className="relative w-full h-[316px] md:h-[400px] 2xl:h-[450px] 3xl:h-[540px] rounded-[10px] overflow-hidden mb-30">
                     <Image
                       src={project.image}
                       alt={project.title}
@@ -217,7 +221,7 @@ export default function FeaturedProducts() {
                     {project.title}
                   </h3>
                   <AnimatedDividerTwo
-                    className="border-secondary mt-2.5 mb-5"
+                    className="border-secondary mt-2.5 mb-2.5 md:mb-5"
                     hoverColor="#0A0A0A"
                   />
                   <p className="text-description-3 text-description-color">

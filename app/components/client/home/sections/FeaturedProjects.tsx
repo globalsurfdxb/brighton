@@ -152,18 +152,18 @@ export default function FeaturedProjects({
   const isPinMode = animate && pinEnabled;
 
   return (
-    <section ref={sectionRef} className={`py-100 overflow-hidden ${className}`}>
-      <div className="container">
+    <section ref={sectionRef} className={`overflow-hidden ${className}`}>
+      <div className="container relative py-[60px] md:py-100">
         <AnimatedTitle
           tag="h2"
           text={sectionTitle}
-          className="section-title mb-40 pb-[6px]"
+          className="section-title mb-5 sm:mb-40 md:pb-1.5"
         />
         <div ref={sliderRef} className={isPinMode ? "" : "cursor-grab"}>
           <Swiper
             onSwiper={(s) => (swiperRef.current = s)}
             spaceBetween={15}
-            slidesPerView={1.2}
+            slidesPerView={1.2687}
             speed={800}
             loop={false}
             breakpoints={swiperBreakpoints}
@@ -179,6 +179,7 @@ export default function FeaturedProjects({
             ))}
           </Swiper>
         </div>
+        <div className="lg:hidden absolute bottom-0 left-0 h-px w-full bg-gradient-to-r from-[rgba(191,191,191,0.1)] via-[rgba(191,191,191,0.5)] to-[rgba(191,191,191,0.1)]" />
       </div>
     </section>
   );
@@ -191,18 +192,18 @@ function ProjectCard({ project }: { project: any }) {
         {project.title}
       </h3>
       <AnimatedDividerTwo
-        className="border-secondary mt-5 mb-40"
+        className="border-secondary mt-2 md:mt-5 mb-3.75 md:mb-40"
         hoverColor="#0A0A0A"
       />
-      <div className="relative w-full h-[280px] md:h-[360px] 2xl:h-[420px] 3xl:h-[520px] rounded-[10px] overflow-hidden">
+      <div className="relative w-full h-[200px] sm:h-[280px] md:h-[360px] 2xl:h-[420px] 3xl:h-[520px] rounded-[10px] overflow-hidden">
         <Image
           src={project.image}
           alt={project.title}
           fill
           className="pointer-events-none object-cover group-hover:scale-105 transition-all duration-500 ease-in-out"
         />
-        <div className="absolute top-5 right-5 rounded-full bg-black/50 px-[18.5px] py-[9.5px] flex justify-center items-center border border-secondary">
-          <span className="text-15 leading-none max-h-[11px] text-secondary font-itc-medium">
+        <div className="absolute top-3.75 md:top-5 right-3.75 md:right-5 rounded-full bg-black/50 px-3.75 md:px-[18.5px] py-[5px] md:py-[9.5px] flex justify-center items-center border border-secondary">
+          <span className="text-15 leading-none max-h-[9px] md:max-h-[11px] text-secondary font-itc-medium">
             {project.location}
           </span>
         </div>
