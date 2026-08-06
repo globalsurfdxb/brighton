@@ -10,16 +10,51 @@ import {
 } from "./data";
 import { motion } from "framer-motion";
 import Image from "next/image";
+import { useState } from "react";
 import AnimatedTitle from "../animations/AnimatedTitle";
 import Reveal from "../animations/RevealItemsOneByOneAnimation";
 import { moveUpV2 } from "../animations/motionVariants";
 import SectionDescription from "../animations/SectionDescription";
 
+function AccordionToggleIcon({ isOpen }: { isOpen: boolean }) {
+  return (
+    <svg
+      width="16"
+      height="16"
+      viewBox="0 0 16 16"
+      fill="none"
+      className="flex-shrink-0"
+    >
+      <rect x="0" y="7" width="16" height="2" rx="1" fill="#000000" />
+
+      <motion.rect
+        x="7"
+        y="0"
+        width="2"
+        height="16"
+        rx="1"
+        fill="#000000"
+        style={{ transformOrigin: "50% 50%" }}
+        animate={{ scaleY: isOpen ? 0 : 1 }}
+        transition={{ duration: 0.4, ease: [0.65, 0, 0.35, 1] }}
+      />
+    </svg>
+  );
+}
+
 export default function Footer() {
+  const [openIndex, setOpenIndex] = useState<number | null>(null);
+
+  const getMarginBottom = (index: number) => {
+    if (index === footerColumns.length - 1) return 0;
+    if (openIndex === index || openIndex === index + 1) return 25;
+    return 30;
+  };
+
   return (
     <footer className="border-t border-black z-10 bg-white">
-      <div className="container pt-100 pb-70">
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-x-6 gap-y-5 lg:gap-y-10">
+      <div className="pt-100 pb-10 sm:pb-70">
+        <div className="container hidden  md:grid md:grid-cols-3 xl:grid-cols-6 gap-x-6 gap-y-5 lg:gap-y-10">
           {footerColumns.map((column) => (
             <div
               key={column.title}
@@ -48,8 +83,59 @@ export default function Footer() {
           ))}
         </div>
 
+        {/* Mobile/tablet accordion — md+ uses the grid above */}
+        <div className="md:hidden flex flex-col">
+          {footerColumns.map((column, index) => {
+            const isOpen = openIndex === index;
+            return (
+              <div
+                key={column.title}
+                style={{ marginBottom: getMarginBottom(index) }}
+                className={`transition-all duration-500 container ${
+                  isOpen ? "bg-cream-background py-5" : ""
+                }`}
+              >
+                <button
+                  type="button"
+                  onClick={() => setOpenIndex(isOpen ? null : index)}
+                  className={`w-full flex items-center justify-between ${
+                    isOpen ? "mb-3.75" : ""
+                  }`}
+                >
+                  <span className="text-subtitle">{column.title}</span>
+                  <AccordionToggleIcon isOpen={isOpen} />
+                </button>
+
+                <motion.div
+                  initial={false}
+                  animate={isOpen ? "open" : "collapsed"}
+                  variants={{
+                    open: { height: "auto", opacity: 1 },
+                    collapsed: { height: 0, opacity: 0 },
+                  }}
+                  transition={{ duration: 0.5, ease: [0.65, 0, 0.35, 1] }}
+                  style={{ overflow: "hidden" }}
+                >
+                  <ul className="flex flex-col gap-2">
+                    {column.links.map((link, i) => (
+                      <li key={i}>
+                        <Link
+                          href={link.href}
+                          className="text-description text-description-color hover:text-primary transition-colors duration-500"
+                        >
+                          {link.label}
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                </motion.div>
+              </div>
+            );
+          })}
+        </div>
+
         <motion.div
-          className="mt-100 mb-70 h-px w-full origin-left"
+          className="mt-10 mb-10 md:mt-100 md:mb-70 h-px w-full origin-left"
           style={{
             background:
               "linear-gradient(90deg, rgba(191, 191, 191, 0.1) 0%, rgba(191, 191, 191, 0.5) 50%, rgba(191, 191, 191, 0.1) 100%)",
@@ -60,7 +146,7 @@ export default function Footer() {
           transition={{ duration: 1, ease: [0.65, 0, 0.35, 1] }}
         />
 
-        <div className="grid grid-cols-2 lg:grid-cols-6 gap-x-6 gap-y-8">
+        <div className="container grid grid-cols-2 lg:grid-cols-6 gap-x-6 gap-y-3.75 md:gap-y-8">
           <div className="col-span-2 text-description text-description-color hover:text-primary transition-colors duration-500 w-fit max-w-[35ch]">
             <SectionDescription text={footerAddress.line} />
           </div>
@@ -79,7 +165,7 @@ export default function Footer() {
               {footerContact.email}
             </Link>
 
-            <div className="flex flex-wrap gap-x-30 gap-y-2 text-description text-description-color mt-30">
+            <div className="flex flex-wrap gap-6 sm:gap-x-30 gap-y-2 text-description text-description-color mt-3.75 md:mt-30">
               {footerSocials.map((social, i) => (
                 <Reveal key={i} variants={moveUpV2} delayRange={i * 0.1}>
                   <Link
@@ -96,10 +182,10 @@ export default function Footer() {
             </div>
           </div>
 
-          <div className="col-span-2 lg:col-start-5 flex flex-wrap gap-x-30 gap-y-2 text-description text-description-color">
+          <div className="mt-3.75 md:mt-0 col-span-2 lg:col-start-5 flex flex-wrap gap-x-30 gap-y-2 text-description text-description-color">
             <Link href={"#"}>
-              <button className="btn-fill-center cursor-pointer max-h-[80px] rounded-[50px] border border-secondary px-6 lg:px-8 3xl:px-[39.5px] py-3 lg:py-6 3xl:py-[27px] transition-colors duration-500 group w-full flex items-center justify-center gap-4 bg-primary">
-                <span className="text-subtitle text-24 3xl:text-28  !leading-none text-white max-h-[21px] group-hover:text-primary">
+              <button className="btn-fill-center cursor-pointer max-h-[51px] md:max-h-[80px] rounded-[50px] border border-secondary px-[30px] sm:px-8 3xl:px-[39.5px] py-[15.5px] lg:py-6 3xl:py-[27px] transition-colors duration-500 group w-full flex items-center justify-center gap-2.5 sm:gap-4 bg-primary">
+                <span className="text-subtitle text-28 md:text-24 3xl:text-28  !leading-none text-white max-h-[21px] group-hover:text-primary">
                   Download Catalogue
                 </span>
                 <Image
@@ -107,7 +193,7 @@ export default function Footer() {
                   alt="Download Catalogue"
                   width={26}
                   height={26}
-                  className="invert brightness-0 transition-all duration-500 group-hover:invert-0 group-hover:brightness-100 w-auto h-5 3xl:h-[26px]"
+                  className="pointer-events-none invert brightness-0 transition-all duration-500 group-hover:invert-0 group-hover:brightness-100 w-auto h-5 3xl:h-[26px]"
                 />
               </button>
             </Link>
@@ -116,18 +202,20 @@ export default function Footer() {
       </div>
 
       <div className="bg-[#F8F8F8] overflow-hidden">
-        <div className="container flex flex-col sm:flex-row items-center pt-[27px] pb-[23px] text-subtitle-2 text-description-color">
-          <div className="flex flex-wrap gap-5 lg:gap-40 min-[1850px]:gap-[47px]">
+        <div className="container flex flex-col sm:flex-row md:items-center pt-5 sm:pt-[27px] pb-5 sm:pb-[23px] text-description sm:text-subtitle-2 text-description-color">
+          <div className="flex flex-col md:flex-row md:flex-wrap gap-3.75 md:gap-5 lg:gap-40 min-[1850px]:gap-[47px]">
             <span className="w-fit">{footerLegal.links[0].label}</span>
-            {footerLegal.links.slice(1).map((link, i) => (
-              <Link
-                key={i}
-                href={link.href}
-                className="hover:text-black transition-colors w-fit"
-              >
-                {link.label}
-              </Link>
-            ))}
+            <div className="flex gap-3.75 md:gap-5 lg:gap-40 min-[1850px]:gap-[47px]">
+              {footerLegal.links.slice(1).map((link, i) => (
+                <Link
+                  key={i}
+                  href={link.href}
+                  className="hover:text-black transition-colors w-fit"
+                >
+                  {link.label}
+                </Link>
+              ))}
+            </div>
           </div>
         </div>
       </div>

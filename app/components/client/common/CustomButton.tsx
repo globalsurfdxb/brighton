@@ -19,7 +19,7 @@ export default function CustomButton({
   return (
     <Link
       href={link}
-      className={`btn-fill-center group/button flex items-center justify-center gap-4 max-h-10.5 rounded-[50px] border border-secondary px-5.5 py-3.5 text-white transition-colors duration-500 hover:text-black ${btnClass}`}
+      className={`btn-fill-center group/button flex items-center justify-center gap-4 max-h-9.25 md:max-h-10.5 rounded-[50px] border border-secondary px-4.5 md:px-5.5 py-[11.5px] md:py-3.5 text-white transition-colors duration-500 hover:text-black ${btnClass}`}
       style={{ "--fill-color": "#fff" } as React.CSSProperties}
     >
       <span

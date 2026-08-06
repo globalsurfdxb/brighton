@@ -175,7 +175,7 @@ export default function IntroAnimation() {
         ref={svgRef}
         viewBox="0 0 190 26"
         xmlns="http://www.w3.org/2000/svg"
-        className="h-auto w-[25vw] min-w-[160px] will-change-transform"
+        className="h-auto w-[30vh] lg:w-[25vw] min-w-[160px] will-change-transform"
       >
         <g ref={brightGroupRef}>
           {/* B */}

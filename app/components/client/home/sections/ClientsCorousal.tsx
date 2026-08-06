@@ -18,7 +18,7 @@ function LogoItem({ image }: Logo) {
         alt={"client-logo"}
         width={160}
         height={50}
-        className="select-none w-auto max-w-[160px] h-8 lg:h-12.5 object-contain pointer-events-none"
+        className="select-none w-auto max-w-[160px] h-6 sm:h-8 lg:h-12.5 object-contain pointer-events-none"
       />
     </div>
   );
@@ -42,7 +42,7 @@ function InfiniteRow({ items }: { items: Logo[] }) {
     xRef.current = 0;
     gsap.set(track, { x: 0 });
 
-    const speed = 0.5;
+    const speed = 0.4;
 
     const tick = () => {
       const setWidth = setWidthRef.current;
@@ -92,7 +92,7 @@ export default function ClientsCorousal({
     <section className={`w-full ${className}`}>
       <div
         style={{ paddingLeft: inset }}
-        className="flex flex-col lg:flex-row lg:items-center justify-center gap-6 lg:gap-140"
+        className="flex flex-col lg:flex-row lg:items-center justify-center gap-30 lg:gap-140"
       >
         <AnimatedTitle
           tag="span"

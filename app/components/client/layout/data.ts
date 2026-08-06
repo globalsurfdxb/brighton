@@ -29,47 +29,47 @@ export const footerColumns: FooterColumn[] = [
   {
     title: "Products",
     links: [
-      { label: "Interior Lighting", href: "/products/interior-lighting" },
-      { label: "Exterior Lighting", href: "/products/exterior-lighting" },
+      { label: "Interior Lighting", href: "#" },
+      { label: "Exterior Lighting", href: "#" },
     ],
   },
   {
     title: "Resources",
     links: [
-      { label: "Digital Catalogue", href: "/resources/digital-catalogue" },
-      { label: "Downloads Hub", href: "/resources/downloads-hub" },
-      { label: "Projects", href: "/resources/projects" },
+      { label: "Digital Catalogue", href: "#" },
+      { label: "Downloads Hub", href: "#" },
+      { label: "Projects", href: "#" },
     ],
   },
   {
     title: "About Brighton",
     links: [
-      { label: "Overview", href: "/about/overview" },
-      { label: "Design Philosophy", href: "/about/design-philosophy" },
-      { label: "Technology", href: "/about/technology" },
-      { label: "Sustainability", href: "/about/sustainability" },
+      { label: "Overview", href: "#" },
+      { label: "Design Philosophy", href: "#" },
+      { label: "Technology", href: "#" },
+      { label: "Sustainability", href: "#" },
     ],
   },
   {
     title: "Services",
     links: [
-      { label: "Technical Consulting", href: "/services/technical-consulting" },
-      { label: "Bespoke/Custom Solutions", href: "/services/bespoke-custom-solutions" },
+      { label: "Technical Consulting", href: "#" },
+      { label: "Bespoke/Custom Solutions", href: "#" },
     ],
   },
   {
     title: "Media Center",
     links: [
-      { label: "News & Stories", href: "/media/news-and-stories" },
-      { label: "Blogs", href: "/media/blogs" },
+      { label: "News & Stories", href: "#" },
+      { label: "Blogs", href: "#" },
     ],
   },
   {
     title: "Helpful",
     links: [
-      { label: "Warranty", href: "/helpful/warranty" },
-      { label: "Newsletter", href: "/helpful/newsletter" },
-      { label: "Certificates", href: "/helpful/certificates" },
+      { label: "Warranty", href: "#" },
+      { label: "Newsletter", href: "#" },
+      { label: "Certificates", href: "#" },
     ],
   },
 ];

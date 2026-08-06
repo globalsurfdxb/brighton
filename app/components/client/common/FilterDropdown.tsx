@@ -117,11 +117,16 @@ export default function FilterSelectDropDown({
             {options.map((option) => (
               <li key={option}>
                 <button
+                      style={
+        {
+          "--fill-color": "var(--color-primary, #0A0A0A)",
+        } as React.CSSProperties
+      }
                   type="button"
                   onClick={() => handleSelect(option)}
-                  className={`block w-full px-4 py-3 text-left text-subtitle-2 hover:bg-primary hover:text-white cursor-pointer capitalize ${
+                  className={`btn-fill-center block w-full px-4 py-3 text-left text-subtitle-2 hover:text-white cursor-pointer capitalize border-b border-secondary rounded-[10px] ${
                     option === value ? "text-primary" : "text-description-color"
-                  }`}
+                  } ${option === options[options.length - 1] ? "border-0" : ""}`}
                 >
                   {option.toLowerCase()}
                 </button>
