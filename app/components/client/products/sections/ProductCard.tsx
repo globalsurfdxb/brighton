@@ -154,7 +154,7 @@ export default function ProductCard({ product }: { product: any }) {
 
   return (
     <div
-      className="group cursor-pointer"
+      className="group cursor-pointer select-none"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
@@ -169,7 +169,7 @@ export default function ProductCard({ product }: { product: any }) {
             src={product.image}
             alt={product.title}
             fill
-            className="object-contain"
+            className="object-contain pointer-events-none"
           />
         </motion.div>
 
@@ -200,7 +200,7 @@ export default function ProductCard({ product }: { product: any }) {
                   src={product.hoverImage}
                   alt={product.title}
                   fill
-                  className="object-cover"
+                  className="object-cover pointer-events-none"
                 />
 
                 <div
@@ -227,7 +227,7 @@ export default function ProductCard({ product }: { product: any }) {
               >
                 <Image
                   src="/assets/icons/right-top-arrow-white.svg"
-                  className="invert brightness-0"
+                  className="invert brightness-0 pointer-events-none"
                   alt=""
                   width={40}
                   height={40}

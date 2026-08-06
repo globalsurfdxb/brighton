@@ -1,174 +1,3 @@
-// "use client";
-
-// import Image from "next/image";
-// import { motion } from "framer-motion";
-// import { servicesData } from "../data";
-// import { useContainerInset } from "@/app/hooks/useContainerInset";
-// import { useLayoutEffect, useRef, useState } from "react";
-// import gsap from "gsap";
-// import { ScrollTrigger } from "gsap/ScrollTrigger";
-// import AnimatedTitle from "../../animations/AnimatedTitle";
-
-// gsap.registerPlugin(ScrollTrigger);
-
-// export default function Services() {
-//   const { sectionTitle, services } = servicesData;
-//   const inset = useContainerInset();
-//   const sectionRef = useRef<HTMLElement>(null);
-//   const imageRevealRef = useRef<HTMLDivElement>(null);
-
-//   // idle state shows the first service's image by default
-//   const [hoveredIndex, setHoveredIndex] = useState<number>(0);
-
-//   useLayoutEffect(() => {
-//     if (!sectionRef.current || !imageRevealRef.current) return;
-
-//     const ctx = gsap.context(() => {
-//       // --- Entry animation ---
-//       gsap.set(imageRevealRef.current, {
-//         clipPath: "inset(0% 38% 0% 38%)",
-//         scale: 1.15,
-//         filter: "blur(14px)",
-//         opacity: 0,
-//       });
-
-//       gsap.to(imageRevealRef.current, {
-//         clipPath: "inset(0% 0% 0% 0%)",
-//         scale: 1,
-//         filter: "blur(0px)",
-//         opacity: 1,
-//         duration: 1.6,
-//         ease: "power4.out",
-//         scrollTrigger: {
-//           trigger: sectionRef.current,
-//           start: "top bottom",
-//           toggleActions: "play none none none",
-//           once: true,
-//         },
-//       });
-//     }, sectionRef);
-
-//     return () => ctx.revert();
-//   }, []);
-//   return (
-//     <section ref={sectionRef} className="w-full bg-primary">
-//       {/* Top bar */}
-//       <div className="bg-primary py-30 3xl:py-[35px]">
-//         <div className="container flex items-center">
-//           <AnimatedTitle
-//             tag="h2"
-//             text={sectionTitle}
-//             className="section-title text-white leading-none"
-//           />
-//         </div>
-//       </div>
-
-//       {/* Background image with center divider + two titles */}
-//       <div className="relative w-full h-[320px] md:h-[420px] xl:h-[500px] 2xl:h-[600px] 3xl:h-[750px]">
-//         <div ref={imageRevealRef} className="absolute inset-0 overflow-hidden">
-//           {/* Stacked images crossfade based on hoveredIndex */}
-//           {services.map((service, index) => (
-//             <div
-//               key={service.title}
-//               className="absolute inset-0 transition-opacity duration-700 ease-out"
-//               style={{ opacity: hoveredIndex === index ? 1 : 0 }}
-//             >
-//               <Image
-//                 src={service.image}
-//                 alt={service.title}
-//                 fill
-//                 className="pointer-events-none object-cover"
-//                 priority={index === 0}
-//               />
-//             </div>
-//           ))}
-//         </div>
-
-//         <div
-//           style={{
-//             background:
-//               "linear-gradient(180deg, rgba(0, 0, 0, 0.7) 15.21%, rgba(0, 0, 0, 0.1) 53.68%)",
-//           }}
-//           className="absolute inset-0"
-//         />
-
-//         <div className="absolute inset-0 grid grid-cols-2 z-10">
-//           {services.map((service, index) => (
-//             <div
-//               key={service.title}
-//               className="relative flex flex-col items-start pt-70 min-[1850px]:pt-[72px]"
-//               style={{ paddingLeft: inset, paddingRight: inset }}
-//               onMouseEnter={() => setHoveredIndex(index)}
-//               onMouseLeave={() => setHoveredIndex(0)}
-//             >
-//               <AnimatedTitle
-//                 tag="h3"
-//                 text={service.title}
-//                 className="text-subtitle text-white"
-//               />
-
-//               {/* Description — fades/slides in on hover of this column */}
-//               <p
-//                 className={`text-description text-secondary mt-5 max-w-[40ch] transition-all duration-500 ease-out ${
-//                   hoveredIndex === index
-//                     ? "opacity-100 translate-y-0"
-//                     : "opacity-0 translate-y-4 pointer-events-none"
-//                 }`}
-//               >
-//                 {service.description}
-//               </p>
-
-//               <div
-//                 className={`mt-5 transition-all duration-500 delay-150 ease-out xl:hidden ${
-//                   hoveredIndex === index
-//                     ? "opacity-100 translate-y-0"
-//                     : "opacity-0 translate-y-4 pointer-events-none"
-//                 }`}
-//               >
-//                 <Image
-//                   src="/assets/icons/top-right-secondary-60.svg"
-//                   alt="arrow"
-//                   width={60}
-//                   height={60}
-//                   className="pointer-events-none w-auto h-8 h-10 xl:h-12 3xl:h-15"
-//                 />
-//               </div>
-
-//               {/* Arrow icon — fades in on hover of this column */}
-//               <div
-//                 className={`absolute top-70 min-[1850px]:top-[72px] right-50 3xl:right-130 transition-all duration-300 ease-out cursor-pointer hidden xl:block ${
-//                   hoveredIndex === index
-//                     ? "opacity-100 translate-x-0"
-//                     : "opacity-0 -translate-x-5 translate-y-5 pointer-events-none"
-//                 }`}
-//                 style={{ marginRight: inset }}
-//               >
-//                 <Image
-//                   src="/assets/icons/top-right-secondary-60.svg"
-//                   alt="arrow"
-//                   width={60}
-//                   height={60}
-//                   className="pointer-events-none w-auto h-12 3xl:h-15"
-//                 />
-//               </div>
-
-//               {index === 0 && (
-//                 <motion.span
-//                   className="absolute right-0 top-0 h-full w-px origin-top bg-secondary/50"
-//                   initial={{ scaleY: 0 }}
-//                   whileInView={{ scaleY: 1 }}
-//                   viewport={{ once: true, amount: 0.3 }}
-//                   transition={{ duration: 1.3, ease: [0.65, 0, 0.35, 1] }}
-//                 />
-//               )}
-//             </div>
-//           ))}
-//         </div>
-//       </div>
-//     </section>
-//   );
-// }
-
 "use client";
 
 import Image from "next/image";
@@ -191,6 +20,8 @@ export default function Services() {
 
   const xTo = useRef<gsap.QuickToFunc | null>(null);
   const yTo = useRef<gsap.QuickToFunc | null>(null);
+  const rotateXTo = useRef<gsap.QuickToFunc | null>(null);
+  const rotateYTo = useRef<gsap.QuickToFunc | null>(null);
 
   const [hoveredIndex, setHoveredIndex] = useState<number>(0);
 
@@ -230,29 +61,43 @@ export default function Services() {
         duration: 1.4,
         ease: "power3.out",
       });
+      rotateXTo.current = gsap.quickTo(imageRevealRef.current, "rotationX", {
+        duration: 1.4,
+        ease: "power3.out",
+      });
+
+      rotateYTo.current = gsap.quickTo(imageRevealRef.current, "rotationY", {
+        duration: 1.4,
+        ease: "power3.out",
+      });
     }, sectionRef);
 
     return () => ctx.revert();
   }, []);
 
   const handleMediaMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (window.innerWidth < 1280) return; // no 3D parallax below xl
+    if (window.innerWidth < 1280) return;
 
     const rect = e.currentTarget.getBoundingClientRect();
     const relX = (e.clientX - rect.left) / rect.width - 0.6;
     const relY = (e.clientY - rect.top) / rect.height - 0.6;
 
-    const maxX = 60;
-    const maxY = 60;
+    const maxTranslate = 60;
+    const maxRotate = 5;
 
-    xTo.current?.(relX * maxX);
-    yTo.current?.(relY * maxY);
+    xTo.current?.(relX * maxTranslate);
+    yTo.current?.(relY * maxTranslate);
+
+    rotateYTo.current?.(relX * maxRotate);
+    rotateXTo.current?.(-relY * maxRotate);
   };
 
   const handleMediaMouseLeave = () => {
-    if (window.innerWidth < 1280) return;
     xTo.current?.(0);
     yTo.current?.(0);
+
+    rotateXTo.current?.(0);
+    rotateYTo.current?.(0);
   };
 
   return (
@@ -271,11 +116,22 @@ export default function Services() {
       {/* Background image with center divider + two titles */}
       <div
         ref={mediaWrapperRef}
+        style={{
+          perspective: 1200,
+          perspectiveOrigin: "center",
+        }}
         onMouseMove={handleMediaMouseMove}
         onMouseLeave={handleMediaMouseLeave}
         className="relative w-full h-[320px] md:h-[420px] xl:h-[500px] 2xl:h-[600px] 3xl:h-[750px] overflow-hidden"
       >
-        <div ref={imageRevealRef} className="absolute inset-0 overflow-hidden">
+        <div
+          ref={imageRevealRef}
+          style={{
+            transformStyle: "preserve-3d",
+            willChange: "transform",
+          }}
+          className="absolute inset-0 overflow-hidden"
+        >
           {services.map((service, index) => (
             <div
               key={service.title}
@@ -356,7 +212,7 @@ export default function Services() {
                 transition={{
                   type: "spring",
                   stiffness: 200,
-                  damping: 11,
+                  damping: 9,
                   mass: 0.9,
                   delay: hoveredIndex === index ? 0.1 : 0,
                 }}

@@ -107,7 +107,7 @@ export default function Footer() {
                   alt="Download Catalogue"
                   width={26}
                   height={26}
-                  className="invert brightness-0 transition-all duration-500 group-hover:invert-0 group-hover:brightness-100 w-auto h-5 3xl:h-[26px]"
+                  className="pointer-events-none invert brightness-0 transition-all duration-500 group-hover:invert-0 group-hover:brightness-100 w-auto h-5 3xl:h-[26px]"
                 />
               </button>
             </Link>
