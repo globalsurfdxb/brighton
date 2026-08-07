@@ -15,8 +15,6 @@ import {
 } from "@/app/hooks/useIntroComplete";
 import { useEffect, useRef, useState } from "react";
 
-const SCROLL_THRESHOLD = 100;
-
 const containerVariants = {
   hidden: {},
   visible: {
@@ -53,6 +51,9 @@ export default function Header() {
   const [searchQuery, setSearchQuery] = useState("");
 
   const surfaceRef = useRef<HTMLDivElement>(null);
+  const upScrollAccum = useRef(0);
+
+  const SCROLL_THRESHOLD = 80;
 
   useEffect(() => {
     registerHeaderSurface(surfaceRef.current);
@@ -67,13 +68,19 @@ export default function Header() {
 
     if (latest < 100) {
       setHidden(false);
+      upScrollAccum.current = 0;
       return;
     }
 
     if (diff > 0) {
+      upScrollAccum.current = 0;
       setHidden(true);
     } else if (diff < 0) {
-      setHidden(false);
+      upScrollAccum.current += Math.abs(diff);
+
+      if (upScrollAccum.current > 100) {
+        setHidden(false);
+      }
     }
   });
 
