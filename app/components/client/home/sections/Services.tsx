@@ -106,9 +106,9 @@ export default function Services() {
       <div className="bg-primary pt-10 pb-5 md:py-30 3xl:py-[35px]">
         <div className="container flex items-center">
           <AnimatedTitle
-            tag="h2"
+            tag="h3"
             text={sectionTitle}
-            className="section-title text-white leading-none"
+            className="section-title text-white sm:leading-none"
           />
         </div>
       </div>
