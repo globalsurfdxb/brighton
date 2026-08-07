@@ -78,7 +78,7 @@ export default function Header() {
     } else if (diff < 0) {
       upScrollAccum.current += Math.abs(diff);
 
-      if (upScrollAccum.current > 100) {
+      if (upScrollAccum.current > 50) {
         setHidden(false);
       }
     }
