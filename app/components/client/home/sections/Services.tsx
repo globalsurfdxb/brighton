@@ -103,7 +103,7 @@ export default function Services() {
   return (
     <section ref={sectionRef} className="w-full bg-primary">
       {/* Top bar */}
-      <div className="bg-primary pt-10 pb-5 md:py-30 3xl:py-[35px]">
+      <div className="bg-primary pt-10 pb-5 md:py-30 2xl:py-[35px]">
         <div className="container flex items-center">
           <AnimatedTitle
             tag="h3"
@@ -228,9 +228,9 @@ export default function Services() {
 
               {index === 0 && (
                 <motion.span
-                  className="absolute right-0 top-0 h-full w-px origin-top bg-secondary/50"
-                  initial={{ scaleY: 0 }}
-                  whileInView={{ scaleY: 1 }}
+                  className="absolute right-0 top-0 h-full w-px shrink-0 bg-secondary/50"
+                  initial={{ clipPath: "inset(0 0 100% 0)" }}
+                  whileInView={{ clipPath: "inset(0 0 0% 0)" }}
                   viewport={{ once: true, amount: 0.3 }}
                   transition={{ duration: 1.3, ease: [0.65, 0, 0.35, 1] }}
                 />
