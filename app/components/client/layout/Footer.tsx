@@ -10,11 +10,12 @@ import {
 } from "./data";
 import { motion } from "framer-motion";
 import Image from "next/image";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import AnimatedTitle from "../animations/AnimatedTitle";
 import Reveal from "../animations/RevealItemsOneByOneAnimation";
 import { moveUpV2 } from "../animations/motionVariants";
 import SectionDescription from "../animations/SectionDescription";
+import { useLenis } from "./LenisProvider";
 
 function AccordionToggleIcon({ isOpen }: { isOpen: boolean }) {
   return (
@@ -44,6 +45,30 @@ function AccordionToggleIcon({ isOpen }: { isOpen: boolean }) {
 
 export default function Footer() {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
+  const containerRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const { scrollTo } = useLenis();
+
+  const handleToggle = (index: number) => {
+    const willOpen = openIndex !== index;
+    setOpenIndex(willOpen ? index : null);
+
+    if (willOpen) {
+      // wait for the expand animation (500ms) to finish before measuring
+      setTimeout(() => {
+        const el = containerRefs.current[index];
+        if (!el) return;
+
+        const rect = el.getBoundingClientRect();
+        const viewportHeight = window.innerHeight;
+
+        // only move if it's not already fully visible
+        if (rect.bottom > viewportHeight) {
+          const overflow = rect.bottom - viewportHeight;
+          scrollTo(window.scrollY + overflow + 20, { immediate: false });
+        }
+      }, 520);
+    }
+  };
 
   const getMarginBottom = (index: number) => {
     if (index === footerColumns.length - 1) return 0;
@@ -90,6 +115,9 @@ export default function Footer() {
             return (
               <div
                 key={column.title}
+                ref={(el) => {
+                  containerRefs.current[index] = el;
+                }}
                 style={{ marginBottom: getMarginBottom(index) }}
                 className={`transition-all duration-500 container ${
                   isOpen ? "bg-cream-background py-5" : ""
@@ -97,10 +125,8 @@ export default function Footer() {
               >
                 <button
                   type="button"
-                  onClick={() => setOpenIndex(isOpen ? null : index)}
-                  className={`w-full flex items-center justify-between ${
-                    isOpen ? "mb-3.75" : ""
-                  }`}
+                  onClick={() => handleToggle(index)}
+                  className="w-full flex items-center justify-between"
                 >
                   <span className="text-subtitle">{column.title}</span>
                   <AccordionToggleIcon isOpen={isOpen} />
@@ -110,8 +136,8 @@ export default function Footer() {
                   initial={false}
                   animate={isOpen ? "open" : "collapsed"}
                   variants={{
-                    open: { height: "auto", opacity: 1 },
-                    collapsed: { height: 0, opacity: 0 },
+                    open: { height: "auto", opacity: 1, marginTop: 15 },
+                    collapsed: { height: 0, opacity: 0, marginTop: 0 },
                   }}
                   transition={{ duration: 0.5, ease: [0.65, 0, 0.35, 1] }}
                   style={{ overflow: "hidden" }}

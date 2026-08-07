@@ -10,7 +10,7 @@ export function useRevealInView({
 }: { delayRange?: number } = {}) {
   const ref = useRef(null);
   const controls = useAnimation();
-  const isInView = useInView(ref, { once: true, margin: "0px 0px -70px 0px" });
+  const isInView = useInView(ref, { once: true, margin: "0px 0px -10px 0px" });
 
   useEffect(() => {
     if (isInView) {

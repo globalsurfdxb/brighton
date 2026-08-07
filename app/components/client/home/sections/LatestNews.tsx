@@ -21,7 +21,7 @@ export function NewsCard({ image, title, date, category }: any) {
       </div>
 
       <div className="flex flex-col lg:mt-30">
-        <div className="flex items-center justify-between text-[11px] sm:text-16 leading-[1.54545455] sm:leading-[100%] text-description-color tracking-[-0.01em] font-itc-medium pr-90 min-[1850px]:pr-[95px]">
+        <div className="flex items-center justify-between text-[11px] sm:text-16 leading-[1.54545455] sm:leading-[100%] text-description-color tracking-[-0.01em] font-itc-medium pr-[45px] sm:pr-90 min-[1850px]:pr-[95px]">
           <span>{date}</span>
           <span className="uppercase">{category}</span>
         </div>

@@ -99,8 +99,8 @@ export default function Header() {
           />
 
           <div
-            className={`transition-[padding] duration-500 ease-in-out py-5 lg:py-3 2xl:py-3.75 ${
-              isScrolled ? "" : "px-3 2xl:px-5"
+            className={`transition-[padding] duration-500 ease-in-out lg:py-3 2xl:py-3.75 ${
+              isScrolled ? "py-5" : "py-2.5 px-3 2xl:px-5"
             }`}
           >
             <motion.div
