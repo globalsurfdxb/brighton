@@ -23,7 +23,7 @@ export default function Overview() {
                   alt={stat.label}
                   width={35}
                   height={45}
-                  className="pointer-events-none w-9 md:w-auto h-9 lg:h-9.5 2xl:h-10 3xl:h-[45px] md:mr-30 3xl:mr-[28px] mb-[2px] object-contain"
+                  className="pointer-events-none w-9 md:w-auto h-9 lg:h-9.5 2xl:h-10 3xl:h-[45px] md:mr-30 3xl:mr-[28px] md:mb-[2px] object-contain"
                 />
               </div>
               <AnimatedDivider className="border-secondary mt-3.75 md:mt-4 mb-3.75 md:mb-30" />
