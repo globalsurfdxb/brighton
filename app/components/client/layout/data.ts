@@ -9,10 +9,11 @@ export type NavItem = {
 
 export const navItems: NavItem[] = [
   { label: "Interior", href: "#", hasDropdown: true, dropdownItems: [
-    { label: "Recessed Downlights", href: "#" },
+    { label: "Ceiling Recessed Downlights", href: "#" },
+    { label: "Surface Mounted Downlight", href: "#" },
+    { label: "Ceiling Recessed / Surface / Suspended Profiles", href: "#" },
+    { label: "Ceiling Recessed / Surface / Suspended Panel Light", href: "#" },
     { label: "Track Lighting", href: "#" },
-    { label: "Pendant Lighting", href: "#" },
-    { label: "Cove Lighting", href: "#" },
   ] },
   { label: "Exterior", href: "#", hasDropdown: true, dropdownItems: [
     { label: "Inground Uplights", href: "#" },
@@ -27,34 +28,28 @@ export const navItems: NavItem[] = [
     { label: "LED Street Lighting", href: "#" },
   ] },
   { label: "Projects", href: "#", hasDropdown: true, dropdownItems: [
-    { label: "Residential Projects", href: "#" },
-    { label: "Commercial Projects", href: "#" },
-    { label: "Hospitality Projects", href: "#" },
-    { label: "Landscape Projects", href: "#" },
+    { label: "Filter: Sector", href: "#" },
+    { label: "Filter: Region", href: "#" },
+    { label: "Project Detail Pages", href: "#" },
   ] },
   { label: "Services", href: "#", hasDropdown: true, dropdownItems: [
-    { label: "Lighting Design", href: "#" },
-    { label: "Installation", href: "#" },
-    { label: "Maintenance", href: "#" },
-    { label: "Consultation", href: "#" },
+    { label: "Technical Consulting", href: "#" },
+    { label: "Bespoke / Custom Solutions", href: "#" },
   ] },
   { label: "Resources", href: "#", hasDropdown: true, dropdownItems: [
-    { label: "Catalogues", href: "#" },
-    { label: "Case Studies", href: "#" },
-    { label: "FAQs", href: "#" },
-    { label: "Downloads", href: "#" },
+    { label: "Digital Catalogue", href: "#" },
+    { label: "Downloads Hub", href: "#" },
   ] },
   { label: "Media", href: "#", hasDropdown: true, dropdownItems: [
-    { label: "News", href: "#" },
-    { label: "Press Releases", href: "#" },
-    { label: "Gallery", href: "#" },
-    { label: "Videos", href: "#" },
+    { label: "News & Stories", href: "#" },
+    { label: "Blogs", href: "#" },
   ] },
   { label: "About", href: "#", hasDropdown: true, dropdownItems: [
-    { label: "Overview", href: "#" },
+    { label: "About Brighton", href: "#" },
     { label: "Design Philosophy", href: "#" },
     { label: "Technology", href: "#" },
     { label: "Sustainability", href: "#" },
+    { label: "Certifications", href: "#" },
   ] },
 ];
 
