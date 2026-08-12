@@ -1,19 +1,62 @@
-export interface NavItem {
+export type NavDropdownItem = { label: string; href: string };
+
+export type NavItem = {
   label: string;
   href: string;
   hasDropdown?: boolean;
-}
+  dropdownItems?: NavDropdownItem[];
+};
 
 export const navItems: NavItem[] = [
-  { label: "Interior", href: "#", hasDropdown: true },
-  { label: "Exterior", href: "#", hasDropdown: true },
-  { label: "Projects", href: "#", hasDropdown: true },
-  { label: "Services", href: "#", hasDropdown: true },
-  { label: "Resources", href: "#", hasDropdown: true },
-  { label: "Media", href: "#", hasDropdown: true },
-  { label: "About", href: "#", hasDropdown: true },
+  { label: "Interior", href: "#", hasDropdown: true, dropdownItems: [
+    { label: "Recessed Downlights", href: "#" },
+    { label: "Track Lighting", href: "#" },
+    { label: "Pendant Lighting", href: "#" },
+    { label: "Cove Lighting", href: "#" },
+  ] },
+  { label: "Exterior", href: "#", hasDropdown: true, dropdownItems: [
+    { label: "Inground Uplights", href: "#" },
+    { label: "Inground Linear Uplights", href: "#" },
+    { label: "Bollard Lighting", href: "#" },
+    { label: "Projector Spike Light", href: "#" },
+    { label: "Wall Recessed Surface", href: "#" },
+    { label: "Weatherproof Lighting", href: "#" },
+    { label: "Bulkhead Lighting", href: "#" },
+    { label: "LED Neon Flex Lighting", href: "#" },
+    { label: "LED Strip Lighting", href: "#" },
+    { label: "LED Street Lighting", href: "#" },
+  ] },
+  { label: "Projects", href: "#", hasDropdown: true, dropdownItems: [
+    { label: "Residential Projects", href: "#" },
+    { label: "Commercial Projects", href: "#" },
+    { label: "Hospitality Projects", href: "#" },
+    { label: "Landscape Projects", href: "#" },
+  ] },
+  { label: "Services", href: "#", hasDropdown: true, dropdownItems: [
+    { label: "Lighting Design", href: "#" },
+    { label: "Installation", href: "#" },
+    { label: "Maintenance", href: "#" },
+    { label: "Consultation", href: "#" },
+  ] },
+  { label: "Resources", href: "#", hasDropdown: true, dropdownItems: [
+    { label: "Catalogues", href: "#" },
+    { label: "Case Studies", href: "#" },
+    { label: "FAQs", href: "#" },
+    { label: "Downloads", href: "#" },
+  ] },
+  { label: "Media", href: "#", hasDropdown: true, dropdownItems: [
+    { label: "News", href: "#" },
+    { label: "Press Releases", href: "#" },
+    { label: "Gallery", href: "#" },
+    { label: "Videos", href: "#" },
+  ] },
+  { label: "About", href: "#", hasDropdown: true, dropdownItems: [
+    { label: "Overview", href: "#" },
+    { label: "Design Philosophy", href: "#" },
+    { label: "Technology", href: "#" },
+    { label: "Sustainability", href: "#" },
+  ] },
 ];
-
 
 export interface FooterLink {
   label: string;

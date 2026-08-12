@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import Image from "next/image";
+import AnimatedTitle from "../../animations/AnimatedTitle";
 
 export default function ProjectBanner({
   image,
@@ -27,21 +28,32 @@ export default function ProjectBanner({
       {/* Content wrapper */}
       <div className="relative container z-10 flex h-full w-full flex-col justify-between pt-200 3xl:pt-[206px] pb-90 min-[1850px]:pb-[94px]">
         <button
+          style={
+            {
+              "--fill-color": "#ffffff",
+            } as React.CSSProperties
+          }
           type="button"
           onClick={() => router.back()}
-          className="flex w-fit items-center gap-2.5 text-white cursor-pointer max-h-[42px] px-[17px] py-2 border border-secondary rounded-[100px] group hover:bg-primary transition-colors duration-500"
+          className="btn-fill-center flex w-fit items-center gap-2.5 text-white cursor-pointer max-h-[42px] px-[17px] py-2 border border-secondary rounded-[100px] group transition-colors duration-500"
         >
           <Image
             src="/assets/icons/arrow-left-white.svg"
             alt=""
             width={27}
             height={27}
-            className="group-hover:-translate-x-1 transition-transform duration-500"
+            className="group-hover:-translate-x-1 transition-all duration-500 group-hover:invert-0 group-hover:brightness-0"
           />
-          <span className="text-description-3 uppercase max-h-[11px] leading-none mb-[2px]">Back</span>
+          <span className="text-description-3 uppercase max-h-[11px] leading-none mb-[2px] group-hover:text-primary transition-colors duration-500">
+            Back
+          </span>
         </button>
 
-        <h1 className="hero-title text-white">{title}</h1>
+        <AnimatedTitle
+          className="hero-title text-white"
+          text={title}
+          tag="h1"
+        />
       </div>
     </div>
   );

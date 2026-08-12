@@ -13,7 +13,10 @@ import {
   useIntroComplete,
   registerHeaderSurface,
 } from "@/app/hooks/useIntroComplete";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import NavDropdown from "./Deskdropdown";
+import MobileMenuIcon from "./MobileMenuIcon";
+import MobileNav from "./MobileNav";
 
 const containerVariants = {
   hidden: {},
@@ -41,6 +44,28 @@ const itemVariants = {
   },
 };
 
+export function PlusMinusIcon({ isHovered }: { isHovered: boolean }) {
+  return (
+    <svg
+      width="11"
+      height="11"
+      viewBox="0 0 11 11"
+      fill="none"
+      className="shrink-0 -mt-[5px]"
+    >
+      <motion.path
+        d="M5.50488 0L5.50488 11"
+        stroke="#0A0A0A"
+        strokeWidth="2"
+        animate={{ scaleY: isHovered ? 0 : 1, opacity: isHovered ? 0 : 1 }}
+        style={{ transformBox: "fill-box", transformOrigin: "center" }}
+        transition={{ duration: 0.3, ease: [0.65, 0, 0.35, 1] }}
+      />
+      <path d="M11 5.505L0 5.505" stroke="#0A0A0A" strokeWidth="2" />
+    </svg>
+  );
+}
+
 export default function Header() {
   const { scrollY } = useScroll();
   const [hidden, setHidden] = useState(false);
@@ -49,9 +74,17 @@ export default function Header() {
 
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [activeIndex, setActiveIndex] = useState<number | null>(null);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const surfaceRef = useRef<HTMLDivElement>(null);
   const upScrollAccum = useRef(0);
+  const headerBoxRef = useRef<HTMLDivElement>(null);
+  const paddingBoxRef = useRef<HTMLDivElement>(null);
+  const itemRefs = useRef<Record<string, HTMLDivElement | null>>({});
+  const [dropdownLeft, setDropdownLeft] = useState(0);
+  const [headerHeight, setHeaderHeight] = useState(0);
+  const isExpanded = isScrolled || isMobileMenuOpen;
 
   const SCROLL_THRESHOLD = 80;
 
@@ -84,30 +117,76 @@ export default function Header() {
     }
   });
 
+  const openDropdown = (idx: number) => {
+    const item = navItems[idx];
+    const itemEl = itemRefs.current[item.label];
+    const boxEl = headerBoxRef.current;
+    if (!itemEl || !boxEl) return;
+
+    const itemRect = itemEl.getBoundingClientRect();
+    const boxRect = boxEl.getBoundingClientRect();
+
+    setDropdownLeft(itemRect.left - boxRect.left);
+    setActiveIndex(idx);
+  };
+
+  useEffect(() => {
+    registerHeaderSurface(surfaceRef.current);
+    return () => registerHeaderSurface(null);
+  }, []);
+
+  useLayoutEffect(() => {
+    if (!isMobileMenuOpen) return;
+    const paddingEl = paddingBoxRef.current;
+    if (!paddingEl) return;
+
+    const clone = paddingEl.cloneNode(true) as HTMLDivElement;
+    clone.style.transition = "none";
+    clone.style.position = "absolute";
+    clone.style.visibility = "hidden";
+    clone.style.pointerEvents = "none";
+    clone.style.top = "-9999px";
+    clone.style.left = "-9999px";
+
+    paddingEl.parentElement?.appendChild(clone);
+    const finalHeight = clone.getBoundingClientRect().height;
+    clone.remove();
+
+    setHeaderHeight(finalHeight);
+  }, [isMobileMenuOpen]);
+
+  useEffect(() => {
+    document.body.style.overflow = isMobileMenuOpen ? "hidden" : "";
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [isMobileMenuOpen]);
+
   return (
     <motion.header
       className={`fixed inset-x-0 z-50 transition-[top] duration-500 ease-in-out ${
-        !isScrolled ? "top-30 md:top-40" : "top-0"
+        !isExpanded ? "top-30 md:top-40" : "top-0"
       }`}
-      animate={{ y: hidden ? -160 : 0 }}
+      animate={{ y: isMobileMenuOpen ? 0 : hidden ? -160 : 0 }}
       transition={{ duration: 0.5, ease: [0.65, 0, 0.35, 1] }}
     >
       <div className="container">
-        <div className="relative">
+        <div className="relative" ref={headerBoxRef}>
           {/* background surface — this is the only thing that expands */}
           <motion.div
             ref={surfaceRef}
             aria-hidden
             className={`absolute inset-y-0 left-1/2 -translate-x-1/2 origin-center bg-white transition-[width,border-radius] duration-500 ease-in-out -z-10 ${
-              isScrolled
+              isExpanded
                 ? "w-screen rounded-none shadow-lg"
                 : "w-full rounded-[10px]"
             }`}
           />
 
           <div
+            ref={paddingBoxRef}
             className={`transition-[padding] duration-500 ease-in-out lg:py-3 2xl:py-3.75 ${
-              isScrolled ? "py-5" : "py-2.5 px-3 2xl:px-5"
+              isExpanded ? "py-5" : "py-2.5 px-3 2xl:px-5"
             }`}
           >
             <motion.div
@@ -133,21 +212,23 @@ export default function Header() {
                   className="hidden xl:flex items-center gap-6 2xl:gap-[37px]"
                   variants={navContainerVariants}
                 >
-                  {navItems.map((item) => (
-                    <motion.div key={item.label} variants={itemVariants}>
+                  {navItems.map((item, idx) => (
+                    <motion.div
+                      key={item.label}
+                      variants={itemVariants}
+                      ref={(el) => {
+                        itemRefs.current[item.label] = el;
+                      }}
+                      onMouseEnter={() => item.hasDropdown && openDropdown(idx)}
+                      onMouseLeave={() => setActiveIndex(null)}
+                    >
                       <Link
                         href={item.href}
                         className="flex items-center text-15 font-itc-medium uppercase gap-[7px] leading-none group text-description-color hover:text-primary transition-all duration-500"
                       >
                         {item.label}
                         {item.hasDropdown && (
-                          <Image
-                            src="/assets/icons/plus.svg"
-                            className="pointer-events-none pb-1 group-hover:rotate-45 transition-all duration-300"
-                            alt="plus"
-                            width={11}
-                            height={11}
-                          />
+                          <PlusMinusIcon isHovered={activeIndex === idx} />
                         )}
                       </Link>
                     </motion.div>
@@ -159,7 +240,7 @@ export default function Header() {
                 <motion.div variants={itemVariants}>
                   <Link
                     href="#"
-                    className="btn-fill-center hidden sm:flex items-center justify-center gap-4 rounded-[20px] bg-primary max-h-[36px] py-[11px] px-[19px] group border border-transparent hover:border-secondary transition-all duration-500"
+                    className="btn-fill-center hidden xl:flex items-center justify-center gap-4 rounded-[20px] bg-primary max-h-[36px] py-[11px] px-[19px] group border border-transparent hover:border-secondary transition-all duration-500"
                   >
                     <span className="text-15 font-itc-medium uppercase leading-none text-secondary group-hover:text-primary max-h-[11px]">
                       Contact
@@ -229,16 +310,11 @@ export default function Header() {
                 <motion.div variants={itemVariants}>
                   <button
                     type="button"
-                    style={{ "--fill-color": "#0A0A0A" } as React.CSSProperties}
-                    className="xl:hidden flex btn-fill-center h-9 w-9 items-center justify-center rounded-full border border-secondary group cursor-pointer transition-all duration-500"
+                    aria-label={isMobileMenuOpen ? "Close menu" : "Open menu"}
+                    onClick={() => setIsMobileMenuOpen((prev) => !prev)}
+                    className="xl:hidden flex h-9 w-9 items-center justify-center rounded-full border border-secondary group cursor-pointer transition-all duration-500"
                   >
-                    <Image
-                      src="/assets/icons/hamburger.svg"
-                      alt="close"
-                      width={20}
-                      height={20}
-                      className="shrink-0 object-contain pointer-events-none w-auto h-5 group-hover:invert group-hover:brightness-0 transition-all duration-500"
-                    />
+                    <MobileMenuIcon isOpen={isMobileMenuOpen} />
                   </button>
                 </motion.div>
               </div>
@@ -296,8 +372,32 @@ export default function Header() {
               </motion.div>
             )}
           </AnimatePresence>
+          <AnimatePresence>
+            {activeIndex !== null && navItems[activeIndex]?.dropdownItems && (
+              <div
+                style={{
+                  position: "absolute",
+                  left: dropdownLeft,
+                  top: "100%",
+                  marginTop: 9,
+                }}
+                onMouseEnter={() => setActiveIndex(activeIndex)}
+                onMouseLeave={() => setActiveIndex(null)}
+              >
+                <NavDropdown items={navItems[activeIndex].dropdownItems!} />
+              </div>
+            )}
+          </AnimatePresence>
         </div>
       </div>
+      <AnimatePresence>
+        {isMobileMenuOpen && (
+          <MobileNav
+            headerHeight={headerHeight}
+            onClose={() => setIsMobileMenuOpen(false)}
+          />
+        )}
+      </AnimatePresence>
     </motion.header>
   );
 }
