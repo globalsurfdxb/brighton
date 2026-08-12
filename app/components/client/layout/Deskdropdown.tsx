@@ -49,7 +49,8 @@ export default function NavDropdown({ items }: { items: NavDropdownItem[] }) {
       animate="visible"
       exit="exit"
       style={{ originY: 0 }}
-      className="absolute left-0 top-full w-[334px] rounded-[10px] bg-white py-[12px] overflow-hidden z-40"
+      data-lenis-prevent
+      className="absolute left-0 top-full w-[334px] rounded-[10px] bg-white py-[12px] z-40 max-h-[300px] overflow-x-hidden overflow-y-auto show-scrollbar"
     >
       <motion.ul
         variants={listVariants}
