@@ -82,6 +82,8 @@ export default function Header() {
   const headerBoxRef = useRef<HTMLDivElement>(null);
   const paddingBoxRef = useRef<HTMLDivElement>(null);
   const itemRefs = useRef<Record<string, HTMLDivElement | null>>({});
+  const closeTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
   const [dropdownLeft, setDropdownLeft] = useState(0);
   const [headerHeight, setHeaderHeight] = useState(0);
   const isExpanded = isScrolled || isMobileMenuOpen;
@@ -117,7 +119,22 @@ export default function Header() {
     }
   });
 
+  const cancelClose = () => {
+    if (closeTimeoutRef.current) {
+      clearTimeout(closeTimeoutRef.current);
+      closeTimeoutRef.current = null;
+    }
+  };
+
+  const scheduleClose = () => {
+    cancelClose();
+    closeTimeoutRef.current = setTimeout(() => {
+      setActiveIndex(null);
+    }, 150);
+  };
+
   const openDropdown = (idx: number) => {
+    cancelClose();
     const item = navItems[idx];
     const itemEl = itemRefs.current[item.label];
     const boxEl = headerBoxRef.current;
@@ -161,6 +178,10 @@ export default function Header() {
       document.body.style.overflow = "";
     };
   }, [isMobileMenuOpen]);
+
+  useEffect(() => {
+    return () => cancelClose();
+  }, []);
 
   return (
     <motion.header
@@ -220,7 +241,7 @@ export default function Header() {
                         itemRefs.current[item.label] = el;
                       }}
                       onMouseEnter={() => item.hasDropdown && openDropdown(idx)}
-                      onMouseLeave={() => setActiveIndex(null)}
+                      onMouseLeave={scheduleClose}
                     >
                       <Link
                         href={item.href}
@@ -379,10 +400,10 @@ export default function Header() {
                   position: "absolute",
                   left: dropdownLeft,
                   top: "100%",
-                  marginTop: 9,
+                  paddingTop: 9,
                 }}
-                onMouseEnter={() => setActiveIndex(activeIndex)}
-                onMouseLeave={() => setActiveIndex(null)}
+                onMouseEnter={cancelClose}
+                onMouseLeave={scheduleClose}
               >
                 <NavDropdown items={navItems[activeIndex].dropdownItems!} />
               </div>
