@@ -231,7 +231,7 @@ export default function Services() {
                   className="absolute right-0 top-0 h-full w-px shrink-0 bg-secondary/50"
                   initial={{ clipPath: "inset(0 0 100% 0)" }}
                   whileInView={{ clipPath: "inset(0 0 0% 0)" }}
-                  viewport={{ once: true, amount: 0.3 }}
+                  viewport={{ once: true, amount: 0 }}
                   transition={{ duration: 1.3, ease: [0.65, 0, 0.35, 1] }}
                 />
               )}

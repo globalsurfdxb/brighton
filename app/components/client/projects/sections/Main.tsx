@@ -5,6 +5,7 @@ import ProjectCard from "./ProjectCard";
 import PillBtn from "../../common/PillBtn";
 import FilterSelectDropDown from "../../common/FilterDropdown";
 import { categoryOptions, regionOptions, projects } from "../data";
+import AnimatedTitle from "../../animations/AnimatedTitle";
 
 const PAGE_SIZE = 10;
 
@@ -69,7 +70,7 @@ export default function ProjectsSection() {
 
   return (
     <section className="bg-white pt-200 3xl:pt-[206px] pb-100 container">
-      <h1 className="hero-title mb-100">Projects</h1>
+      <AnimatedTitle className="hero-title mb-100" text="Projects" tag="h1" />
 
       <div className="mb-10 flex flex-wrap items-center justify-between">
         <div className="flex flex-wrap gap-[5px]">

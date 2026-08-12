@@ -348,6 +348,7 @@ body {
   transform: translate(-50%, -50%) scale(0);
   opacity: 0;
   z-index: -1;
+  filter: blur(7px);
 }
 
 @media (hover: hover) and (pointer: fine) {
