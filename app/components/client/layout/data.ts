@@ -27,11 +27,13 @@ export const navItems: NavItem[] = [
     { label: "LED Strip Lighting", href: "#" },
     { label: "LED Street Lighting", href: "#" },
   ] },
-  { label: "Projects", href: "#", hasDropdown: true, dropdownItems: [
-    { label: "Filter: Sector", href: "#" },
-    { label: "Filter: Region", href: "#" },
-    { label: "Project Detail Pages", href: "#" },
-  ] },
+  { label: "Projects", href: "#", hasDropdown: false,
+  //    dropdownItems: [
+  //   { label: "Filter: Sector", href: "#" },
+  //   { label: "Filter: Region", href: "#" },
+  //   { label: "Project Detail Pages", href: "#" },
+  // ] 
+},
   { label: "Services", href: "#", hasDropdown: true, dropdownItems: [
     { label: "Technical Consulting", href: "#" },
     { label: "Bespoke / Custom Solutions", href: "#" },
