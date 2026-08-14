@@ -85,7 +85,7 @@ export default function MobileNav({
               href="#"
               className="btn-fill-center flex items-center justify-center gap-4 rounded-[20px] bg-primary max-h-[37px] py-[11px] px-[19px] group border border-transparent hover:border-secondary transition-all duration-500"
             >
-              <span className="text-15 font-itc-medium uppercase leading-none text-white max-h-[11px]">
+              <span className="text-15 font-itc-medium uppercase leading-none text-white max-h-[11px] group-hover:text-primary transition-all duration-500">
                 Contact
               </span>
               <Image
@@ -93,7 +93,7 @@ export default function MobileNav({
                 alt="contact-us"
                 width={14}
                 height={14}
-                className="pointer-events-none invert brightness-0"
+                className="pointer-events-none group-hover:rotate-45 invert brightness-0 group-hover:brightness-100 transition-all duration-500"
               />
             </Link>
           </motion.div>
