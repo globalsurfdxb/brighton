@@ -104,11 +104,11 @@ export default function Overview() {
                 />
 
                 <div className="mt-2.5 md:mt-3.75 overflow-hidden">
-                  <p className="text-description text-secondary 2xl:mb-5 3xl:mb-[26px] max-w-[50ch] 2xl:translate-y-6 2xl:opacity-0 transition-all duration-500 ease-out delay-0 2xl:group-hover:translate-y-0 2xl:group-hover:opacity-100">
+                  <p className="text-description text-secondary mb-3 2xl:mb-5 3xl:mb-[26px] max-w-[50ch] 2xl:translate-y-6 2xl:opacity-0 transition-all duration-500 ease-out delay-0 2xl:group-hover:translate-y-0 2xl:group-hover:opacity-100">
                     {card.description}
                   </p>
 
-                  <div className="hidden xl:block translate-y-6 opacity-0 transition-all duration-500 ease-out delay-80 group-hover:translate-y-0 group-hover:opacity-100">
+                  <div className="2xl:translate-y-6 2xl:opacity-0 transition-all duration-500 ease-out delay-80 2xl:group-hover:translate-y-0 2xl:group-hover:opacity-100">
                     <CustomButton
                       text={card.button}
                       link="#"
