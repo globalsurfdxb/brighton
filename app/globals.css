@@ -46,16 +46,16 @@
   background: transparent;
   margin-right: 4px;
 }
+
 .show-scrollbar::-webkit-scrollbar-thumb {
   background-color: #BFBFBF;
-  border-radius: 10px;
+  border-radius: 0 5px 5px 0;
 }
 
 /* Firefox uses a different property entirely, not ::-webkit-scrollbar */
 .show-scrollbar {
   scrollbar-width: thin;
   scrollbar-color: #BFBFBF transparent;
-  padding-right: 10px;
 }
 
 html {
