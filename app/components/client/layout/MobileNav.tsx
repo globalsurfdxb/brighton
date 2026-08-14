@@ -191,7 +191,7 @@ export default function MobileNav({
                         onClick={onClose}
                         className="flex items-center justify-between"
                       >
-                        <span className="text-20 font-itc-book leading-[1.3] uppercase">
+                        <span className="text-[20px] font-itc-book leading-[1.3] uppercase">
                           {item.label}
                         </span>
                       </Link>
