@@ -50,7 +50,7 @@ export default function NavDropdown({ items }: { items: NavDropdownItem[] }) {
       exit="exit"
       style={{ originY: 0 }}
       data-lenis-prevent
-      className="absolute left-0 top-full w-[334px] rounded-[10px] bg-white py-[12px] z-40 max-h-[330px] 3xl:max-h-[390px] overflow-x-hidden overflow-y-auto show-scrollbar"
+      className="absolute left-0 top-full w-[334px] rounded-[10px] bg-white py-[12px] z-40 max-h-[330px] overflow-x-hidden overflow-y-auto show-scrollbar"
     >
       <motion.ul
         variants={listVariants}
@@ -66,7 +66,7 @@ export default function NavDropdown({ items }: { items: NavDropdownItem[] }) {
           >
             <Link
               href={item.href}
-              className="flex items-center justify-between py-[17px] text-15 font-itc-medium"
+              className="flex items-center justify-between py-[12px] text-15 font-itc-medium"
             >
               <span className="group-hover:text-primary text-[#6B6B70] transition-all duration-500">{item.label}</span>
               <span className="shrink-0 flex h-[26px] w-[26px] items-center justify-center rounded-full border border-secondary opacity-0 scale-75 transition-all duration-500 group-hover:opacity-100 group-hover:scale-100">
