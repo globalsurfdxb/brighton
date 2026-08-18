@@ -14,9 +14,12 @@ import {
   registerHeaderSurface,
 } from "@/app/hooks/useIntroComplete";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { usePathname } from "next/navigation";
 import NavDropdown from "./Deskdropdown";
 import MobileMenuIcon from "./MobileMenuIcon";
 import MobileNav from "./MobileNav";
+
+const LIGHT_HEADER_ROUTES = ["/interior-lighting/*", "/projects"];
 
 const containerVariants = {
   hidden: {},
@@ -66,6 +69,16 @@ export function PlusMinusIcon({ isHovered }: { isHovered: boolean }) {
   );
 }
 
+const matchesRoute = (pathname: string, route: string) => {
+  if (route.endsWith("/*")) {
+    const baseRoute = route.slice(0, -2);
+
+    return pathname === baseRoute || pathname.startsWith(`${baseRoute}/`);
+  }
+
+  return pathname === route;
+};
+
 export default function Header() {
   const { scrollY } = useScroll();
   const [hidden, setHidden] = useState(false);
@@ -89,6 +102,12 @@ export default function Header() {
   const isExpanded = isScrolled || isMobileMenuOpen;
 
   const SCROLL_THRESHOLD = 80;
+
+  const pathname = usePathname();
+
+  const isLightHeaderRoute = LIGHT_HEADER_ROUTES.some((route) =>
+    matchesRoute(pathname, route),
+  );
 
   useEffect(() => {
     registerHeaderSurface(surfaceRef.current);
@@ -197,11 +216,11 @@ export default function Header() {
           <motion.div
             ref={surfaceRef}
             aria-hidden
-            className={`absolute inset-y-0 left-1/2 -translate-x-1/2 origin-center bg-white transition-[width,border-radius] duration-500 ease-in-out -z-10 ${
+            className={`absolute inset-y-0 left-1/2 -translate-x-1/2 origin-center transition-[width,border-radius,background-color] duration-500 ease-in-out -z-10 ${
               isExpanded
                 ? "w-screen rounded-none shadow-lg"
                 : "w-full rounded-[10px]"
-            }`}
+            } ${isLightHeaderRoute ? "bg-[#f5f5f5]" : "bg-white"}`}
           />
 
           <div

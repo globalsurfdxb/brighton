@@ -7,6 +7,7 @@ import "swiper/css";
 import { moreProductsData } from "../data";
 import AnimatedTitle from "../../animations/AnimatedTitle";
 import ProductCard from "../../products/sections/ProductCard";
+import CustomButton from "../../common/CustomButton";
 
 export default function MoreProducts() {
   const { sectionTitle, products } = moreProductsData;
@@ -16,6 +17,7 @@ export default function MoreProducts() {
       <div className="container">
         <div className="flex flex-col lg:flex-row lg:items-center justify-between mb-5 sm:mb-40">
           <AnimatedTitle tag="h2" text={sectionTitle} className="section-title" />
+          <CustomButton text="VIEW ALL FAMILIES" variant="2" />
         </div>
 
         {/* Slider */}
