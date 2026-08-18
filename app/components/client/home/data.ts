@@ -50,7 +50,7 @@ export const overviewData = {
 
 export const featuredProductsData = {
   sectionTitle: "Featured Products",
-  projects: [
+  products: [
     {
       image: "/assets/images/home/products/1.jpg",
       title: "Relo",

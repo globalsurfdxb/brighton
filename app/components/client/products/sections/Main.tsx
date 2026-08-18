@@ -5,7 +5,6 @@ import { products, subcategories, categories } from "../data";
 import ProductCard from "./ProductCard";
 import SubCategoryTabs from "./SubCategoryTabs";
 import PillBtn from "../../common/PillBtn";
-import SectionTitle from "../../animations/SectionTitle";
 import AnimatedTitle from "../../animations/AnimatedTitle";
 
 export function CategoryTabs({ active, onChange }: any) {

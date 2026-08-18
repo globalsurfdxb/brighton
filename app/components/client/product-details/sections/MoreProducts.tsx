@@ -1,0 +1,60 @@
+"use client";
+
+import { Swiper, SwiperSlide } from "swiper/react";
+
+import "swiper/css";
+
+import { moreProductsData } from "../data";
+import AnimatedTitle from "../../animations/AnimatedTitle";
+import ProductCard from "../../products/sections/ProductCard";
+
+export default function MoreProducts() {
+  const { sectionTitle, products } = moreProductsData;
+
+  return (
+    <section className="w-full py-100 bg-cream-background overflow-hidden">
+      <div className="container">
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between mb-5 sm:mb-40">
+          <AnimatedTitle tag="h2" text={sectionTitle} className="section-title" />
+        </div>
+
+        {/* Slider */}
+        <div className="cursor-grab">
+          <Swiper
+            spaceBetween={15}
+            speed={800}
+            slidesPerView={1.2687}
+            breakpoints={{
+              640: {
+                slidesPerView: 2,
+                spaceBetween: 20,
+              },
+              768: {
+                slidesPerView: 2.4,
+                spaceBetween: 20,
+              },
+              1024: {
+                slidesPerView: 3,
+                spaceBetween: 20,
+              },
+              1280: {
+                slidesPerView: 4,
+                spaceBetween: 24,
+              },
+              1700: {
+                slidesPerView: 4,
+                spaceBetween: 30,
+              },
+            }}
+          >
+            {products.map((product, index) => (
+              <SwiperSlide key={index}>
+                <ProductCard key={product.id} product={product} bgColor="bg-white" />
+              </SwiperSlide>
+            ))}
+          </Swiper>
+        </div>
+      </div>
+    </section>
+  );
+}
