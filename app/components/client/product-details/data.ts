@@ -22,7 +22,7 @@ export const productBannerData = {
       alt: "Spin downlight close up",
     },
   ],
-  specs: ["14 Variants", "IP44 / IP55", "3-Step MacAdam", "DALI ON/OFF"],
+  specs: ["14 Variants", "IP44 / IP55", "3-Step MacAdam", "DALI . ON/OFF"],
   buttons: [
     { text: "Download Datasheet", link: "#" },
     { text: "Configure Variant", link: "#" },
