@@ -19,7 +19,7 @@ import AnimatedTitle from "../../animations/AnimatedTitle";
 gsap.registerPlugin(ScrollTrigger);
 
 export default function FeaturedProducts() {
-  const { sectionTitle, projects } = featuredProductsData;
+  const { sectionTitle, products } = featuredProductsData;
   const sectionRef = useRef<HTMLElement>(null);
   const sliderRef = useRef<HTMLDivElement>(null);
 
@@ -206,26 +206,26 @@ export default function FeaturedProducts() {
             }}
             className="!overflow-visible lg:!overflow-hidden"
           >
-            {projects.map((project, index) => (
+            {products.map((product, index) => (
               <SwiperSlide key={index}>
                 <div className="flex flex-col group featured-slide-inner">
                   <div className="relative w-full h-[316px] md:h-[400px] 2xl:h-[450px] 3xl:h-[540px] rounded-[10px] overflow-hidden mb-30">
                     <Image
-                      src={project.image}
-                      alt={project.title}
+                      src={product.image}
+                      alt={product.title}
                       fill
                       className="featured-slide-image pointer-events-none object-cover group-hover:scale-105 transition-all duration-500 ease-in-out"
                     />
                   </div>
                   <h3 className="text-subtitle text-primary line-clamp-1">
-                    {project.title}
+                    {product.title}
                   </h3>
                   <AnimatedDividerTwo
                     className="border-secondary mt-2.5 mb-2.5 md:mb-5"
                     hoverColor="#0A0A0A"
                   />
                   <p className="text-description-3 text-description-color">
-                    {project.label}
+                    {product.label}
                   </p>
                 </div>
               </SwiperSlide>

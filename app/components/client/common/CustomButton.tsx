@@ -40,19 +40,21 @@
 //   );
 // }
 
-
+"use client";
 
 import Link from "next/link";
 import Image from "next/image";
 
 interface CustomButtonProps {
   text: string;
-  link: string;
+  link?: string;
   btnClass?: string;
   txtClass?: string;
   imageClass?: string;
   variant?: "1" | "2" | "3";
   iconDirection?: "default" | "down";
+  onClick?: () => void;
+  showIcon?: boolean;
 }
 
 export default function CustomButton({
@@ -63,52 +65,72 @@ export default function CustomButton({
   imageClass = "",
   variant = "1",
   iconDirection = "default",
+  onClick,
+  showIcon = true,
 }: CustomButtonProps) {
   const variantStyles = {
     "1": {
-      button:
-        "border-secondary text-white hover:text-black",
-      icon:
-        "invert brightness-0 group-hover/button:invert-0 group-hover/button:brightness-100",
+      button: "border-secondary text-white hover:text-black",
+      icon: "invert brightness-0 group-hover/button:invert-0 group-hover/button:brightness-100",
+      fill: "#fff",
     },
     "2": {
       button:
-        "border-primary bg-transparent text-primary hover:text-white",
+        "border-secondary bg-transparent text-description-color hover:text-white",
       icon:
-        "group-hover/button:invert-0 group-hover/button:brightness-100",
+        "invert-0 brightness-100 group-hover/button:invert group-hover/button:brightness-0",
+      fill: "var(--primary)",
     },
     "3": {
       button:
-        "border-primary bg-primary text-white hover:bg-white hover:text-primary",
-      icon:
-        "invert brightness-0 group-hover/button:invert-0 group-hover/button:brightness-100",
+        "border-secondary bg-primary text-white hover:text-primary",
+      icon: "invert brightness-0 group-hover/button:invert-0 group-hover/button:brightness-100",
+      fill: "#fff",
     },
   };
 
   const iconRotation =
-    iconDirection === "down"
-      ? "rotate-90"
-      : "group-hover/button:rotate-45";
+    iconDirection === "down" ? "rotate-135" : "group-hover/button:rotate-45";
 
-  return (
-    <Link
-      href={link}
-      className={`btn-fill-center group/button flex items-center justify-center gap-4 max-h-9.25 md:max-h-10.5 rounded-[50px] border px-4.5 md:px-5.5 py-[11.5px] md:py-3.5 transition-colors duration-500 ${variantStyles[variant].button} ${btnClass}`}
-      style={{ "--fill-color": "#fff" } as React.CSSProperties}
-    >
+  const sharedClassName = `btn-fill-center group/button flex items-center justify-center gap-4 max-h-9.25 md:max-h-10.5 rounded-[50px] border px-4.5 md:px-5.5 py-[11.5px] md:py-3.5 transition-colors duration-500 ${variantStyles[variant].button} ${btnClass}`;
+  const sharedStyle = { "--fill-color": variantStyles[variant].fill } as React.CSSProperties;
+
+  const content = (
+    <>
       <span
-        className={`mt-1 text-15 leading-none uppercase font-itc-medium ${txtClass}`}
+        className={`mt-1 text-15 leading-none uppercase font-itc-medium whitespace-nowrap ${txtClass}`}
       >
         {text}
       </span>
 
-      <Image
-        src="/assets/icons/right-top-arrow-primary.svg"
-        alt="arrow-top-right"
-        width={14}
-        height={14}
-        className={`pointer-events-none transition-transform duration-500 ${variantStyles[variant].icon} ${iconRotation} ${imageClass}`}
-      />
+      {showIcon && (
+        <Image
+          src="/assets/icons/right-top-arrow-primary.svg"
+          alt="arrow-top-right"
+          width={14}
+          height={14}
+          className={`pointer-events-none transition-all duration-500 ${variantStyles[variant].icon} ${iconRotation} ${imageClass}`}
+        />
+      )}
+    </>
+  );
+
+  if (!link) {
+    return (
+      <button
+        type="button"
+        onClick={onClick}
+        className={sharedClassName}
+        style={sharedStyle}
+      >
+        {content}
+      </button>
+    );
+  }
+
+  return (
+    <Link href={link} onClick={onClick} className={sharedClassName} style={sharedStyle}>
+      {content}
     </Link>
   );
 }

@@ -331,12 +331,22 @@ body {
   @apply text-18 leading-[1.54545455] md:leading-[1.38888889] font-itc-book tracking-[-0.01em];
 }
 
+@utility text-description-4 {
+  @apply text-18 leading-[1.54545455] md:leading-[1.55555556] font-itc-medium tracking-[-0.01em];
+}
+
 @utility text-subtitle {
   @apply text-28 leading-[1.3] md:leading-[1.35714286] font-itc-book tracking-[-0.01em];
 }
 
 @utility text-subtitle-2 {
   @apply text-16 leading-[100%] font-itc-medium tracking-[-0.01em];
+}
+
+/* for enabling vertical trim */
+.text-trim {
+  text-box-trim: trim-both;
+  text-box-edge: cap alphabetic;
 }
 
 @keyframes wiggle {
