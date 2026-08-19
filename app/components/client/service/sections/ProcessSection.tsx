@@ -156,11 +156,11 @@ const ProcessSection = ({ data }: ProcessSectionProps) => {
   };
 
   return (
-    <section className="py-100">
+    <section className="py-100 overflow-hidden">
       <div className="container">
         <AnimatedTitle text={data.title} className="section-title mb-40" />
 
-        <div ref={containerRef} className="relative bg-linear-to-br from-gray-50 to-white overflow-hidden select-none">
+        <div ref={containerRef} className="relative select-none">
           <div
             ref={trackRef}
             onPointerDown={handlePointerDown}
@@ -176,7 +176,7 @@ const ProcessSection = ({ data }: ProcessSectionProps) => {
           >
             {/* continuous line, vertically centered on the badges */}
             <div
-              className="absolute h-px bg-gray-200 pointer-events-none"
+              className="absolute h-px bg-secondary pointer-events-none z-10"
               style={{
                 top: lineTop,
                 left: 50,
@@ -187,29 +187,30 @@ const ProcessSection = ({ data }: ProcessSectionProps) => {
 
             {data.items.map((item, index) => (
               <div key={item.id}
-                className={`relative flex flex-col p-50 rounded-[10px] border border-[#bfbfbf] 
+                className={`relative flex flex-col p-50 rounded-[10px] border border-[#bfbfbf] -mr-px overflow-hidden 3xl:min-h-[363px]
                 ${needsSlider ? "flex-shrink-0" : "flex-1"}`}
                 style={{ minWidth: ITEM_MIN_WIDTH, ...(needsSlider ? { width: itemWidth } : {}) }}
               >
-                <h3 className="text-subtitle text-primary mb-40">
+                <div className="absolute top-0 left-0 w-full h-full bg-linear-to-t from-[#f5f5f5] to-[#ffffff] z-0"></div>
+                <h3 className="relative z-20 text-subtitle text-primary mb-2 xl:mb-[19px] ">
                   {item.title}
                 </h3>
 
                 <div
                   ref={index === 0 ? badgeRef : undefined}
-                  className="relative z-10 flex items-center justify-center w-[70px] h-[70px] rounded-[5px] bg-primary text-secondary text-subtitle shrink-0"
+                  className="relative z-20 flex items-center justify-center w-[70px] h-[70px] rounded-[5px] bg-primary text-secondary text-subtitle shrink-0"
                 >
                   {String(index + 1).padStart(2, "0")}
                 </div>
 
-                <p className="text-gray-400 mt-90">{item.description}</p>
+                <p className="relative z-20 text-description-4 text-description-color mt-90">{item.description}</p>
               </div>
             ))}
           </div>
         </div>
 
         {needsSlider && (
-          <div className="flex justify-center gap-8 mt-24">
+          <div className="flex justify-center gap-8 mt-8 xl:mt-24">
             {data.items.map((_, index) => (
               <button
                 key={index}
