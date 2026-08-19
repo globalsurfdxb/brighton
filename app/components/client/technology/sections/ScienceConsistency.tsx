@@ -11,7 +11,7 @@ export default function ScienceConsistency() {
   const [activeIndex, setActiveIndex] = useState(1);
 
   return (
-    <section className="w-full py-100 bg-neutral-100">
+    <section className="w-full py-100 bg-cream-background">
       <div className="container">
         <AnimatedTitle
           text={scienceConsistencyData.title}
@@ -20,7 +20,7 @@ export default function ScienceConsistency() {
 
         <div className="flex flex-col lg:flex-row gap-30 items-start">
           {/* Left - image */}
-          <div className="relative w-full lg:w-1/2 shrink-0 aspect-[895/700] 3xl:w-[895px] 3xl:h-[700px] rounded-[10px] overflow-hidden">
+          <div className="relative w-full lg:w-[52%] shrink-0 aspect-[895/700] 3xl:w-[895px] 3xl:h-[700px] rounded-[10px] overflow-hidden">
             <AnimatePresence>
               {scienceConsistencyData.items.map((item, i) =>
                 i === activeIndex ? (
@@ -45,7 +45,7 @@ export default function ScienceConsistency() {
           </div>
 
           {/* Right - accordion */}
-          <div className="flex flex-col gap-8 w-full lg:flex-1">
+          <div className="flex flex-col gap-30 w-full lg:flex-1">
             {scienceConsistencyData.items.map((item, i) => {
               const isActive = activeIndex === i;
 
@@ -53,13 +53,17 @@ export default function ScienceConsistency() {
                 <div
                   key={i}
                   onMouseEnter={() => setActiveIndex(i)}
-                  className="rounded-[10px] px-50 py-40 cursor-pointer relative"
+                  className="rounded-[10px] p-30 3xl:px-50 3xl:py-40 cursor-pointer relative"
                   style={{
                     background:
                       "linear-gradient(180deg, #FFFFFF 0%, #F5F5F5 100%)",
                   }}
                 >
-                  <div className="absolute top-20 right-20 flex items-center justify-between">
+                  <div
+                    className={`absolute right-20 flex items-center justify-between transition-all duration-300 ${
+                      isActive ? "top-20" : "top-30"
+                    }`}
+                  >
                     <div
                       className={`w-8 h-8 3xl:w-10 3xl:h-10 flex items-center justify-center rounded-[5px] transition-colors duration-500 ${
                         isActive ? "bg-primary" : "bg-secondary"
@@ -68,18 +72,22 @@ export default function ScienceConsistency() {
                       <PlusMinusIcon isActive={isActive} />
                     </div>
                   </div>
-                  <h3 className="text-subtitle text-primary">{item.title}</h3>
+                  <AnimatedTitle
+                    tag={"h3"}
+                    className="text-subtitle text-primary text-trim"
+                    text={item.title}
+                  />
 
                   <AnimatePresence initial={false}>
                     {isActive && (
                       <motion.div
-                        initial={{ height: 0, opacity: 0, marginTop: 0 }}
-                        animate={{ height: "auto", opacity: 1, marginTop: 30 }}
-                        exit={{ height: 0, opacity: 0, marginTop: 0 }}
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: "auto", opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
                         transition={{ duration: 0.3, ease: "easeOut" }}
                         className="overflow-hidden"
                       >
-                        <p className="text-description-4 text-description-color">
+                        <p className="text-description-4 text-description-color max-w-[80%] mt-30">
                           {item.description}
                         </p>
                       </motion.div>
