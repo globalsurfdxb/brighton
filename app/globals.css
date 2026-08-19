@@ -347,6 +347,10 @@ body {
   @apply text-16 leading-[100%] font-itc-medium tracking-[-0.01em];
 }
 
+@utility text-subtitle-3 {
+  @apply text-20 leading-[1.4] font-itc-medium tracking-[-0.01em];
+}
+
 /* for enabling vertical trim */
 .text-trim {
   text-box-trim: trim-both;
@@ -418,5 +422,31 @@ body {
     transition:
       transform 3s cubic-bezier(0.22, 1, 0.36, 1),
       opacity 0.1s linear;
+  }
+}
+
+@keyframes capFadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.cap-fade {
+  animation: capFadeUp 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes revealLeft {
+  from {
+    clip-path: inset(0 100% 0 0);
+  }
+
+  to {
+    clip-path: inset(0 0% 0 0);
   }
 }
