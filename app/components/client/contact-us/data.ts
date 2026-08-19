@@ -18,3 +18,14 @@ export const contactData = {
   mapLink:
     "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2483.378894355918!2d-0.14440310567920855!3d51.506264399135425!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x487604d7c797a6d7%3A0x5e47a3dc1face63a!2s63%20St%20James's%20St%2C%20London%20SW1A%201LY%2C%20UK!5e0!3m2!1sen!2sin!4v1787137397668!5m2!1sen!2sin" ,
 };
+
+export const socialsData = {
+  image: "/assets/images/contact-us/socials/bg.jpg",
+  imageAlt: "Team reviewing lighting plans in a hotel room",
+  socials: [
+    { title: "LinkedIn", icon: "/assets/images/contact-us/socials/icons/linkedin.svg", href: "#" },
+    { title: "Facebook", icon: "/assets/images/contact-us/socials/icons/facebook.svg", href: "#" },
+    { title: "Instagram", icon: "/assets/images/contact-us/socials/icons/instagram.svg", href: "#" },
+    { title: "Youtube", icon: "/assets/images/contact-us/socials/icons/youtube.svg", href: "#" },
+  ],
+};
