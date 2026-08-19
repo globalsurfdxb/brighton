@@ -37,7 +37,7 @@ export const scienceConsistencyData = {
       title: "The Binning Process",
       description:
         "Every LED is measured and sorted at manufacture so only chips within a tight tolerance are grouped together, avoiding visible variation across a project.",
-      image: "/assets/images/technology/science-consistency/2.jpg",
+      image: "/assets/images/technology/banner.jpg",
       imageAlt: "LED binning process close-up",
     },
     {
