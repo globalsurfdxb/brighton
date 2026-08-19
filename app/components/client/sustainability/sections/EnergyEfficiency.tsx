@@ -3,27 +3,33 @@
 import { useState } from "react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
-import { scienceConsistencyData } from "../data";
+import { energyEfficiencyData } from "../data";
 import AnimatedTitle from "../../animations/AnimatedTitle";
-import PlusMinusIcon from "./PlusMinusIcon";
+import PlusMinusIcon from "../../technology/sections/PlusMinusIcon";
 
-export default function ScienceConsistency() {
+export default function EnergyEfficiency() {
   const [activeIndex, setActiveIndex] = useState(1);
   const [baseImage, setBaseImage] = useState(
-    scienceConsistencyData.items[1].image,
+    energyEfficiencyData.items[1].image,
   );
 
   return (
-    <section className="w-full py-100 bg-cream-background">
+    <section className="w-full py-100 overflow-hidden">
       <div className="container">
-        <AnimatedTitle
-          text={scienceConsistencyData.title}
-          className="section-title mb-40"
-        />
+        <div className="flex flex-col lg:flex-row items-start">
+          {/* Left - title + description */}
+          <div className="w-full lg:w-auto max-w-[30%] min-[1900px]:max-w-[463px] pt-60 mr-40 3xl:mr-80">
+            <AnimatedTitle
+              text={energyEfficiencyData.title}
+              className="section-title mb-60"
+            />
+            <p className="text-description-4 text-description-color">
+              {energyEfficiencyData.description}
+            </p>
+          </div>
 
-        <div className="flex flex-col lg:flex-row gap-30 items-start">
-          {/* Left - image */}
-          <div className="relative w-full lg:w-[52%] shrink-0 aspect-[895/700] 3xl:w-[895px] 3xl:h-[700px] rounded-[10px] overflow-hidden">
+          {/* Middle - image */}
+          <div className="relative w-full lg:w-auto shrink-0 aspect-[587/667] lg:h-[480px] 3xl:w-[587px] 3xl:h-[667px] rounded-[10px] overflow-hidden mr-40 3xl:mr-70 min-[1900px]:mr-[73px]">
             <Image
               src={baseImage}
               alt=""
@@ -37,13 +43,13 @@ export default function ScienceConsistency() {
               animate={{ clipPath: "inset(0 0% 0 0)" }}
               transition={{ duration: 0.5, ease: [0.65, 0, 0.35, 1] }}
               onAnimationComplete={() =>
-                setBaseImage(scienceConsistencyData.items[activeIndex].image)
+                setBaseImage(energyEfficiencyData.items[activeIndex].image)
               }
               className="absolute inset-0"
             >
               <Image
-                src={scienceConsistencyData.items[activeIndex].image}
-                alt={scienceConsistencyData.items[activeIndex].imageAlt}
+                src={energyEfficiencyData.items[activeIndex].image}
+                alt={energyEfficiencyData.items[activeIndex].imageAlt}
                 fill
                 className="object-cover object-center pointer-events-none"
               />
@@ -51,15 +57,15 @@ export default function ScienceConsistency() {
           </div>
 
           {/* Right - accordion */}
-          <div className="flex flex-col gap-30 w-full lg:flex-1">
-            {scienceConsistencyData.items.map((item, i) => {
+          <div className="flex flex-col gap-2.5 w-full lg:max-w-[617px] pt-60">
+            {energyEfficiencyData.items.map((item, i) => {
               const isActive = activeIndex === i;
 
               return (
                 <div
                   key={i}
                   onMouseEnter={() => setActiveIndex(i)}
-                  className="rounded-[10px] p-30 3xl:px-50 3xl:py-40 cursor-pointer relative"
+                  className="rounded-[10px] p-30 3xl:py-40 cursor-pointer relative"
                   style={{
                     background:
                       "linear-gradient(180deg, #FFFFFF 0%, #F5F5F5 100%)",
@@ -80,7 +86,7 @@ export default function ScienceConsistency() {
                   </div>
                   <AnimatedTitle
                     tag={"h3"}
-                    className="text-subtitle text-primary text-trim"
+                    className="text-subtitle text-primary text-trim max-w-[90%]"
                     text={item.title}
                   />
 

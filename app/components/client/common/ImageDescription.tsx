@@ -1,8 +1,16 @@
 import Image from "next/image";
-import { lightTechnologyData } from "../data";
-import AnimatedTitle from "../../animations/AnimatedTitle";
+import AnimatedTitle from "../animations/AnimatedTitle";
 
-export default function LightTechnology() {
+interface ImageDescriptionProps {
+  data: {
+    title: string;
+    description: string;
+    image: string;
+    imageAlt: string;
+  };
+}
+
+export default function ImageDescription({ data }: ImageDescriptionProps) {
   return (
     <section className="w-full py-100">
       <div className="container">
@@ -10,8 +18,8 @@ export default function LightTechnology() {
           {/* Left */}
           <div className="w-full lg:w-1/2 relative aspect-[895/640] 3xl:w-[895px] 3xl:h-[640px] rounded-[10px] overflow-hidden">
             <Image
-              src={lightTechnologyData.image}
-              alt={lightTechnologyData.imageAlt}
+              src={data.image}
+              alt={data.imageAlt}
               fill
               className="object-cover object-center"
             />
@@ -20,11 +28,11 @@ export default function LightTechnology() {
           {/* Right */}
           <div className="w-full lg:w-1/2 flex flex-col flex-1">
             <AnimatedTitle
-              text={lightTechnologyData.title}
+              text={data.title}
               className="section-title mb-30"
             />
             <p className="text-description-4 text-description-color">
-              {lightTechnologyData.description}
+              {data.description}
             </p>
           </div>
         </div>
