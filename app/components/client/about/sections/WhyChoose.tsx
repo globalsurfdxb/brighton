@@ -31,7 +31,7 @@ export default function WhyChoose() {
               <div className="border border-secondary rounded-[10px] p-40 h-[410px] 2xl:h-[440px] 3xl:h-[473px] -mr-px relative">
                 <div className="absolute inset-0 rounded-[10px]" style={{background: "linear-gradient(180deg, #FFFFFF 0%, #F5F5F5 100%)"}} />
                 <div className="relative h-full flex flex-col justify-between">
-                    <div className="3xl:w-17.5 3xl:h-17.5 w-15 h-15 rounded-[5px] bg-black flex items-center justify-center">
+                    <div className="3xl:w-17.5 3xl:h-17.5 w-15 h-15 rounded-[5px] bg-primary flex items-center justify-center">
                       <Image
                         src={item.icon}
                         alt={item.title}
