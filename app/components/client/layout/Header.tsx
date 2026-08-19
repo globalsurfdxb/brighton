@@ -19,7 +19,7 @@ import NavDropdown from "./Deskdropdown";
 import MobileMenuIcon from "./MobileMenuIcon";
 import MobileNav from "./MobileNav";
 
-const LIGHT_HEADER_ROUTES = ["/interior-lighting/*", "/projects"];
+const LIGHT_HEADER_ROUTES = ["/interior-lighting/*", "/projects", "/resources/digital-catalogue" ];
 
 const containerVariants = {
   hidden: {},
