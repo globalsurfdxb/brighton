@@ -72,7 +72,7 @@ export default function Main() {
             </p>
 
             <form onSubmit={handleSubmit(onSubmit)}>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-40 mb-60">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-50 mb-60">
                 <FormInput
                   label="Name"
                   required
