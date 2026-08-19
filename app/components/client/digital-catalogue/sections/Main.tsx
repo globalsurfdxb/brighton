@@ -101,7 +101,11 @@ export default function Main() {
                 />
               </div>
 
-              <CustomButton text={"Download Catalogue"} variant="2" />
+              <CustomButton
+                text={"Download Catalogue"}
+                variant="2"
+                onClick={handleSubmit(onSubmit)}
+              />
             </form>
           </div>
         </div>

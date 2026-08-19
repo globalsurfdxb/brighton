@@ -55,7 +55,7 @@ const FormInput = forwardRef<HTMLInputElement, FormInputProps>(
           className={`absolute left-0 bottom-5 h-px transition-all duration-500 ease-in-out
             ${error ? "w-full bg-red-500" : "w-0 bg-secondary peer-focus:w-full"}`}
         />
-        <span className="absolute left-0 bottom-0 h-5 text-15 text-red-500">
+        <span className="absolute left-0 bottom-0 h-5 text-[14px] font-itc-book text-red-500 pt-[2px]">
           {error ?? ""}
         </span>
       </div>
