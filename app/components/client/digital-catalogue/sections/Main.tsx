@@ -32,7 +32,7 @@ export default function Main() {
           className="hero-title mb-80 min-[1900px]:mb-[83px]"
         />
 
-        <div className="flex flex-col lg:flex-row gap-40 lg:gap-[184px]">
+        <div className="flex flex-col lg:flex-row gap-40 lg:gap-130 min-[1900px]:gap-[184px]">
           {/* Left - catalogue cover */}
           <div className="relative w-full lg:w-[35%] aspect-[587/747] 3xl:w-[587px] 3xl:h-[747px] shrink-0 rounded-[10px] overflow-hidden">
             <Image
