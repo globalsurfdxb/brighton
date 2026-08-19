@@ -316,7 +316,7 @@ body {
 }
 
 @utility section-title {
-  @apply text-55 leading-[1.33333333] md:leading-[1.09090909] font-itc-book tracking-[-0.01em];
+  @apply text-55 leading-[1.33333333] md:leading-[1.18181818] font-itc-book tracking-[-0.01em];
 }
 
 @utility text-description {

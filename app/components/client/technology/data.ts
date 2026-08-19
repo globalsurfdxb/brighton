@@ -56,3 +56,7 @@ export const scienceConsistencyData = {
     },
   ],
 };
+
+export const introData = {
+  description: "Our products are the result of extensive in-house research and testing, fusing advanced LED technology with timeless design. Achieving highly efficient, precisely controlled light from a compact optical structure is the central discipline behind every Brighton luminaire.",
+};
