@@ -13,7 +13,6 @@ export const aboutIntroData = {
   ],
 };
 
-
 export const visionMissionData = {
   image: "/assets/images/about/bg-mv.jpg",
   imageAlt: "Person writing notes at a desk",
@@ -30,7 +29,6 @@ export const visionMissionData = {
     },
   ],
 };
-
 
 export const lightBeyondData = {
   title: "Light Beyond Illumination",
@@ -67,3 +65,28 @@ export const whyChooseData = {
     },
   ],
 };
+
+export const researchInnovationData = {
+  image: "/assets/images/about/research-bg.jpg",
+  imageAlt: "Researcher analyzing a lighting component in a lab",
+  title: "Research & Innovation",
+  description: `<p>Our research teams study lighting performance, user behaviour, visual perception, and emerging technologies to develop solutions that deliver measurable improvements in efficiency, comfort, and architectural expression.</p><p><br></p><p>This ongoing investment ensures Brighton remains at the forefront of modern lighting design.</p>`,
+};
+
+
+export const serviceDrivenData = {
+  title: "Service & Solution Driven",
+  description:
+    "Brighton has grown into a recognised name in lighting design for commercial and professional environments, working with architects and brands across retail, residential, offices, public spaces, showrooms, hospitality and landscape projects — from small installations to large-scale developments.",
+  image: "/assets/images/about/service-driven.jpg",
+  imageAlt: "Service & Solution Driven",
+};
+
+export const aboutCtaData = {
+  title: "Let's Talk Lighting",
+  description: "Discuss your project, technical requirements, or product selection with our specialists.",
+  button: {
+    text: "Connect With Us",
+    href: "#",
+  }
+}
