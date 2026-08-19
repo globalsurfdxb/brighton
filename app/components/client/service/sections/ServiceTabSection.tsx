@@ -58,7 +58,7 @@ const ServiceTabSection = ({ data }: ServiceTabSectionProps) => {
   return (
     <section className="py-100">
       <div className="container">
-        <AnimatedTitle text={data.sectionTitle} className="section-title mb-40 mr-60" />
+        <AnimatedTitle text={data.sectionTitle} className="section-title mb-3 xl:mb-40 mr-60" />
         <div className="grid grid-cols-1 md:grid-cols-2 3xl:grid-cols-[895px_845px] gap-6 xl:gap-10 3xl:gap-80">
           {/* Image (desktop / tablet only) */}
           <div className="relative hidden md:block">
@@ -82,16 +82,16 @@ const ServiceTabSection = ({ data }: ServiceTabSectionProps) => {
           </div>
 
           {/* Right side */}
-          <div className="flex flex-col pt-40 3xl:pt-[72px]">
+          <div className="flex flex-col xl:pt-40 3xl:pt-[70px]">
             {/* ---- Desktop / tablet: two-column tab list ---- */}
-            <div className="hidden md:grid grid-cols-2 gap-x-10 xl:gap-x-16 2xl:mb-100 3xl:mb-150">
+            <div className="hidden md:grid grid-cols-2 gap-x-4 xl:gap-x-5 3xl:gap-x-[45px] 2xl:mb-100 3xl:mb-[150px]">
               {columns.map((col, colIdx) => (
                 <div key={colIdx} className="flex flex-col">
                   {col.map((item) => {
                     const isActive = activeItem?.id === item.id;
                     return (
                       <button key={item.id} type="button" onClick={() => handleSelect(item.id)}
-                        className="group flex items-center justify-between gap-4 border-b border-secondary py-4 text-left transition-colors duration-300" >
+                        className="group flex items-center justify-between gap-x-4 border-b border-secondary last:border-b-0 text-left transition-colors duration-300 3xl:pr-5 py-[8px] xl:py-[12px] first:pt-0" >
                         <span className={`text-subtitle-3 transition-colors duration-300 ${isActive ? "text-primary font-medium" : "text-description-color group-hover:text-primary" }`}>
                           {item.title}
                         </span>
@@ -108,13 +108,13 @@ const ServiceTabSection = ({ data }: ServiceTabSectionProps) => {
             </div>
 
             {/* ---- Desktop / tablet: active description ---- */}
-            <div className="hidden md:block mt-14 xl:mt-16">
+            <div className="hidden md:block">
               {activeItem && (
                 <div key={activeItem.id} className="cap-fade">
                   <h3 className="text-subtitle mb-3 xl:mb-4 2xl:mb-[26px]">
                     {activeItem.title}
                   </h3>
-                  <p className="text-description-4 text-description-color max-w-[68ch]">
+                  <p className="text-description-4 text-description-color max-w-[68ch] pl-[2px]">
                     {activeItem.description}
                   </p>
                 </div>
@@ -169,7 +169,7 @@ const ServiceTabSection = ({ data }: ServiceTabSectionProps) => {
                     >
                       <div className="overflow-hidden">
                         <div className="pb-5 pr-2">
-                          <div className="mb-4 aspect-[4/3] w-full overflow-hidden rounded-xl bg-gray-100">
+                          <div className="mb-4 aspect-[4/3] max-h-[30vh] w-full overflow-hidden rounded-xl bg-gray-100">
                             <img
                               src={item.image}
                               alt={item.title}
