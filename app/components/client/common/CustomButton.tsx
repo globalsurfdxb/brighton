@@ -72,8 +72,9 @@ export default function CustomButton({
   const { scrollTo } = useLenis();
 
   const isHashLink = link?.startsWith("#") && link.length > 1;
+  const isFileLink = link ? /\.(pdf|docx?|xlsx?|zip|csv)$/i.test(link) : false;
 
-const handleClick = () => {
+  const handleClick = () => {
     if (isHashLink) {
       const el = document.getElementById(link!.slice(1));
       if (el) {
@@ -93,13 +94,11 @@ const handleClick = () => {
     "2": {
       button:
         "border-secondary bg-transparent text-description-color hover:text-white",
-      icon:
-        "invert-0 brightness-100 group-hover/button:invert group-hover/button:brightness-0",
+      icon: "invert-0 brightness-100 group-hover/button:invert group-hover/button:brightness-0",
       fill: "var(--primary)",
     },
     "3": {
-      button:
-        "border-secondary bg-primary text-white hover:text-primary",
+      button: "border-secondary bg-primary text-white hover:text-primary",
       icon: "invert brightness-0 group-hover/button:invert-0 group-hover/button:brightness-100",
       fill: "#fff",
     },
@@ -109,7 +108,9 @@ const handleClick = () => {
     iconDirection === "down" ? "rotate-135" : "group-hover/button:rotate-45";
 
   const sharedClassName = `btn-fill-center group/button flex items-center justify-center gap-4 max-h-9.25 md:max-h-10.5 rounded-[50px] border px-4.5 md:px-5.5 py-[11.5px] md:py-3.5 transition-colors duration-500 ${variantStyles[variant].button} ${btnClass}`;
-  const sharedStyle = { "--fill-color": variantStyles[variant].fill } as React.CSSProperties;
+  const sharedStyle = {
+    "--fill-color": variantStyles[variant].fill,
+  } as React.CSSProperties;
 
   const content = (
     <>
@@ -160,8 +161,27 @@ const handleClick = () => {
     );
   }
 
+  if (isFileLink) {
+    return (
+      <a
+        href={link}
+        download
+        onClick={onClick}
+        className={sharedClassName}
+        style={sharedStyle}
+      >
+        {content}
+      </a>
+    );
+  }
+
   return (
-    <Link href={link} onClick={handleClick} className={sharedClassName} style={sharedStyle}>
+    <Link
+      href={link}
+      onClick={handleClick}
+      className={sharedClassName}
+      style={sharedStyle}
+    >
       {content}
     </Link>
   );

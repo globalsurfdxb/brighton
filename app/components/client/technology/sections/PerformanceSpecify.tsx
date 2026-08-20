@@ -27,7 +27,7 @@ export default function PerformanceSpecify() {
                 onMouseEnter={() => setActiveIndex(i)}
                 className={`h-[362px] cursor-pointer flex flex-col overflow-hidden transition-[flex-grow, padding] duration-500 ease-in-out basis-0 min-w-[120px] ${
                   isActive
-                    ? "grow-[1.8] md:grow-[2.5] xl:grow-[3.335] px-40 3xl:px-60"
+                    ? "grow-[1.8] md:grow-[2.5] xl:grow-[3.4105] px-40 3xl:px-60"
                     : "grow-[1] px-20"
                 }`}
               >
@@ -41,7 +41,7 @@ export default function PerformanceSpecify() {
                     height: isActive ? 70 : 50,
                   }}
                   transition={{ duration: 0.4, ease: "easeOut" }}
-                  className="rounded-[8px] bg-black flex items-center justify-center shrink-0"
+                  className="rounded-[10px] bg-primary flex items-center justify-center shrink-0"
                 >
                   <Image
                     src={item.icon}
@@ -61,9 +61,7 @@ export default function PerformanceSpecify() {
                   transition={{ duration: 0.3, ease: "easeOut" }}
                   className="overflow-hidden mt-40"
                 >
-                  <h3 className="text-subtitle mb-30 whitespace-nowrap text-trim">
-                    {item.title}
-                  </h3>
+                  <AnimatedTitle key={isActive.toString()} className="text-subtitle mb-[18px] whitespace-nowrap" text={item.title} />
                   <p className="text-description-4 text-description-color">
                     {item.description}
                   </p>
