@@ -158,7 +158,7 @@ export default function ProductCard({ product, bgColor="bg-cream-background" }: 
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      <div className={`relative flex h-[260px] items-center justify-center overflow-hidden rounded-[10px] ${bgColor} sm:h-[340px] md:h-[400px] lg:h-[430px] 3xl:h-[540px]`}>
+      <div className={`relative flex h-[260px] items-center justify-center overflow-hidden rounded-[10px] ${bgColor} h-[400px] lg:h-[430px] 3xl:h-[540px]`}>
         {/* Base image — scales down on hover */}
         <motion.div
           className="absolute inset-0"

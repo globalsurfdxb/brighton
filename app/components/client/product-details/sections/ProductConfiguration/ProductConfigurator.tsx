@@ -5,6 +5,9 @@ import { attributes, product } from "../../data";
 import OptionButton from "./OptionButton";
 import AnimatedTitle from "../../../animations/AnimatedTitle";
 import CustomButton from "../../../common/CustomButton";
+import SectionDescription from "../../../animations/SectionDescription";
+import { motion } from "framer-motion";
+import { moveUp } from "../../../animations/motionVariants";
 
 function buildDefaultSelections() {
   const initial: Record<string, string> = {};
@@ -58,13 +61,10 @@ export default function ProductConfigurator() {
       await navigator.clipboard.writeText(productCode);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
-    } catch {
-      // Clipboard API unavailable — silently ignore, code is still visible on screen
-    }
+    } catch {}
   };
 
   const handleDownload = () => {
-    // Placeholder — wire this up to the actual datasheet-generation endpoint later
     console.log("Download configured datasheet for:", productCode);
   };
 
@@ -77,24 +77,30 @@ export default function ProductConfigurator() {
             className="section-title mb-20"
             text={`Configure Your ${product.name}`}
           />
-          <p className="text-description text-description-color">
-            Hover any option to preview the visual or property. Click to select.
-            The product code rebuilds in real time from your selections.
-          </p>
+          <SectionDescription
+            text="Hover any option to preview the visual or property. Click to select.
+            The product code rebuilds in real time from your selections."
+            direction="y"
+            className="text-description text-description-color"
+          />
         </div>
 
         <div className="flex flex-col xl:flex-row justify-between gap-40">
           {/* Attributes */}
-          <div className="flex flex-col md:flex-row gap-x-60 min-[1900px]:gap-x-[207px]">
+          <div className="flex flex-col md:flex-row gap-y-6 md:gap-y-0 gap-x-60 min-[1900px]:gap-x-[207px]">
             {[0, 1].map((colIndex) => (
               <div
                 key={colIndex}
-                className="flex flex-col gap-y-40 3xl:gap-y-[44px] flex-1"
+                className="flex flex-col gap-y-6 sm:gap-y-40 3xl:gap-y-[44px] flex-1"
               >
                 {attributes
                   .filter((_, i) => i % 2 === colIndex)
-                  .map((attr) => (
-                    <div
+                  .map((attr, i) => (
+                    <motion.div
+                    variants={moveUp( i * 0.006)}
+                      initial="hidden"
+                      whileInView={"show"}
+                      viewport={{ once: true }}
                       key={attr.id}
                       className="flex flex-col gap-[16px] max-w-[481px]"
                     >
@@ -113,26 +119,28 @@ export default function ProductConfigurator() {
                           />
                         ))}
                       </div>
-                    </div>
+                    </motion.div>
                   ))}
               </div>
             ))}
           </div>
 
           {/* Summary / live code sidebar */}
-          <aside className="max-w-[463px] h-fit xl:sticky xl:top-20 bg-cream-background p-40 rounded-[10px]">
-            <h3 className="text-subtitle mb-20 max-w-[27ch]">
+          <aside className="xl:max-w-[463px] h-fit xl:sticky xl:top-20 bg-cream-background p-5 sm:p-40 rounded-[10px]">
+            <h3 className="text-subtitle mb-20 xl:max-w-[27ch]">
               {product.name} Ceiling Recessed Downlight
               <span className="block">- {product.category}</span>
             </h3>
 
-            <p className="text-description text-trim text-description-color mb-60">
+            <p className="text-description text-trim text-description-color mb-6 md:mb-60">
               {summary}
             </p>
 
             <div className="mb-20">
-              <div className="bg-white border-secondary border px-[27px] py-[30.35px] rounded-[10px] flex items-center justify-center">
-                <span className="text-description-color text-description text-trim">{productCode}</span>
+              <div className="bg-white border-secondary border px-4 md:px-[27px] py-4 md:py-[30.35px] rounded-[10px] flex items-center justify-center">
+                <span className="text-description-color text-description text-trim">
+                  {productCode}
+                </span>
               </div>
             </div>
 

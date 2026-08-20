@@ -7,6 +7,7 @@ interface SectionDescriptionProps {
   text?: string;
   html?: string;
   className?: string;
+  direction?: "x" | "y";
   as?: "p" | "span" | "div";
 }
 
@@ -20,6 +21,7 @@ export default function SectionDescription({
   text,
   html,
   className = "",
+  direction = "x",
   as = "p",
 }: SectionDescriptionProps) {
   const ref = useRef<HTMLDivElement>(null);
@@ -31,9 +33,9 @@ export default function SectionDescription({
     <div ref={ref} className="overflow-hidden">
       <MotionTag
         className={`text-description ${className}`}
-        initial={{ x: "50px", opacity: 0 }}
+        initial={{ [direction]: direction === "x" ? "50px" : "25px", opacity: 0 }}
         animate={
-          isInView ? { x: "0px", opacity: 1 } : { x: "50px", opacity: 0.1 }
+          isInView ? { [direction]: "0px", opacity: 1 } : { [direction]: direction === "x" ? "50px" : "25px", opacity: 0.1 }
         }
         transition={{ duration: 0.9, ease: [0.25, 0.1, 0.25, 1] }}
         {...(html
