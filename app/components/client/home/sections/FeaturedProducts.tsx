@@ -209,7 +209,7 @@ export default function FeaturedProducts() {
             {products.map((product, index) => (
               <SwiperSlide key={index}>
                 <div className="flex flex-col group featured-slide-inner">
-                  <div className="relative w-full h-[316px] md:h-[400px] 2xl:h-[450px] 3xl:h-[540px] rounded-[10px] overflow-hidden mb-30">
+                  <div className="relative w-full h-[316px] md:h-[400px] 2xl:h-[420px] 3xl:h-[540px] rounded-[10px] overflow-hidden mb-30">
                     <Image
                       src={product.image}
                       alt={product.title}

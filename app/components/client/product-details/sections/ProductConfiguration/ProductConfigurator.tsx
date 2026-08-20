@@ -147,7 +147,7 @@ export default function ProductConfigurator() {
             <div className="flex flex-col gap-2">
               <CustomButton
                 text="Download Configured Datasheet"
-                link="#"
+                link="/assets/files/spin-10w.pdf"
                 variant="3"
                 iconDirection="down"
                 btnClass="xl:!px-40"

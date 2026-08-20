@@ -24,7 +24,7 @@ export const productBannerData = {
   ],
   specs: ["14 Variants", "IP44 / IP55", "3-Step MacAdam", "DALI . ON/OFF"],
   buttons: [
-    { text: "Download Datasheet", link: "#" },
+    { text: "Download Datasheet", link: "/assets/files/spin-10w.pdf" },
     { text: "Configure Variant", link: "#product-configuration" },
   ],
 };
