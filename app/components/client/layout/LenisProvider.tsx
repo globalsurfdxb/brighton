@@ -106,7 +106,7 @@ useEffect(() => {
     if (hash) {
       const el = document.getElementById(hash.slice(1));
       if (el) {
-        lenisRef.current?.scrollTo(el, { offset: -100, immediate: false });
+        lenisRef.current?.scrollTo(el, { offset: 0, immediate: false });
       }
     }
   }, 300);

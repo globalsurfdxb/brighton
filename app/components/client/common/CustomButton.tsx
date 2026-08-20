@@ -44,6 +44,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
+import { useLenis } from "../layout/LenisProvider";
 
 interface CustomButtonProps {
   text: string;
@@ -68,6 +69,21 @@ export default function CustomButton({
   onClick,
   showIcon = true,
 }: CustomButtonProps) {
+  const { scrollTo } = useLenis();
+
+  const isHashLink = link?.startsWith("#") && link.length > 1;
+
+const handleClick = () => {
+    if (isHashLink) {
+      const el = document.getElementById(link!.slice(1));
+      if (el) {
+        scrollTo(el, { offset: 0 });
+        window.history.pushState(null, "", link);
+      }
+    }
+    onClick?.();
+  };
+
   const variantStyles = {
     "1": {
       button: "border-secondary text-white hover:text-black",
@@ -119,7 +135,7 @@ export default function CustomButton({
     return (
       <button
         type="button"
-        onClick={onClick}
+        onClick={handleClick}
         className={sharedClassName}
         style={sharedStyle}
       >
@@ -128,8 +144,24 @@ export default function CustomButton({
     );
   }
 
+  if (isHashLink) {
+    return (
+      <a
+        href={link}
+        onClick={(e) => {
+          e.preventDefault();
+          handleClick();
+        }}
+        className={sharedClassName}
+        style={sharedStyle}
+      >
+        {content}
+      </a>
+    );
+  }
+
   return (
-    <Link href={link} onClick={onClick} className={sharedClassName} style={sharedStyle}>
+    <Link href={link} onClick={handleClick} className={sharedClassName} style={sharedStyle}>
       {content}
     </Link>
   );
