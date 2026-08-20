@@ -69,7 +69,7 @@ export default function ProductConfigurator() {
   };
 
   return (
-    <section className="w-full bg-white py-100">
+    <section id="product-configuration" className="w-full bg-white py-100">
       <div className="container mx-auto px-4">
         <div className="mb-50">
           <AnimatedTitle
