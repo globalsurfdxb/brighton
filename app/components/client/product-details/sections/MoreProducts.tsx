@@ -15,9 +15,13 @@ export default function MoreProducts() {
   return (
     <section className="w-full py-100 bg-cream-background overflow-hidden">
       <div className="container">
-        <div className="flex flex-col lg:flex-row lg:items-center justify-between mb-5 sm:mb-40">
-          <AnimatedTitle tag="h2" text={sectionTitle} className="section-title" />
-          <CustomButton text="VIEW ALL FAMILIES" variant="2" />
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between mb-[30px] sm:mb-40 gap-2.5 lg:gap-0">
+          <AnimatedTitle
+            tag="h2"
+            text={sectionTitle}
+            className="section-title"
+          />
+          <CustomButton text="VIEW ALL FAMILIES" variant="2" link="#" btnClass="w-fit" />
         </div>
 
         {/* Slider */}
@@ -48,10 +52,15 @@ export default function MoreProducts() {
                 spaceBetween: 30,
               },
             }}
+            className="!overflow-visible lg:!overflow-hidden"
           >
             {products.map((product, index) => (
               <SwiperSlide key={index}>
-                <ProductCard key={product.id} product={product} bgColor="bg-white" />
+                <ProductCard
+                  key={product.id}
+                  product={product}
+                  bgColor="bg-white"
+                />
               </SwiperSlide>
             ))}
           </Swiper>

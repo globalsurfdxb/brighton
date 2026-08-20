@@ -6,6 +6,10 @@ import { motion, AnimatePresence } from "framer-motion";
 import { productBannerData } from "../data";
 import CustomButton from "../../common/CustomButton";
 import AnimatedDivider from "../../animations/AnimatedDivider";
+import AnimatedTitle from "../../animations/AnimatedTitle";
+import SectionDescription from "../../animations/SectionDescription";
+import { moveUp, moveUpV2 } from "../../animations/motionVariants";
+import Reveal from "../../animations/RevealItemsOneByOneAnimation";
 
 export default function ProductBanner() {
   const { category, subCategory, name, description, images, specs, buttons } =
@@ -13,10 +17,10 @@ export default function ProductBanner() {
   const [activeIndex, setActiveIndex] = useState(0);
 
   return (
-    <section className="w-full pt-140 3xl:pt-[146px] container">
-      <div className="flex flex-col items-center gap-10 lg:flex-row lg:gap-15">
+    <section className="w-full pt-[100px] xl:pt-[146px] container overflow-hidden">
+      <div className="flex flex-col items-center gap-5 sm:gap-8 lg:flex-row lg:gap-15">
         {/* Left: Image gallery */}
-        <div className="relative w-full lg:w-[110%] 3xl:w-[896px]">
+        <div className="relative w-full lg:w-[110%] 3xl:w-[896px] overflow-hidden">
           <div className="relative aspect-[896/760] w-full overflow-hidden rounded-[10px] bg-cream-background 3xl:h-[760px] 3xl:w-[896px]">
             <AnimatePresence initial={false}>
               <motion.div
@@ -41,11 +45,11 @@ export default function ProductBanner() {
           {/* Thumbnails */}
           <div className="absolute bottom-0 left-0 flex gap-[5px] p-2.5">
             {images.map((img, index) => (
+              <Reveal key={index} variants={moveUpV2} delayRange={index * 0.03}>
               <button
-                key={img.src}
                 type="button"
                 onClick={() => setActiveIndex(index)}
-                className={`cursor-pointer relative h-[80px] w-[90px] shrink-0 overflow-hidden rounded-[10px] bg-white transition-opacity duration-300 3xl:h-[100px] 3xl:w-[115px] ${
+                className={`cursor-pointer relative h-[50px] w-[60px] sm:h-[60px] md:w-[70px] ms:h-[80px] md:w-[90px] shrink-0 overflow-hidden rounded-[10px] bg-white transition-opacity duration-300 3xl:h-[100px] 3xl:w-[115px] ${
                   activeIndex === index ? " ring ring-secondary" : ""
                 }`}
               >
@@ -56,34 +60,52 @@ export default function ProductBanner() {
                   className="pointer-events-none object-cover"
                 />
               </button>
+            </Reveal>
             ))}
           </div>
         </div>
 
         {/* Right: Content */}
         <div className="flex flex-col">
-          <p className="text-subtitle-2 text-description-color uppercase mb-30 min-[1920px]:min-h-[19px]">
-            {category} · {subCategory}
-          </p>
+          <SectionDescription
+            direction="y"
+            className="text-subtitle-2 text-description-color uppercase mb-30 min-[1920px]:min-h-[19px]"
+            text={`${category} · ${subCategory}`}
+          />
+          <AnimatedTitle
+            tag="h1"
+            className="hero-title mb-30 xl:mb-60"
+            text={name}
+          />
 
-          <h1 className="hero-title mb-60">{name}</h1>
+          <SectionDescription
+            text={description}
+            direction="y"
+            className="text-description-4 text-description-color mb-30 min-[1900px]:max-w-[80ch]"
+          />
 
-          <p className="text-description-4 text-description-color mb-30 min-[1900px]:max-w-[80ch]">
-            {description}
-          </p>
-
-          <div className="flex lg:flex-nowrap gap-[5px] mb-50">
-            {specs.map((spec) => (
-              <div
+          <div className="flex lg:flex-nowrap gap-[5px] mb-50 md:max-w-[70%] lg:max-w-full">
+            {specs.map((spec, i) => (
+              <motion.div
+                variants={moveUp(i * 0.03)}
+                initial="hidden"
+                whileInView="show"
+                viewport={{ once: true }}
                 key={spec}
                 className="flex flex-1 min-w-0 aspect-square 3xl:flex-none 3xl:w-[162px] 3xl:h-[162px] px-20 flex-col items-center justify-center rounded-[10px] bg-primary text-description-4 text-center text-white"
               >
                 <span className="text-trim">{spec}</span>
-              </div>
+              </motion.div>
             ))}
           </div>
 
-          <div className="flex flex-wrap items-center gap-[9px]">
+          <motion.div
+            variants={moveUp(0.1)}
+            initial="hidden"
+            whileInView="show"
+            viewport={{ once: true }}
+            className="flex flex-wrap items-center gap-[9px]"
+          >
             <CustomButton
               variant="2"
               text={buttons[0].text}
@@ -97,7 +119,7 @@ export default function ProductBanner() {
               btnClass="w-fit"
               iconDirection="down"
             />
-          </div>
+          </motion.div>
         </div>
       </div>
 
