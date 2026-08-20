@@ -25,7 +25,7 @@ export default function Main() {
   };
 
   return (
-    <section className="w-full pb-100 pt-200 3xl:pt-[206px]">
+    <section className="w-full pb-100 top-spacing">
       <div className="container">
         <AnimatedTitle
           text="Digital Catalogue"

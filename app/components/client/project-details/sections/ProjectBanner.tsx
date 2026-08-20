@@ -26,7 +26,7 @@ export default function ProjectBanner({
       />
 
       {/* Content wrapper */}
-      <div className="relative container z-10 flex h-full w-full flex-col justify-between pt-200 3xl:pt-[206px] pb-90 min-[1850px]:pb-[94px]">
+      <div className="relative container z-10 flex h-full w-full flex-col justify-between top-spacing pb-90 min-[1850px]:pb-[94px]">
         <button
           style={
             {
