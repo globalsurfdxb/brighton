@@ -10,6 +10,7 @@ import EngineeredSystem from "./sections/EngineeredSystem";
 import ImageDescription from "../common/ImageDescription";
 import ScienceConsistency from "./sections/ScienceConsistency";
 import IntroSection from "../common/IntroSection";
+import PerformanceSpecify from "./sections/PerformanceSpecify";
 
 const Index = () => {
   return (
@@ -18,6 +19,7 @@ const Index = () => {
       <IntroSection data={introData} className="max-w-[115ch]" />
       <ImageDescription data={lightTechnologyData} />
       <EngineeredSystem />
+      <PerformanceSpecify />
       <ScienceConsistency />
       <Cta data={technologyCtaData} />
     </>
