@@ -58,5 +58,42 @@ export const scienceConsistencyData = {
 };
 
 export const introData = {
-  description: "Our products are the result of extensive in-house research and testing, fusing advanced LED technology with timeless design. Achieving highly efficient, precisely controlled light from a compact optical structure is the central discipline behind every Brighton luminaire.",
+  description:
+    "Our products are the result of extensive in-house research and testing, fusing advanced LED technology with timeless design. Achieving highly efficient, precisely controlled light from a compact optical structure is the central discipline behind every Brighton luminaire.",
+};
+
+export const performanceSpecifyData = {
+  title: "Performance You Can Specify",
+  items: [
+    {
+      title: "IP Rating — IEC 60529",
+      description:
+        "Ingress protection rated per fixture environment: IP20 for dry indoor use, rising to IP65–IP68 for wet, outdoor, or submersible applications.",
+      icon: "/assets/images/technology/performance-specify/1.svg",
+    },
+    {
+      title: "IK Rating — EN 62262",
+      description:
+        "Impact resistance on a 0–10 scale, engineered per application: IK02 on indoor downlights such as Spin and Zen, rising to IK08–IK10 on bulkhead, weatherproof and street lighting exposed to public areas, such as Luke and Selio Pro.",
+      icon: "/assets/images/technology/performance-specify/2.svg",
+    },
+    {
+      title: "L70>50,000 HRS",
+      description:
+        "LED lumen maintenance rated to retain 70% output beyond 50,000 hours of operation, ensuring long-term performance with minimal degradation.",
+      icon: "/assets/images/technology/performance-specify/3.svg",
+    },
+    {
+      title: "3-STEP MACADAM",
+      description:
+        "Colour consistency held within 3-Step MacAdam ellipses, so every fixture in a project matches the one beside it.",
+      icon: "/assets/images/technology/performance-specify/4.svg",
+    },
+    {
+      title: "NO FLICKER",
+      description:
+        "Drivers engineered to eliminate visible and imperceptible flicker, supporting visual comfort and reducing eye strain.",
+      icon: "/assets/images/technology/performance-specify/5.svg",
+    },
+  ],
 };
