@@ -357,6 +357,10 @@ body {
   text-box-edge: cap alphabetic;
 }
 
+.top-spacing {
+  @apply pt-[100px] md:pt-[140px] 2xl:pt-200 3xl:pt-[206px];
+}
+
 @keyframes wiggle {
   0%,
   100% {

@@ -69,7 +69,7 @@ export default function ProjectsSection() {
   const hasMore = visibleCount < filteredProjects.length;
 
   return (
-    <section className="bg-white pt-200 3xl:pt-[206px] pb-100 container">
+    <section className="bg-white top-spacing pb-100 container">
       <AnimatedTitle className="hero-title mb-100" text="Projects" tag="h1" />
 
       <div className="mb-10 flex flex-wrap items-center justify-between">

@@ -61,7 +61,7 @@ export default function PerformanceSpecify() {
                   transition={{ duration: 0.3, ease: "easeOut" }}
                   className="overflow-hidden mt-40"
                 >
-                  <h3 className="text-subtitle mb-40 whitespace-nowrap">
+                  <h3 className="text-subtitle mb-30 whitespace-nowrap text-trim">
                     {item.title}
                   </h3>
                   <p className="text-description-4 text-description-color">

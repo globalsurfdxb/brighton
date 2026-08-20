@@ -7,6 +7,8 @@ import type { Swiper as SwiperType } from "swiper";
 import "swiper/css";
 
 import { subcategories } from "../data";
+import Reveal from "../../animations/RevealItemsOneByOneAnimation";
+import { moveUpV2 } from "../../animations/motionVariants";
 
 interface Props {
   active: string;
@@ -20,12 +22,15 @@ export default function SubCategoryTabs({ active, onChange }: Props) {
     <Swiper
       slidesPerView="auto"
       onSwiper={(swiper) => (swiperRef.current = swiper)}
+      className="!overflow-visible"
     >
       {subcategories.map((sub, index) => {
         const isActive = active === sub.id;
 
         return (
+          
           <SwiperSlide key={sub.id} className="!w-auto">
+            <Reveal key={index} variants={moveUpV2} delayRange={index * 0.03}>
             <button
               style={
                 {
@@ -45,13 +50,13 @@ export default function SubCategoryTabs({ active, onChange }: Props) {
                   : "text-description-color hover:text-white z-10"
               }`}
             >
-              <span className="flex h-70 w-70 shrink-0 items-center justify-center rounded-full bg-[#D9D9D9]">
+              <span className="flex h-10 w-10 lg:h-[70px] lg:w-[70px] shrink-0 items-center justify-center rounded-full bg-[#D9D9D9]">
                 <Image
                   src={sub.icon}
                   alt=""
                   width={30}
                   height={30}
-                  className="h-[30px] w-auto"
+                  className="h-6 lg:h-[30px] w-auto"
                 />
               </span>
 
@@ -59,6 +64,7 @@ export default function SubCategoryTabs({ active, onChange }: Props) {
                 {sub.title}
               </span>
             </button>
+          </Reveal>
           </SwiperSlide>
         );
       })}

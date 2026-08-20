@@ -4,7 +4,7 @@ import ContactForm from "./ContactForm";
 
 export default function ContactSection() {
   return (
-    <section className="w-full pt-200 3xl:pt-[206px] pb-100">
+    <section className="w-full top-spacing pb-100">
       <div className="container">
         <AnimatedTitle text={contactData.title} className="hero-title mb-100" />
 
