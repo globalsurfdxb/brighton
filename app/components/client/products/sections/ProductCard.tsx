@@ -242,9 +242,6 @@ export default function ProductCard({
               </motion.div>
             )}
           </AnimatePresence> */}
-          {/* Hover image — always mounted so next/image fetches it on card mount,
-              not on first hover. Visibility is controlled by opacity, not mount state,
-              so there's no fetch delay/glitch the first time someone hovers. */}
           {product.hoverImage && (
             <motion.div
               className="absolute inset-0 rounded-t-2xl overflow-hidden"
