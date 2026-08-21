@@ -469,10 +469,10 @@ export const attributes = [
       {
         id: "dali",
         code: "D",
-        label: "DALI",
+        label: "Dali",
         default: true,
         tooltip: {
-          label: "DALI",
+          label: "Dali",
           meta: "Digital dimming",
           preview: { type: "none" },
         },
