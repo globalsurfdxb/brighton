@@ -34,10 +34,11 @@ export default function OptionButton({ option, isActive, onSelect }: any) {
       onClick={() => onSelect(option.id)}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      className={`cursor-pointer group relative inline-flex items-center rounded-[5px] gap-2 px-3 sm:px-4 py-3 sm:py-[18px] max-h-[50px] text-description-4 leading-none transition-colors duration-400 ${
+      className={`cursor-pointer group relative inline-flex items-center rounded-[5px] gap-2 px-3 sm:px-4 py-3 sm:py-[18px] max-h-[50px] border border-secondary text-description-4 leading-none transition-colors duration-400 ${
         isActive ? "bg-primary text-white" : "bg-cream-background text-primary"
       }`}
     >
+      {/* Animated drawn border */}
       {/* Animated drawn border */}
       <svg
         className="pointer-events-none absolute inset-0 h-full w-full overflow-visible"
