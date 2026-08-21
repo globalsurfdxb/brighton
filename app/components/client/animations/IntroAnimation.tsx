@@ -3,6 +3,8 @@
 import { useEffect, useRef, useState } from "react";
 import { gsap } from "gsap";
 import { useLenis } from "../layout/LenisProvider";
+import { usePathname } from "next/navigation";
+import { isLightHeaderRoute } from "@/lib/utils/lightHeaderRoutes";
 
 const INTRO_ENABLED = process.env.NEXT_PUBLIC_SHOW_INTRO !== "false";
 
@@ -12,6 +14,8 @@ if (typeof window !== "undefined") {
 
 export default function IntroAnimation() {
   const [shouldRender, setShouldRender] = useState(INTRO_ENABLED);
+    const pathname = usePathname();
+  const isLight = isLightHeaderRoute(pathname);
 
   const overlayRef = useRef<HTMLDivElement>(null);
   const svgRef = useRef<SVGSVGElement>(null);
@@ -168,7 +172,9 @@ export default function IntroAnimation() {
   return (
     <div
       ref={overlayRef}
-      className="fixed inset-0 z-[9999] flex items-center justify-center bg-white will-change-transform"
+      className={`fixed inset-0 z-9999 flex items-center justify-center will-change-transform ${
+        isLight ? "bg-cream-background" : "bg-white"
+      }`}
       style={{ opacity: 0 }}
     >
       <svg
