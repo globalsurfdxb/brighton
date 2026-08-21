@@ -18,8 +18,7 @@ import { usePathname } from "next/navigation";
 import NavDropdown from "./Deskdropdown";
 import MobileMenuIcon from "./MobileMenuIcon";
 import MobileNav from "./MobileNav";
-
-const LIGHT_HEADER_ROUTES = ["/interior-lighting/*", "/projects", "/resources/digital-catalogue", "/contact-us", "/news" ];
+import { isLightHeaderRoute } from "@/lib/utils/lightHeaderRoutes";
 
 const containerVariants = {
   hidden: {},
@@ -69,16 +68,6 @@ export function PlusMinusIcon({ isHovered }: { isHovered: boolean }) {
   );
 }
 
-const matchesRoute = (pathname: string, route: string) => {
-  if (route.endsWith("/*")) {
-    const baseRoute = route.slice(0, -2);
-
-    return pathname === baseRoute || pathname.startsWith(`${baseRoute}/`);
-  }
-
-  return pathname === route;
-};
-
 export default function Header() {
   const { scrollY } = useScroll();
   const [hidden, setHidden] = useState(false);
@@ -105,9 +94,7 @@ export default function Header() {
 
   const pathname = usePathname();
 
-  const isLightHeaderRoute = LIGHT_HEADER_ROUTES.some((route) =>
-    matchesRoute(pathname, route),
-  );
+const isLight = isLightHeaderRoute(pathname);
 
   useEffect(() => {
     registerHeaderSurface(surfaceRef.current);
@@ -220,7 +207,7 @@ export default function Header() {
               isExpanded
                 ? "w-screen rounded-none shadow-lg"
                 : "w-full rounded-[10px]"
-            } ${isLightHeaderRoute ? "bg-[#f5f5f5]" : "bg-white"}`}
+            } ${isLight ? "bg-cream-background" : "bg-white"}`}
           />
 
           <div
