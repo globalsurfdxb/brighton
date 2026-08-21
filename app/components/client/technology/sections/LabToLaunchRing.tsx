@@ -1,8 +1,11 @@
+"use client";
+
 import Image from "next/image";
 import { ringItems, sectionTitle, RingItem } from "../data";
 import AnimatedTitle from "../../animations/AnimatedTitle";
+import { motion } from "framer-motion";
+import SectionDescription from "../../animations/SectionDescription";
 
-// container reference: 892 x 756.5 (matches aspect-[892/756.5] wrapper below)
 const CONTAINER_W = 892;
 const CONTAINER_H = 756.5;
 
@@ -10,38 +13,36 @@ const px = (v: number, axis: "x" | "y") =>
   `${(v / (axis === "x" ? CONTAINER_W : CONTAINER_H)) * 100}%`;
 
 type PointPosition = {
-  // top row: edge offset (box corner) — no translate needed
-  // bottom row: center offset (box center) — needs translate-x-1/2, box overflows edge
   top?: string;
   bottom?: string;
   left?: string;
   right?: string;
-  centered?: boolean; // true = anchor is box center, apply translate-x-1/2
+  centered?: boolean;
   textSide: "left" | "right";
 };
 
 const pointPositions: Record<string, PointPosition> = {
   "02": {
-    top: px(22, "y"),
-    left: px(10, "x"),
+    top: px(74, "y"),
+    left: px(200, "x"),
     centered: true,
     textSide: "left",
   },
   "03": {
-    top: px(22, "y"),
-    right: px(10, "x"),
+    top: px(74, "y"),
+    right: px(200, "x"),
     centered: true,
     textSide: "right",
   },
   "01": {
-    bottom: px(220, "y"),
-    left: px(-200, "x"),
+    top: px(431, "y"),
+    left: px(10, "x"),
     centered: true,
     textSide: "left",
   },
   "04": {
-    bottom: px(220, "y"),
-    right: px(-200, "x"),
+    top: px(431, "y"),
+    right: px(10, "x"),
     centered: true,
     textSide: "right",
   },
@@ -58,67 +59,69 @@ function RingPoint({ item }: { item: RingItem }) {
     right: pos.right,
   };
 
-  // centered boxes anchor by their own center (overflow edge), so translate-x-1/2 pulls
-  // them back by half width — same effect mirrored for left vs right anchor
-  const translateClass = pos.centered
-    ? pos.left !== undefined
-      ? "-translate-x-1/2"
-      : "translate-x-1/2"
-    : "";
+  const translateX =
+    pos.left !== undefined ? "-translate-x-1/2" : "translate-x-1/2";
+  const translateY =
+    pos.top !== undefined ? "-translate-y-1/2" : "translate-y-1/2";
 
   return (
     <div
-      className={`absolute flex items-start gap-5 md:gap-70 3xl:gap-[73px] ${translateClass}`}
+      className={`absolute z-10 flex h-14 w-14 3xl:h-[70px] 3xl:w-[70px] items-start justify-center ${translateX} ${translateY}`}
       style={wrapperStyle}
     >
-      {isLeft && (
-        <div className="order-1 w-max max-w-[260px] 3xl:max-w-[350px] text-right">
-          <h3 className="mb-2.5 text-subtitle">{item.title}</h3>
-          <p className="text-description-4 text-description-color">
-            {item.description}
-          </p>
-        </div>
-      )}
-
-      <div className="order-2 z-10 flex h-14 w-14 3xl:h-[70px] 3xl:w-[70px] flex-shrink-0 mt-[2px] items-center justify-center rounded-[5px] bg-primary text-trim text-subtitle text-secondary">
+      <div className="flex h-full w-full items-center justify-center rounded-[5px] bg-primary text-trim text-subtitle text-secondary">
         {item.number}
       </div>
 
-      {!isLeft && (
-        <div className="order-3 w-max max-w-[260px] 3xl:max-w-[350px] text-left">
-          <h3 className="mb-2.5 text-subtitle">{item.title}</h3>
-          <p className="text-description-4 text-description-color">
-            {item.description}
-          </p>
-        </div>
-      )}
+      <div
+        className={`absolute w-max max-w-[260px] 3xl:max-w-[350px] ${
+          isLeft
+            ? "right-full mr-5 md:mr-70 2xl:mr-[73px] text-right"
+            : "left-full ml-5 md:ml-70 2xl:ml-[73px] text-left"
+        }`}
+      >
+        <AnimatedTitle className="mb-2.5 text-subtitle" text={item.title} />
+        <SectionDescription
+          direction="y"
+          className="text-description-4 text-description-color"
+          text={item.description}
+        />
+      </div>
     </div>
   );
 }
 
 export default function LabToLaunchRing() {
   return (
-    <section className="w-full bg-cream-background pt-100 min-[1800px]:pt-[93.5px] max-h-[849px]">
-      <div className="relative mx-auto aspect-[892/756.5] w-full max-w-[700px] 3xl:max-w-[892px]">
-        <div className="absolute inset-0 h-full w-full">
-          <Image
-            src="/assets/images/technology/ring.svg"
-            alt="Lab to Launch Ring"
-            fill
-            className="object-contain"
-          />
+    <section className="w-full pt-100 min-[1800px]:pt-[93.5px] max-h-[849px] bg-cream-background">
+      <div className="container overflow-hidden">
+        <div className="relative mx-auto aspect-[892/756.5] w-full xl:max-w-[580px] 2xl:max-w-[695px] 3xl:max-w-[892px]">
+          <div className="absolute inset-0 h-full w-full">
+            <Image
+              src="/assets/images/technology/ring.svg"
+              alt="Lab to Launch Ring"
+              fill
+              className="object-contain pointer-events-none select-none"
+            />
+          </div>
+          <div className="absolute bottom-[32%] 3xl:bottom-[259px] left-1/2 -translate-x-1/2 text-center">
+            <AnimatedTitle
+              className="section-title max-w-[20ch]"
+              text={sectionTitle.title}
+            />
+          </div>
+          {ringItems.map((item, index) => (
+            <motion.div
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              transition={{ duration: 0.8, delay: 0.32 * index }}
+              viewport={{ once: true }}
+              key={item.id}
+            >
+              <RingPoint item={item} />
+            </motion.div>
+          ))}
         </div>
-
-        <div className="absolute bottom-[32%] 3xl:bottom-[259px] left-1/2 -translate-x-1/2 text-center">
-          <AnimatedTitle
-            className="section-title max-w-[20ch]"
-            text={sectionTitle.title}
-          />
-        </div>
-
-        {ringItems.map((item) => (
-          <RingPoint key={item.id} item={item} />
-        ))}
       </div>
     </section>
   );
