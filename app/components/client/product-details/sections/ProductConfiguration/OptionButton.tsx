@@ -155,7 +155,7 @@ export default function OptionButton({ option, isActive, onSelect }: any) {
       onClick={() => onSelect(option.id)}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      className={`cursor-pointer group relative inline-flex items-center rounded-[5px] gap-2 px-3 sm:px-4 py-3 sm:py-[18px] max-h-[50px] min-[1900px]:min-h-[50px] text-description-4 leading-none transition-colors duration-400 ${
+      className={`cursor-pointer group relative inline-flex items-center rounded-[5px] gap-2 px-3 sm:px-4 py-3 md:py-[18px] max-h-[42px] 3xl:max-h-[50px] min-[1900px]:min-h-[50px] text-description-4 leading-none transition-colors duration-400 ${
         isActive ? "bg-primary text-white" : "bg-cream-background text-primary"
       }`}
     >
@@ -193,7 +193,7 @@ export default function OptionButton({ option, isActive, onSelect }: any) {
 
       {option.swatchColor && (
         <span
-          className="w-[26px] h-[26px] rounded-full flex-shrink-0"
+          className="h-5 w-5 3xl:w-[26px] 3xl:h-[26px] rounded-full flex-shrink-0"
           style={{ background: option.swatchColor }}
         />
       )}

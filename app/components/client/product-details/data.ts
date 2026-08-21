@@ -472,7 +472,7 @@ export const attributes = [
         label: "Dali",
         default: true,
         tooltip: {
-          label: "DALI",
+          label: "Dali",
           meta: "Digital dimming",
           preview: { type: "none" },
         },
