@@ -469,7 +469,7 @@ export const attributes = [
       {
         id: "dali",
         code: "D",
-        label: "DALI",
+        label: "Dali",
         default: true,
         tooltip: {
           label: "DALI",
