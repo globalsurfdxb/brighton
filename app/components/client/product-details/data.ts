@@ -629,7 +629,7 @@ export const moreProductsData = {
       title: "Spin E",
       subtitle: "LED Recessed Downlight",
       image: "/assets/images/products/interior/1.png",
-      hoverImage: "/assets/images/products/interior/hover.jpg",
+      hoverImage: "/assets/images/products/interior/hover-images/3.jpg",
       category: "interior",
       subcategoryId: "ceiling-recessed-downlight",
     },
@@ -638,7 +638,7 @@ export const moreProductsData = {
       title: "Rusty",
       subtitle: "LED Recessed Downlight",
       image: "/assets/images/products/interior/2.png",
-      hoverImage: "/assets/images/products/interior/hover.jpg",
+      hoverImage: "/assets/images/products/interior/hover-images/2.jpg",
       category: "interior",
       subcategoryId: "ceiling-recessed-downlight",
     },
@@ -647,7 +647,7 @@ export const moreProductsData = {
       title: "Zen",
       subtitle: "LED Recessed Downlight",
       image: "/assets/images/products/interior/3.png",
-      hoverImage: "/assets/images/products/interior/hover.jpg",
+      hoverImage: "/assets/images/products/interior/hover-images/4.jpg",
       category: "interior",
       subcategoryId: "ceiling-recessed-downlight",
     },
@@ -656,7 +656,7 @@ export const moreProductsData = {
       title: "Loro P",
       subtitle: "LED Recessed Downlight",
       image: "/assets/images/products/interior/4.png",
-      hoverImage: "/assets/images/products/interior/hover.jpg",
+      hoverImage: "/assets/images/products/interior/hover-images/1.jpg",
       category: "interior",
       subcategoryId: "ceiling-recessed-downlight",
     },
@@ -665,7 +665,7 @@ export const moreProductsData = {
       title: "Rusty",
       subtitle: "LED Recessed Downlight",
       image: "/assets/images/products/interior/2.png",
-      hoverImage: "/assets/images/products/interior/hover.jpg",
+      hoverImage: "/assets/images/products/interior/hover-images/2.jpg",
       category: "interior",
       subcategoryId: "surface-mounted-downlight",
     },
@@ -674,7 +674,7 @@ export const moreProductsData = {
       title: "Zen",
       subtitle: "LED Recessed Downlight",
       image: "/assets/images/products/interior/3.png",
-      hoverImage: "/assets/images/products/interior/hover.jpg",
+      hoverImage: "/assets/images/products/interior/hover-images/4.jpg",
       category: "interior",
       subcategoryId: "ceiling-recessed-suspended-profiles",
     },
@@ -683,7 +683,7 @@ export const moreProductsData = {
       title: "Loro P",
       subtitle: "LED Recessed Downlight",
       image: "/assets/images/products/interior/4.png",
-      hoverImage: "/assets/images/products/interior/hover.jpg",
+      hoverImage: "/assets/images/products/interior/hover-images/1.jpg",
       category: "interior",
       subcategoryId: "ceiling-recessed-suspended-panel-light",
     },
@@ -692,19 +692,19 @@ export const moreProductsData = {
       title: "Loro P",
       subtitle: "LED Recessed Downlight",
       image: "/assets/images/products/interior/2.png",
-      hoverImage: "/assets/images/products/interior/hover.jpg",
+      hoverImage: "/assets/images/products/interior/hover-images/2.jpg",
       category: "interior",
       subcategoryId: "track-lighting",
     },
   ],
 };
 
-
 export const productDetailsCtaData = {
   title: "Let's Talk Lighting",
-  description: "Discuss your project, technical requirements, or product selection with our specialists.",
+  description:
+    "Discuss your project, technical requirements, or product selection with our specialists.",
   button: {
     text: "Connect With Us",
     href: "#",
-  }
-}
+  },
+};
