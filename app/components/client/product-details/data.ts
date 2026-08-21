@@ -579,7 +579,7 @@ export const resourceData = {
       fileType: "RFA",
       name: "Revit Family (BIM)",
       meta: "1.6 MB",
-      action: "Email required",
+      action: "Download",
       href: "/downloads/spin-revit.rfa",
     },
     {
@@ -587,7 +587,7 @@ export const resourceData = {
       fileType: "IMG",
       name: "High-Res Imagery",
       meta: "12 MB",
-      action: "Email required",
+      action: "Download",
       href: "/downloads/spin-imagery.zip",
     },
     {

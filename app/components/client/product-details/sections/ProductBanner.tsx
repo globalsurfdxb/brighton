@@ -106,12 +106,12 @@ export default function ProductBanner() {
             viewport={{ once: true }}
             className="flex flex-wrap items-center gap-[9px]"
           >
-            <CustomButton
+            {/* <CustomButton
               variant="2"
               text={buttons[0].text}
               link={buttons[0].link}
               btnClass="w-fit"
-            />
+            /> */}
             <CustomButton
               variant="3"
               text={buttons[1].text}

@@ -11,6 +11,7 @@ import ImageDescription from "../common/ImageDescription";
 import ScienceConsistency from "./sections/ScienceConsistency";
 import IntroSection from "../common/IntroSection";
 import PerformanceSpecify from "./sections/PerformanceSpecify";
+import LabToLaunchRing from "./sections/LabToLaunchRing";
 
 const Index = () => {
   return (
@@ -18,6 +19,7 @@ const Index = () => {
       <InnerBanner data={technologyPageData} />
       <IntroSection data={introData} className="max-w-[115ch]" />
       <ImageDescription data={lightTechnologyData} />
+      <LabToLaunchRing />
       <EngineeredSystem />
       <PerformanceSpecify />
       <ScienceConsistency />

@@ -97,3 +97,69 @@ export const performanceSpecifyData = {
     },
   ],
 };
+
+
+export interface RingStep {
+  id: string;
+  number: string;
+  title: string;
+  description: string;
+  angle: number;
+  row: "top" | "bottom";
+  textSide: "left" | "right";
+}
+
+export const ringSteps: RingStep[] = [
+  {
+    id: "01",
+    number: "01",
+    title: "Enquiry",
+    description:
+      "gonio photometer and spectrometer capture every optical and colour parameter.",
+    angle: 205,
+    row: "bottom",
+    textSide: "left",
+  },
+  {
+    id: "02",
+    number: "02",
+    title: "Analyse",
+    description: "luminance cameras verify glare control and visual comfort.",
+    angle: 235,
+    row: "top",
+    textSide: "left",
+  },
+  {
+    id: "03",
+    number: "03",
+    title: "Prototype",
+    description:
+      "3D printing turns findings into a physical sample within days, not weeks.",
+    angle: -55,
+    row: "top",
+    textSide: "right",
+  },
+  {
+    id: "04",
+    number: "04",
+    title: "Certify & Launch",
+    description:
+      "the finished product is tested against IP, IK and lifetime standards before release.",
+    angle: -25,
+    row: "bottom",
+    textSide: "right",
+  },
+];
+
+// SVG viewBox this all maps onto
+export const viewBox = { width: 893, height: 762 };
+
+// separate ellipse per row so top/bottom cx & cy can move independently
+export const rowEllipse = {
+  top: { cx: 446.26, cy: 230.5, rx: 438, ry: 230.5 },
+  bottom: { cx: 446.26, cy: 570, rx: 439, ry: 190 },
+};
+
+export const sectionTitle = {
+  title: "From Lab to Launch",
+};
