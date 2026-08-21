@@ -30,7 +30,7 @@ export default function SectionDescription({
   const MotionTag = tagMotion[as];
 
   return (
-    <div ref={ref} className="overflow-hidden">
+    <div ref={ref}>
       <MotionTag
         className={`text-description ${className}`}
         initial={{ [direction]: direction === "x" ? "50px" : "25px", opacity: 0 }}
