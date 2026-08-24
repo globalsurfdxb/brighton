@@ -14,7 +14,7 @@ export default function ProjectBanner({
   const router = useRouter();
 
   return (
-    <div className="relative flex max-h-[800px] h-[90svh] w-full overflow-hidden">
+    <div className="relative flex max-h-[800px] h-[450px] lg:h-[580px] h-[90svh] w-full overflow-hidden">
       <Image src={image} alt={title} fill priority className="object-cover" />
 
       <div
@@ -26,7 +26,7 @@ export default function ProjectBanner({
       />
 
       {/* Content wrapper */}
-      <div className="relative container z-10 flex h-full w-full flex-col justify-between top-spacing pb-90 min-[1850px]:pb-[94px]">
+      <div className="relative container z-10 flex h-full w-full flex-col justify-between pt-[280px] sm:pt-[140px] 2xl:pt-200 3xl:pt-[206px] pb-90 min-[1850px]:pb-[94px]">
         <button
           style={
             {
@@ -35,16 +35,16 @@ export default function ProjectBanner({
           }
           type="button"
           onClick={() => router.back()}
-          className="btn-fill-center flex w-fit items-center gap-2.5 text-white cursor-pointer max-h-[42px] px-[17px] py-2 border border-secondary rounded-[100px] group transition-colors duration-500"
+          className="btn-fill-center flex w-fit items-center gap-2 lg:gap-2.5 text-white cursor-pointer max-h-9.25 md:max-h-10.5 px-[17px] py-2 border border-secondary rounded-[100px] group transition-colors duration-500"
         >
           <Image
             src="/assets/icons/arrow-left-white.svg"
             alt=""
             width={27}
             height={27}
-            className="group-hover:-translate-x-1 transition-all duration-500 group-hover:invert-0 group-hover:brightness-0"
+            className="w-auto h-5 lg:h-[27px] group-hover:-translate-x-1 transition-all duration-500 group-hover:invert-0 group-hover:brightness-0"
           />
-          <span className="text-description-3 uppercase max-h-[11px] leading-none mb-[2px] group-hover:text-primary transition-colors duration-500">
+          <span className="text-description-3 uppercase text-trim group-hover:text-primary transition-colors duration-500">
             Back
           </span>
         </button>

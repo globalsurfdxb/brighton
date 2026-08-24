@@ -63,13 +63,13 @@ export default function FilterSelectDropDown({
     <div
       ref={rootRef}
       onClick={() => setOpen((prev) => !prev)}
-      className={`relative w-full 2xl:min-w-[229px] cursor-pointer max-h-[42px] ${className}`}
+      className={`relative w-full min-w-[200px] 2xl:min-w-[229px] cursor-pointer ${className}`}
     >
       <button
         type="button"
         aria-haspopup="listbox"
         aria-expanded={open}
-        className="flex w-full bg-cream-background items-center justify-between text-left border border-secondary rounded-[50px] gap-100 cursor-pointer px-5 py-[15px] text-15 leading-none font-itc-medium uppercase"
+        className="flex w-full bg-cream-background items-center justify-between text-left border border-secondary rounded-[50px] gap-100 cursor-pointer px-4.5 md:px-5 py-[15px] text-15 leading-none font-itc-medium uppercase max-h-9.25 md:max-h-10.5"
       >
         <span
           className={`max-h-[11px] ${value ? "text-primary" : "text-description-color"}`}

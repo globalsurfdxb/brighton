@@ -29,12 +29,12 @@ export default function Main() {
       <div className="container">
         <AnimatedTitle
           text="Digital Catalogue"
-          className="hero-title mb-80 min-[1900px]:mb-[83px]"
+          className="hero-title mb-30 md:mb-80 min-[1900px]:mb-[83px]"
         />
 
-        <div className="flex flex-col lg:flex-row gap-40 lg:gap-130 min-[1900px]:gap-[184px]">
+        <div className="flex flex-col md:flex-row gap-40 lg:gap-60 xl:gap-130 min-[1900px]:gap-[184px]">
           {/* Left - catalogue cover */}
-          <div className="relative w-full lg:w-[35%] aspect-[587/747] 3xl:w-[587px] 3xl:h-[747px] shrink-0 rounded-[10px] overflow-hidden">
+          <div className="relative w-full md:w-[38%] lg:w-[35%] max-[639px]:max-h-[400px] max-[767px]:max-h-[450px] aspect-[587/747] 3xl:w-[587px] 3xl:h-[747px] shrink-0 rounded-[10px] overflow-hidden">
             <Image
               src="/assets/images/resources/catalogue.jpg"
               alt="Brighton Catalogue 2026"
@@ -44,16 +44,16 @@ export default function Main() {
 
             <div className="absolute inset-0 bg-black/20" />
 
-            <div className="absolute z-10 left-40 3xl:left-[48px] top-100 3xl:top-[117px]">
+            <div className="absolute z-10 left-5 lg:left-40 3xl:left-[48px] top-60 lg:top-100 3xl:top-[117px]">
               <Image
                 src="/assets/logos/header-logo.svg"
                 alt="Brighton"
                 width={372}
                 height={50}
-                className="invert brightness-0 h-10 3xl:h-12.5 w-auto max-w-[372px]"
+                className="invert brightness-0 h-6 xl:h-10 3xl:h-12.5 w-auto max-w-[372px]"
               />
               <p
-                className="text-[26px] font-itc-medium tracking-[-0.01em] leading-[2.5] bg-clip-text text-transparent mt-4.5"
+                className="text-[26px] font-itc-medium tracking-[-0.01em] leading-[2.5] bg-clip-text text-transparent mt-2 xl:mt-4.5"
                 style={{
                   backgroundImage:
                     "linear-gradient(180deg, #FFFFFF 25.38%, #999999 60%)",
@@ -72,7 +72,7 @@ export default function Main() {
             </p>
 
             <form onSubmit={handleSubmit(onSubmit)}>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-50 mb-60">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-50 mb-30 md:mb-60">
                 <FormInput
                   label="Name"
                   required

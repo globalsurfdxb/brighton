@@ -66,11 +66,13 @@ function RingPoint({ item }: { item: RingItem }) {
 
   return (
     <div
-      className={`absolute z-10 flex h-14 w-14 3xl:h-[70px] 3xl:w-[70px] items-start justify-center ${translateX} ${translateY}`}
+      className={`absolute z-10 flex h-12 w-12 2xl:h-14 2xl:w-14 3xl:h-[70px] 3xl:w-[70px] items-start justify-center ${translateX} ${translateY}`}
       style={wrapperStyle}
     >
-      <div className="flex h-full w-full items-center justify-center rounded-[5px] bg-primary text-trim text-subtitle text-secondary">
-        {item.number}
+      <div className="flex h-full w-full items-center justify-center rounded-[5px] bg-primary">
+        <span className="text-trim text-subtitle text-secondary">
+          {item.number}
+        </span>
       </div>
 
       <div
@@ -95,7 +97,7 @@ export default function LabToLaunchRing() {
   return (
     <section className="w-full pt-100 min-[1800px]:pt-[93.5px] max-h-[849px] bg-cream-background">
       <div className="container overflow-hidden">
-        <div className="relative mx-auto aspect-[892/756.5] w-full xl:max-w-[580px] 2xl:max-w-[695px] 3xl:max-w-[892px]">
+        <div className="hidden xl:block relative mx-auto aspect-[892/756.5] w-full xl:max-w-[490px] 2xl:max-w-[640px] 3xl:max-w-[892px]">
           <div className="absolute inset-0 h-full w-full">
             <Image
               src="/assets/images/technology/ring.svg"
@@ -121,6 +123,44 @@ export default function LabToLaunchRing() {
               <RingPoint item={item} />
             </motion.div>
           ))}
+        </div>
+
+        <div className="xl:hidden pb-100">
+          <AnimatedTitle
+            className="section-title max-w-[20ch] mb-30 md:mb-50"
+            text={sectionTitle.title}
+            tag="p"
+          />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-30 sm:gap-40 md:gap-50">
+            {ringItems.map((item, index) => (
+              <motion.div
+                initial={{ opacity: 0 }}
+                whileInView={{ opacity: 1 }}
+                transition={{ duration: 0.8, delay: 0.32 * index }}
+                viewport={{ once: true }}
+                key={item.id}
+              >
+                <div className="flex items-start gap-4 md:gap-5">
+                  <div className="flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-[5px] bg-primary shrink-0">
+                    <span className="text-trim text-subtitle text-secondary">
+                      {item.number}
+                    </span>
+                  </div>
+                  <div>
+                    <AnimatedTitle
+                      className="mb-2.5 text-subtitle"
+                      text={item.title}
+                    />
+                    <SectionDescription
+                      direction="y"
+                      className="text-description-4 text-description-color"
+                      text={item.description}
+                    />
+                  </div>
+                </div>
+              </motion.div>
+            ))}
+          </div>
         </div>
       </div>
     </section>

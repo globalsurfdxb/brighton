@@ -27,7 +27,7 @@ export default function ContactForm() {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
-      <div className="grid grid-cols-1 gap-50 mb-40">
+      <div className="grid grid-cols-1 gap-4 md:gap-50 mb-30 md:mb-40">
         <FormInput
           label="Name"
           required
@@ -35,7 +35,7 @@ export default function ContactForm() {
           error={errors.name?.message}
         />
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-30">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-30">
           <FormInput
             label="Email"
             type="email"

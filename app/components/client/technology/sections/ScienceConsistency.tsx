@@ -6,24 +6,29 @@ import { motion, AnimatePresence } from "framer-motion";
 import { scienceConsistencyData } from "../data";
 import AnimatedTitle from "../../animations/AnimatedTitle";
 import PlusMinusIcon from "./PlusMinusIcon";
+import { useLenis } from "../../layout/LenisProvider";
 
 export default function ScienceConsistency() {
   const [activeIndex, setActiveIndex] = useState(1);
   const [baseImage, setBaseImage] = useState(
     scienceConsistencyData.items[1].image,
   );
+  const { scrollTo } = useLenis();
 
   return (
     <section className="w-full py-100 bg-cream-background">
       <div className="container">
         <AnimatedTitle
           text={scienceConsistencyData.title}
-          className="section-title mb-40"
+          className="section-title mb-5 sm:mb-40"
         />
 
-        <div className="flex flex-col lg:flex-row gap-30 items-start">
+        <div
+          id="science-consistency"
+          className="flex flex-col lg:flex-row gap-30 items-stretch"
+        >
           {/* Left - image */}
-          <div className="relative w-full lg:w-[52%] shrink-0 aspect-[895/700] 3xl:w-[895px] 3xl:h-[700px] rounded-[10px] overflow-hidden">
+          <div className="hidden lg:block relative w-full lg:w-[50%] xl:w-[52%] shrink-0 aspect-[895/700] 3xl:w-[895px] 3xl:h-[700px] rounded-[10px] overflow-hidden">
             <Image
               src={baseImage}
               alt=""
@@ -51,7 +56,7 @@ export default function ScienceConsistency() {
           </div>
 
           {/* Right - accordion */}
-          <div className="flex flex-col gap-30 w-full lg:flex-1">
+          <div className="flex flex-col gap-30 w-full lg:flex-1 lg:pb-[50px] xl:pb-0">
             {scienceConsistencyData.items.map((item, i) => {
               const isActive = activeIndex === i;
 
@@ -59,6 +64,9 @@ export default function ScienceConsistency() {
                 <div
                   key={i}
                   onMouseEnter={() => setActiveIndex(i)}
+                  onClick={() =>
+                    scrollTo("#science-consistency", { offset: -15 })
+                  }
                   className="rounded-[10px] p-30 3xl:px-50 3xl:py-40 cursor-pointer relative"
                   style={{
                     background:
@@ -67,7 +75,7 @@ export default function ScienceConsistency() {
                 >
                   <div
                     className={`absolute right-20 flex items-center justify-between transition-all duration-300 ${
-                      isActive ? "top-20" : "top-30"
+                      isActive ? "top-20" : "top-1/2 -translate-y-1/2"
                     }`}
                   >
                     <div
@@ -80,7 +88,7 @@ export default function ScienceConsistency() {
                   </div>
                   <AnimatedTitle
                     tag={"h3"}
-                    className="text-subtitle text-primary text-trim"
+                    className="text-subtitle text-primary text-trim max-w-[88%]"
                     text={item.title}
                   />
 
@@ -90,12 +98,22 @@ export default function ScienceConsistency() {
                         initial={{ height: 0, opacity: 0 }}
                         animate={{ height: "auto", opacity: 1 }}
                         exit={{ height: 0, opacity: 0 }}
-                        transition={{ duration: 0.3, ease: "easeOut" }}
+                        transition={{ duration: 0.45, ease: "easeOut" }}
                         className="overflow-hidden"
                       >
                         <p className="text-description-4 text-description-color max-w-[80%] mt-30">
                           {item.description}
                         </p>
+
+                        {/* Mobile / Tablet image */}
+                        <div className="lg:hidden relative w-full aspect-[895/700] max-h-[280px] md:max-h-[380px] mt-30 rounded-[10px] overflow-hidden">
+                          <Image
+                            src={item.image}
+                            alt={item.imageAlt}
+                            fill
+                            className="object-cover object-center"
+                          />
+                        </div>
                       </motion.div>
                     )}
                   </AnimatePresence>

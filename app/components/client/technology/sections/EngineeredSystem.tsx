@@ -14,8 +14,9 @@ export default function EngineeredSystem() {
       />
 
       {/* Overlay */}
+      <div className="md:hidden absolute inset-0 bg-black/75" />
       <div
-        className="absolute inset-0"
+        className="hidden md:block absolute inset-0"
         style={{
           background:
             "linear-gradient(270deg, rgba(0, 0, 0, 0) 15.1%, rgba(0, 0, 0, 0.8) 85.36%)",

@@ -1,6 +1,12 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useRef } from "react";
+import { Swiper, SwiperSlide } from "swiper/react";
+import type { Swiper as SwiperType } from "swiper";
+import "swiper/css";
+
 import ProjectCard from "./ProjectCard";
 import PillBtn from "../../common/PillBtn";
 import FilterSelectDropDown from "../../common/FilterDropdown";
@@ -24,10 +30,10 @@ function withRowMeta(items: any[]) {
     rowItems.forEach((item) => {
       result.push({
         item,
-        colSpanClass: isOddRow ? "xl:col-span-3" : "xl:col-span-2",
+        colSpanClass: isOddRow ? "2xl:col-span-3" : "2xl:col-span-2",
         heightClass: isOddRow
-          ? "h-[300px] sm:h-[340px] lg:h-[380px] xl:h-[560px]"
-          : "h-[300px] sm:h-[340px] lg:h-[380px] xl:h-[368px]",
+          ? "h-[280px] lg:h-[380px] 2xl:h-[560px]"
+          : "h-[280px] lg:h-[380px] 2xl:h-[368px]",
       });
     });
 
@@ -39,9 +45,44 @@ function withRowMeta(items: any[]) {
 }
 
 export default function ProjectsSection() {
-  const [category, setCategory] = useState("all");
-  const [region, setRegion] = useState<string | null>(null);
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
+  const swiperRef = useRef<SwiperType | null>(null);
+
+  const [category, setCategory] = useState(
+    searchParams.get("category") || "all",
+  );
+
+  const [region, setRegion] = useState<string | null>(
+    searchParams.get("region"),
+  );
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
+
+  const updateFiltersInUrl = (
+    newCategory: string,
+    newRegion: string | null,
+  ) => {
+    const params = new URLSearchParams(searchParams.toString());
+
+    if (newCategory === "all") {
+      params.delete("category");
+    } else {
+      params.set("category", newCategory);
+    }
+
+    if (!newRegion) {
+      params.delete("region");
+    } else {
+      params.set("region", newRegion.toLowerCase().replace(",", ""));
+    }
+
+    const queryString = params.toString();
+
+    router.push(queryString ? `?${queryString}` : "?", {
+      scroll: false,
+    });
+  };
 
   const filteredProjects = useMemo(() => {
     return projects.filter((p) => {
@@ -69,38 +110,66 @@ export default function ProjectsSection() {
   const hasMore = visibleCount < filteredProjects.length;
 
   return (
-    <section className="bg-white top-spacing pb-100 container">
+    <section className="bg-white top-spacing pb-100 container overflow-hidden">
       <AnimatedTitle className="hero-title mb-100" text="Projects" tag="h1" />
 
-      <div className="mb-10 flex flex-wrap items-center justify-between">
-        <div className="flex flex-wrap gap-[5px]">
-          {categoryOptions.map((cat) => (
-            <PillBtn
-              key={cat.id}
-              label={cat.label}
-              active={category === cat.id}
-              onClick={() => setCategory(cat.id)}
-            />
+      <div className="mb-40 gap-5 flex flex-col lg:flex-row items-start lg:items-center justify-between">
+        <Swiper
+          speed={800}
+          slidesPerView="auto"
+          spaceBetween={5}
+          freeMode
+          grabCursor
+          allowTouchMove
+          touchStartPreventDefault={false}
+          onSwiper={(swiper) => {
+            swiperRef.current = swiper;
+          }}
+          className="w-full !overflow-visible"
+        >
+          {categoryOptions.map((cat, index) => (
+            <SwiperSlide key={cat.id} className="!w-auto">
+              <PillBtn
+                label={cat.label}
+                active={category === cat.id}
+                onClick={() => {
+                  setCategory(cat.id);
+                  updateFiltersInUrl(cat.id, region);
+                  swiperRef.current?.slideTo(index);
+                }}
+              />
+            </SwiperSlide>
           ))}
-        </div>
+        </Swiper>
 
         <div>
           <FilterSelectDropDown
             label="Region"
             options={regionOptions}
             value={region}
-            onChange={setRegion}
+            onChange={(value) => {
+              setRegion(value);
+              updateFiltersInUrl(category, value);
+            }}
           />
         </div>
       </div>
 
-      <div className="grid grid-cols-1 gap-x-30 gap-y-60 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
-        {rowMeta.map(({ item, colSpanClass, heightClass }) => (
-          <div key={item.id} className={colSpanClass}>
-            <ProjectCard project={item} heightClass={heightClass} />
-          </div>
-        ))}
-      </div>
+      {filteredProjects.length > 0 ? (
+        <div className="grid grid-cols-1 gap-x-30 gap-y-60 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-6">
+          {rowMeta.map(({ item, colSpanClass, heightClass }) => (
+            <div key={item.id} className={colSpanClass}>
+              <ProjectCard project={item} heightClass={heightClass} />
+            </div>
+          ))}
+        </div>
+      ) : (
+        <div className="flex py-60">
+          <p className="text-description-color text-subtitle">
+            No projects found.
+          </p>
+        </div>
+      )}
 
       {hasMore && (
         <div className="mt-80 flex items-center justify-center">

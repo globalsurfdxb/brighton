@@ -3,8 +3,8 @@ export const LIGHT_HEADER_ROUTES = [
   "/projects",
   "/resources/digital-catalogue",
   "/contact-us",
-  "/news",
-  "/blog",
+  "/news/*",
+  "/blog/*",
 ];
 
 export const matchesRoute = (pathname: string, route: string) => {
