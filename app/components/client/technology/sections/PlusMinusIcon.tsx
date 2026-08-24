@@ -14,7 +14,7 @@ export default function PlusMinusIcon({ isActive }: PlusMinusIconProps) {
       height="20"
       viewBox="0 0 20 20"
       fill="none"
-      className="w-4 h-4 3xl:w-[20px] 3xl:h-[20px]"
+      className="w-auto h-3.5 md:h-4 3xl:w-[20px] 3xl:h-[20px]"
     >
       <motion.path
         d="M20 10L0 10"

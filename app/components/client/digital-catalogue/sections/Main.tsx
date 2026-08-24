@@ -34,7 +34,7 @@ export default function Main() {
 
         <div className="flex flex-col md:flex-row gap-40 lg:gap-60 xl:gap-130 min-[1900px]:gap-[184px]">
           {/* Left - catalogue cover */}
-          <div className="relative w-full md:w-[38%] lg:w-[35%] max-[640px]:max-h-[400px] max-[767px]:max-h-[450px] aspect-[587/747] 3xl:w-[587px] 3xl:h-[747px] shrink-0 rounded-[10px] overflow-hidden">
+          <div className="relative w-full md:w-[38%] lg:w-[35%] max-[639px]:max-h-[400px] max-[767px]:max-h-[450px] aspect-[587/747] 3xl:w-[587px] 3xl:h-[747px] shrink-0 rounded-[10px] overflow-hidden">
             <Image
               src="/assets/images/resources/catalogue.jpg"
               alt="Brighton Catalogue 2026"
