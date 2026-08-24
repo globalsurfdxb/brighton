@@ -59,10 +59,10 @@ const ServiceTabSection = ({ data }: ServiceTabSectionProps) => {
     <section className="py-100">
       <div className="container">
         <AnimatedTitle text={data.sectionTitle} className="section-title mb-3 xl:mb-40 mr-60" />
-        <div className="grid grid-cols-1 md:grid-cols-2 3xl:grid-cols-[895px_845px] gap-6 xl:gap-10 3xl:gap-80">
+        <div className="grid grid-cols-1 md:grid-cols-[1fr_1.3fr] 2xl:grid-cols-2 min-[1650px]:grid-cols-[895px_auto] gap-6 xl:gap-10 3xl:gap-80">
           {/* Image (desktop / tablet only) */}
           <div className="relative hidden md:block">
-            <div className="relative w-full rounded-[10px] overflow-hidden bg-gray-100 min-h-[300px] xl:min-h-[450px] 2xl:min-h-[100vh] 3xl:min-h-[720px]">
+            <div className="relative w-full rounded-[10px] overflow-hidden bg-gray-100 min-h-[300px] md:min-h-full xl:min-h-[calc(100%_+_50px)] 2xl:min-h-[calc(100%_+_50px)] 3xl:min-h-[720px] 3xl:h-[calc(100% + 158px)]">
               <img
                 key={`base-${previousItem.id}`}
                 src={previousItem.image}
@@ -84,7 +84,7 @@ const ServiceTabSection = ({ data }: ServiceTabSectionProps) => {
           {/* Right side */}
           <div className="flex flex-col xl:pt-40 3xl:pt-[70px]">
             {/* ---- Desktop / tablet: two-column tab list ---- */}
-            <div className="hidden md:grid grid-cols-2 gap-x-4 xl:gap-x-5 3xl:gap-x-[45px] 2xl:mb-100 3xl:mb-[150px]">
+            <div className="hidden md:grid grid-cols-2 gap-x-4 xl:gap-x-5 3xl:gap-x-[45px] mb-4 2xl:mb-100 3xl:mb-[150px]">
               {columns.map((col, colIdx) => (
                 <div key={colIdx} className="flex flex-col">
                   {col.map((item) => {
@@ -111,10 +111,10 @@ const ServiceTabSection = ({ data }: ServiceTabSectionProps) => {
             <div className="hidden md:block">
               {activeItem && (
                 <div key={activeItem.id} className="cap-fade">
-                  <h3 className="text-subtitle mb-3 xl:mb-4 2xl:mb-[26px]">
+                  <h3 className="text-subtitle mb-3 xl:mb-3 3xl:mb-6.5">
                     {activeItem.title}
                   </h3>
-                  <p className="text-description-4 text-description-color max-w-[68ch] pl-[2px]">
+                  <p className="text-description-4 text-description-color max-w-[68ch] pl-0.5">
                     {activeItem.description}
                   </p>
                 </div>
