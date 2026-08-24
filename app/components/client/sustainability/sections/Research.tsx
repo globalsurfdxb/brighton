@@ -14,8 +14,9 @@ export default function Research() {
       />
 
       {/* Overlay */}
+      <div className="md:hidden absolute inset-0 bg-black/75" />
       <div
-        className="absolute inset-0"
+        className="hidden md:block absolute inset-0"
         style={{
           background:
             "linear-gradient(270deg, rgba(0, 0, 0, 0) 0%, rgba(10, 10, 10, 0.85) 81.69%)",
@@ -23,7 +24,7 @@ export default function Research() {
       />
 
       {/* Content */}
-      <div className="relative z-10 container py-120 min-[1800px]:py-[178px]">
+      <div className="relative z-10 container py-150 min-[1800px]:py-[178px]">
         <div>
           <AnimatedTitle
             text={researchData.title}

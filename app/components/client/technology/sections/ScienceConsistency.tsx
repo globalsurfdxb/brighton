@@ -75,7 +75,7 @@ export default function ScienceConsistency() {
                 >
                   <div
                     className={`absolute right-20 flex items-center justify-between transition-all duration-300 ${
-                      isActive ? "top-20" : "top-30"
+                      isActive ? "top-20" : "top-1/2 -translate-y-1/2"
                     }`}
                   >
                     <div
