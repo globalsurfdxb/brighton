@@ -115,6 +115,7 @@ export default function ProjectsSection() {
 
       <div className="mb-40 gap-5 flex flex-col lg:flex-row items-start lg:items-center justify-between">
         <Swiper
+          speed={800}
           slidesPerView="auto"
           spaceBetween={5}
           freeMode
@@ -164,7 +165,9 @@ export default function ProjectsSection() {
         </div>
       ) : (
         <div className="flex py-60">
-          <p className="text-description-color text-subtitle">No projects found.</p>
+          <p className="text-description-color text-subtitle">
+            No projects found.
+          </p>
         </div>
       )}
 
