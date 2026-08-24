@@ -43,8 +43,8 @@ export const navItems: NavItem[] = [
     { label: "Downloads Hub", href: "#" },
   ] },
   { label: "Media", href: "#", hasDropdown: true, dropdownItems: [
-    { label: "News & Stories", href: "#" },
-    { label: "Blogs", href: "#" },
+    { label: "News & Stories", href: "/news" },
+    { label: "Blogs", href: "/blog" },
   ] },
   { label: "About", href: "#", hasDropdown: true, dropdownItems: [
     { label: "About Brighton", href: "#" },
@@ -100,8 +100,8 @@ export const footerColumns: FooterColumn[] = [
   {
     title: "Media Center",
     links: [
-      { label: "News & Stories", href: "#" },
-      { label: "Blogs", href: "#" },
+      { label: "News & Stories", href: "/news" },
+      { label: "Blogs", href: "/blog" },
     ],
   },
   {
