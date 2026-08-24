@@ -53,7 +53,7 @@ const Main = ({ data }: { data: NewsDetails }) => {
           </div>
           <div className="grid grid-cols-1 xl:grid-cols-[309px_auto] gap-x-40 3xl:gap-x-[155px]">
             <div>
-              <div>
+              <div className="xl:sticky xl:top-100 xl:h-fit">
                 <div className="border-b border-secondary pb-3 xl:pb-6.5 mb-3 xl:mb-6.5">
                   <h4 className="text-subtitle-2 uppercase text-description-color mb-[10px]">Published</h4>
                   <p className="text-subtitle-3">{data.date.split("-").reverse().join(" - ")}</p>
