@@ -17,19 +17,20 @@ export default function Socials() {
 
       <div className="container py-100">
         <AnimatedDivider className="border-secondary" />
-        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-[62%_1fr] 3xl:grid-cols-[1078px_1fr]">
+        <div className="grid grid-cols-2 xl:grid-cols-[62%_1fr] 3xl:grid-cols-[1078px_1fr]">
           {socialsData.socials.map((item, i) => (
             <div key={i}>
               <Link
                 href={item.href}
-                className="inline-flex items-end gap-[25px] py-[50px] cursor-pointer"
+                className="inline-flex items-end gap-3 lg:gap-6.25 py-5 lg:py-50 cursor-pointer"
               >
-                <p className="section-title text-trim">{item.title}</p>
+                <p className="text-subtitle md:section-title text-trim">{item.title}</p>
                 <Image
                   src={item.icon}
                   alt={item.title}
                   width={20}
                   height={20}
+                  className="w-auto h-4 md:h-5"
                 />
               </Link>
               {i < socialsData.socials.length - 2 && (
