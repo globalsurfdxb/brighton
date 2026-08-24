@@ -62,7 +62,7 @@ const ServiceTabSection = ({ data }: ServiceTabSectionProps) => {
         <div className="grid grid-cols-1 md:grid-cols-[1fr_1.3fr] 2xl:grid-cols-2 min-[1650px]:grid-cols-[895px_auto] gap-6 xl:gap-10 3xl:gap-80">
           {/* Image (desktop / tablet only) */}
           <div className="relative hidden md:block">
-            <div className="relative w-full rounded-[10px] overflow-hidden bg-gray-100 min-h-[300px] md:min-h-full xl:min-h-[calc(100%_+_50px)] 2xl:min-h-[calc(100%_+_50px)] 3xl:min-h-[720px] 3xl:h-[calc(100% + 158px)]">
+            <div className="relative w-full rounded-[10px] overflow-hidden bg-gray-100 min-h-[300px] md:min-h-full 3xl:min-h-[720px]">
               <img
                 key={`base-${previousItem.id}`}
                 src={previousItem.image}
@@ -114,7 +114,7 @@ const ServiceTabSection = ({ data }: ServiceTabSectionProps) => {
                   <h3 className="text-subtitle mb-3 xl:mb-3 3xl:mb-6.5">
                     {activeItem.title}
                   </h3>
-                  <p className="text-description-4 text-description-color max-w-[68ch] pl-0.5">
+                  <p className="text-description-4 text-description-color max-w-[68ch] pl-0.5 pb-6 xl:pb-10 2xl:pb-12 3xl:pb-0">
                     {activeItem.description}
                   </p>
                 </div>
