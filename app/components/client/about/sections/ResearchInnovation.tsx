@@ -14,8 +14,9 @@ export default function ResearchInnovation() {
       />
 
       {/* Overlay */}
+      <div className="lg:hidden absolute inset-0 bg-black/75" />
       <div
-        className="absolute inset-0"
+        className="hidden lg:block absolute inset-0"
         style={{
           background:
             "linear-gradient(270deg, rgba(0, 0, 0, 0.75) 43.75%, rgba(0, 0, 0, 0.2) 77.34%)",
@@ -23,8 +24,8 @@ export default function ResearchInnovation() {
       />
 
       {/* Content */}
-      <div className="relative z-10 h-full container mx-auto flex items-center justify-end py-200 min-[1900px]:py-[235px]">
-        <div className="ml-auto w-[49.3%] max-w-[897px]">
+      <div className="relative z-10 h-full container mx-auto flex items-center justify-end py-150 lg:py-200 min-[1900px]:py-[235px]">
+        <div className="w-full lg:ml-auto lg:w-[49.3%] max-w-[897px]">
             <AnimatedTitle text={researchInnovationData.title} className="section-title text-white mb-30" />
           <div
             className="text-description-4 text-white"

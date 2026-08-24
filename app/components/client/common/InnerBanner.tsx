@@ -49,7 +49,7 @@ export default function InnerBanner({ data }: PageBannerProps) {
   }, []);
 
   return (
-    <section className="relative w-full h-[308px] sm:h-[450px] lg:h-[580px] 3xl:h-[700px] overflow-hidden">
+    <section className="relative w-full h-[400px] sm:h-[450px] lg:h-[580px] 3xl:h-[700px] overflow-hidden">
       {/* Background image */}
       <Image
         ref={imageRef}
