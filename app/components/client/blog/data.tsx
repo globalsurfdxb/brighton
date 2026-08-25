@@ -12,7 +12,7 @@ export const blogItems = [
       "Designing for Longevity Through Precision, Performance, and Innovation",
     date: "14 - 05 - 2026",
     category: "Technology",
-    image: "/assets/images/news/news-1.jpg",
+    image: "/assets/images/blog/blog-1.jpg",
   },
   {
     id: 2,
@@ -20,7 +20,7 @@ export const blogItems = [
       "Designing for Longevity Through Precision, Performance, and Innovation",
     date: "14 - 05 - 2026",
     category: "Technology",
-    image: "/assets/images/news/news-2.jpg",
+    image: "/assets/images/blog/blog-2.jpg",
   },
   {
     id: 3,
@@ -28,7 +28,7 @@ export const blogItems = [
       "Designing for Longevity Through Precision, Performance, and Innovation",
     date: "14 - 05 - 2026",
     category: "Technology",
-    image: "/assets/images/news/news-3.jpg",
+    image: "/assets/images/blog/blog-3.jpg",
   },
   {
     id: 4,
@@ -36,7 +36,7 @@ export const blogItems = [
       "Designing for Longevity Through Precision, Performance, and Innovation",
     date: "14 - 05 - 2026",
     category: "Technology",
-    image: "/assets/images/news/news-4.jpg",
+    image: "/assets/images/blog/blog-4.jpg",
   },
   {
     id: 5,
@@ -44,7 +44,7 @@ export const blogItems = [
       "Designing for Longevity Through Precision, Performance, and Innovation",
     date: "14 - 05 - 2026",
     category: "Technology",
-    image: "/assets/images/news/news-5.jpg",
+    image: "/assets/images/blog/blog-5.jpg",
   },
   {
     id: 6,
@@ -52,7 +52,7 @@ export const blogItems = [
       "Designing for Longevity Through Precision, Performance, and Innovation",
     date: "14 - 05 - 2026",
     category: "Technology",
-    image: "/assets/images/news/news-6.jpg",
+    image: "/assets/images/blog/blog-6.jpg",
   },
 ];
 
