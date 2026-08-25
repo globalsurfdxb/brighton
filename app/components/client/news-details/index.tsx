@@ -12,6 +12,6 @@ const Index = () => {
       <Cta data={ctaData} />
     </>
   );
-}
+};
 
 export default Index;

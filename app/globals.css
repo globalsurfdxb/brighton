@@ -455,3 +455,29 @@ body {
     clip-path: inset(0 0% 0 0);
   }
 }
+
+
+/* NEWS CONTENT STYLES */
+.news-content h3 {
+  @apply text-subtitle text-primary;
+}
+
+.news-content p {
+  @apply text-description-4 text-description-color;
+}
+
+.news-content img {
+  @apply rounded-[10px] w-full h-auto max-h-[600px] object-cover;
+}
+
+.news-content ul {
+  @apply list-disc ml-[24px] md:ml-[30px];
+}
+
+.news-content ul li {
+  @apply text-description-4 text-description-color;
+}
+
+.news-content ul li::marker {
+  @apply text-[18px] md:text-[24px];
+}

@@ -1,5 +1,4 @@
 export const categoryOptions = [
-  { id: "all", label: "All" },
   { id: "commercial", label: "Commercial" },
   { id: "residential", label: "Residential" },
   { id: "hospitality", label: "Hospitality" },

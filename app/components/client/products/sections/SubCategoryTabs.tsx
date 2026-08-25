@@ -20,7 +20,7 @@ export default function SubCategoryTabs({ active, onChange }: Props) {
 
   return (
     <Swiper
-    speed={800}
+      speed={800}
       slidesPerView="auto"
       onSwiper={(swiper) => (swiperRef.current = swiper)}
       className="!overflow-visible"

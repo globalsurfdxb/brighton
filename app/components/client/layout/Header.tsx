@@ -94,7 +94,7 @@ export default function Header() {
 
   const pathname = usePathname();
 
-const isLight = isLightHeaderRoute(pathname);
+  const isLight = isLightHeaderRoute(pathname);
 
   useEffect(() => {
     registerHeaderSurface(surfaceRef.current);
@@ -379,7 +379,7 @@ const isLight = isLightHeaderRoute(pathname);
                   </motion.div>
                 </div>
 
-                {/* dropdown stays as-is below */}
+                {/* dropdown*/}
                 <AnimatePresence>
                   {searchQuery.length > 0 && (
                     <motion.ul
@@ -411,7 +411,7 @@ const isLight = isLightHeaderRoute(pathname);
                 onMouseEnter={cancelClose}
                 onMouseLeave={scheduleClose}
               >
-                <NavDropdown items={navItems[activeIndex].dropdownItems!} />
+                <NavDropdown isLight={isLight} items={navItems[activeIndex].dropdownItems!} />
               </div>
             )}
           </AnimatePresence>

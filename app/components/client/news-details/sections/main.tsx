@@ -1,98 +1,85 @@
-"use client"
+"use client";
+import AnimatedDivider from "../../animations/AnimatedDivider";
 import AnimatedTitle from "../../animations/AnimatedTitle";
 import CustomButton from "../../common/CustomButton";
-import Image, { StaticImageData } from "next/image";
+import Image from "next/image";
+import PillBtn from "../../common/PillBtn";
+import { formatDate } from "@/lib/utils/formatDate";
 
 export interface NewsDetails {
   title: string;
   date: string;
   category: string;
-  heroImage: string | StaticImageData;
-  intro: string;
-  content: Array<
-    {
-      type: "heading main";
-      text: string;
-    }
-    
-    | {
-      type: "first two paragraph";
-      introData: string[];
-    }
-    | {
-      type: "paragraph" | "heading";
-      text: string;
-    }
-    | {
-      type: "image";
-      src: string;
-      alt: string;
-    }
-    | {
-      type: "list";
-      items: string[];
-    }
-  >;
+  heroImage: string;
+  content: string;
 }
 
 const Main = ({ data }: { data: NewsDetails }) => {
   return (
-    <section className="mt-100 py-100">
+    <section className="top-spacing pb-100">
       <div className="container">
         <div>
-          <AnimatedTitle text={data.title} className="section-title mb-40 max-w-[60ch]" />
-          <div className="mb-80">
-            <div className="flex md:justify-between mb-4 xl:mb-7.5 3xl:max-w-[1566px]">
-              <div><p>Published on: {data.date}</p></div>
-              <div><CustomButton text={data.category} variant="2" showIcon={false} /></div>
+          <AnimatedTitle
+            text={data.title}
+            className="hero-title md:leading-[1.16666667] mb-40 2xl:max-w-[85%] 3xl:max-w-[70%]"
+          />
+
+          <div className=" mb-40 xl:mb-80">
+            <div className="flex justify-between items-center mb-30 xl:mr-150 min-[1900px]:mr-[254px]">
+              <div>
+                <p className="text-description-color text-subtitle-2">
+                  {formatDate(data.date)}
+                </p>
+              </div>
+              <div className="flex items-center max-h-7.5 border border-secondary rounded-full py-2.25 px-4.5">
+                <span className="text-description-color text-subtitle-2 text-trim uppercase">
+                  {data.category}
+                </span>
+              </div>
             </div>
-            <div>
-              <Image src={data.heroImage} alt={data.title} width={1820} height={700}
-                className="rounded-[10px] w-full object-cover h-auto max-h-[700px]" />
+
+            <div className="rounded-[10px] overflow-hidden">
+              <Image
+                src={data.heroImage}
+                alt={data.title}
+                width={1820}
+                height={700}
+                className="w-full object-cover aspect-[1820/900] min-h-[280px] max-h-[700px]"
+              />
             </div>
           </div>
-          <div className="grid grid-cols-1 xl:grid-cols-[309px_auto] gap-x-40 3xl:gap-x-[155px]">
+
+          <div className="grid grid-cols-1 xl:grid-cols-[18%_auto] 3xl:grid-cols-[308px_auto] gap-y-50 xl:gap-y-0 gap-x-100 3xl:gap-x-[155px]">
             <div>
-              <div className="xl:sticky xl:top-100 xl:h-fit">
-                <div className="border-b border-secondary pb-3 xl:pb-6.5 mb-3 xl:mb-6.5">
-                  <h4 className="text-subtitle-2 uppercase text-description-color mb-[10px]">Published</h4>
-                  <p className="text-subtitle-3">{data.date.split("-").reverse().join(" - ")}</p>
-                </div>
+              <div className="xl:sticky xl:top-100 xl:h-fit flex flex-row justify-between xl:flex-col gap-4 xl:gap-[26px]">
                 <div>
-                  <h4 className="text-subtitle-2 uppercase text-description-color mb-[10px]">Topic</h4>
-                  <p className="text-subtitle-3">{data.category}</p>
+                  <h4 className="text-subtitle-2 uppercase text-description-color mb-[10px]">
+                    Published
+                  </h4>
+                  <p className="text-subtitle-3 text-trim">
+                    {data.date.split("-").reverse().join(" - ")}
+                  </p>
+                </div>
+                <AnimatedDivider className="hidden xl:block border-secondary" />
+                <div>
+                  <h4 className="text-subtitle-2 uppercase text-description-color mb-[10px]">
+                    Topic
+                  </h4>
+                  <p className="text-subtitle-3 text-trim">{data.category}</p>
                 </div>
               </div>
+              <AnimatedDivider className="xl:hidden border-secondary mt-30" />
             </div>
-            <div>
-              <div>
-                {data.content.map((item, index) => (
-                  <div key={index}>
-                    {item.type === "heading main" && <h2 className="text-subtitle mb-40">{item.text}</h2>}
-                    {item.type === "heading" && <h2 className="text-subtitle mb-30">{item.text}</h2>}
-                    {item.type === "first two paragraph" && item.introData.map((intro, index) => (
-                      <div key={index}>
-                        <p className={`text-description-4 text-description-color ${index === item.introData.length - 1 ? "mb-60" : "mb-7.5"}`}>{intro}</p>
-                      </div>
-                    ))}
-                    {item.type === "paragraph" && <p className="text-description-4 text-description-color mb-30">{item.text}</p>}
-                    {item.type === "image" && item.src && <Image src={item.src} alt={item.alt || ""} width={1200} height={600} className="rounded-[10px] w-full object-cover h-auto max-h-[600px] mb-60" />}
-                    {item.type === "list" && (
-                      <ul className="list-disc ml-6 mb-30 marker:text-[24px]">
-                        {item.items.map((listItem) => (
-                          <li className="text-description-4 text-description-color" key={listItem}>{listItem}</li>
-                        ))}
-                      </ul>
-                    )}
-                  </div>
-                ))}
-              </div>
-            </div>
+
+            <div
+              className="news-content 2xl:mr-80 min-[1900]:mr-[156px]"
+              dangerouslySetInnerHTML={{ __html: data.content }}
+            />
           </div>
         </div>
       </div>
     </section>
   );
-}
+};
 
 export default Main;

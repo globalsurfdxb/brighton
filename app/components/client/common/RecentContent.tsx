@@ -1,5 +1,9 @@
+"use client";
+
 import Image, { StaticImageData } from "next/image";
 import Link from "next/link";
+import { Swiper, SwiperSlide } from "swiper/react";
+import "swiper/css";
 import AnimatedTitle from "../animations/AnimatedTitle";
 
 export interface RecentContentItem {
@@ -18,26 +22,59 @@ interface RecentContentProps {
 
 const RecentContent = ({ title, items, hrefPrefix }: RecentContentProps) => {
   return (
-    <section className="py-100 bg-cream-background">
+    <section className="py-100 bg-cream-background overflow-hidden">
       <div className="container">
-        <AnimatedTitle text={title} className="section-title mb-40 max-w-[60ch]" />
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-7.5 gap-y-5 xl:gap-y-40 2xl:gap-y-80">
+        <AnimatedTitle
+          text={title}
+          className="section-title mb-40"
+        />
+        <Swiper
+          spaceBetween={15}
+          speed={300}
+          slidesPerView={1.2687}
+          breakpoints={{
+            640: {
+              slidesPerView: 2,
+              spaceBetween: 20,
+            },
+            768: {
+              slidesPerView: 2.4,
+              spaceBetween: 20,
+            },
+            1280: { slidesPerView: 3, spaceBetween: 30 },
+          }}
+          className="!overflow-visible"
+        >
           {items.map((item) => (
-            <article key={item.id} className="flex flex-col gap-7.5 relative">
-              <Link href={`/${hrefPrefix}/${item.id}`} className="absolute inset-0 z-10" aria-label={item.title} />
-              <div className="rounded-[10px] overflow-hidden h-[260px] xl:h-[320px] 2xl:h-[380px] 3xl:h-[420px]">
-                <Image src={item.image} alt={item.title} className="w-full h-auto" width={587} height={420} />
-              </div>
-              <div className="pb-4 flex flex-wrap border-b border-secondary">
-                <p className="text-gray-600">{item.date.split("-").reverse().join(" - ")}</p>
-                <p className="text-gray-600 ml-auto">{item.category}</p>
-              </div>
-              <div>
-                <h3 className="text-subtitle">{item.title}</h3>
-              </div>
-            </article>
+            <SwiperSlide key={item.id}>
+              <Link href={`/${hrefPrefix}/${item.id}`}>
+                <div className="flex flex-col gap-30 relative">
+                  <div
+                    className={`relative rounded-[10px] overflow-hidden bg-secondary ${
+                      hrefPrefix === "blog"
+                        ? "h-[260px] xl:h-[320px] 2xl:h-[460px] 3xl:h-[560px]"
+                        : "h-[260px] xl:h-[320px] 2xl:h-[360px] 3xl:h-[420px]"
+                    }`}
+                  >
+                    <Image
+                      src={item.image || "/assets/images/placeholder.png"}
+                      alt={item.title}
+                      className="object-cover pointer-events-none"
+                      fill
+                    />
+                  </div>
+                  <div className="pb-4 flex justify-between border-b border-secondary text-description-color text-subtitle-2">
+                    <p>{item.date.split("-").reverse().join(" - ")}</p>
+                    <p className="mr-60">{item.category}</p>
+                  </div>
+                  <div>
+                    <h3 className="text-subtitle line-clamp-2">{item.title}</h3>
+                  </div>
+                </div>
+              </Link>
+            </SwiperSlide>
           ))}
-        </div>
+        </Swiper>
       </div>
     </section>
   );
