@@ -129,8 +129,8 @@ const BlogList = ({ data }: BlogListProps) => {
     <section className="mt-100 py-100" style={noScrollAnchorStyle}>
       <div className="container">
         <AnimatedTitle text={data.title} className="section-title mb-40 mr-60" />
-        <div className="flex flex-wrap gap-4 mb-60">
-          <PillBtn label="All Blogs" active={selectedCategory === ALL_CATEGORY} onClick={() => handleCategoryClick(ALL_CATEGORY)} />
+        <div className="flex flex-wrap gap-[5px] mb-40">
+          <PillBtn label="All" active={selectedCategory === ALL_CATEGORY} onClick={() => handleCategoryClick(ALL_CATEGORY)} />
           {data.categories.map((category, index) => (
             <PillBtn key={index} label={category} active={selectedCategory === category} onClick={() => handleCategoryClick(category)} />
           ))}
@@ -147,7 +147,7 @@ const BlogList = ({ data }: BlogListProps) => {
               {visibleRows.map((row, rowIndex) => (
                 <motion.div
                   key={`${selectedCategory}-${rowIndex}`}
-                  className="flex flex-col gap-y-50 md:gap-y-70 lg:flex-row lg:items-start lg:gap-x-50 xl:gap-x-80 2xl:gap-x-120 3xl:gap-x-[184px]"
+                  className="flex flex-col gap-y-50 md:gap-y-70 lg:flex-row lg:items-start lg:gap-x-50 xl:gap-x-80 2xl:gap-x-120 3xl:gap-x-[184px] "
                   initial={{ opacity: 0, y: 22 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: 10 }}
