@@ -10,7 +10,7 @@ export const blogItems = [
     id: 1,
     title:
       "Designing for Longevity Through Precision, Performance, and Innovation",
-    date: "14 - 05 - 2026",
+    date: "14/05/2026",
     category: "Technology",
     image: "/assets/images/blog/blog-1.jpg",
   },
@@ -18,7 +18,7 @@ export const blogItems = [
     id: 2,
     title:
       "Designing for Longevity Through Precision, Performance, and Innovation",
-    date: "14 - 05 - 2026",
+    date: "14/05/2026",
     category: "Technology",
     image: "/assets/images/blog/blog-2.jpg",
   },
@@ -26,7 +26,7 @@ export const blogItems = [
     id: 3,
     title:
       "Designing for Longevity Through Precision, Performance, and Innovation",
-    date: "14 - 05 - 2026",
+    date: "14/05/2026",
     category: "Technology",
     image: "/assets/images/blog/blog-3.jpg",
   },
@@ -34,7 +34,7 @@ export const blogItems = [
     id: 4,
     title:
       "Designing for Longevity Through Precision, Performance, and Innovation",
-    date: "14 - 05 - 2026",
+    date: "14/05/2026",
     category: "Technology",
     image: "/assets/images/blog/blog-4.jpg",
   },
@@ -42,7 +42,7 @@ export const blogItems = [
     id: 5,
     title:
       "Designing for Longevity Through Precision, Performance, and Innovation",
-    date: "14 - 05 - 2026",
+    date: "14/05/2026",
     category: "Technology",
     image: "/assets/images/blog/blog-5.jpg",
   },
@@ -50,7 +50,15 @@ export const blogItems = [
     id: 6,
     title:
       "Designing for Longevity Through Precision, Performance, and Innovation",
-    date: "14 - 05 - 2026",
+    date: "14/05/2026",
+    category: "Technology",
+    image: "/assets/images/blog/blog-6.jpg",
+  },
+  {
+    id: 7,
+    title:
+      "Designing for Longevity Through Precision, Performance, and Innovation",
+    date: "14/05/2026",
     category: "Technology",
     image: "/assets/images/blog/blog-6.jpg",
   },
@@ -60,7 +68,6 @@ export const blogSection = {
   title: "Blogs",
   categories: blogCategories,
   items: blogItems,
-  loadMoreText: "Load More",
 };
 
 export const ctaData = {

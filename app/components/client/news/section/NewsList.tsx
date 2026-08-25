@@ -3,9 +3,10 @@
 import AnimatedTitle from "../../animations/AnimatedTitle";
 import PillBtn from "../../common/PillBtn";
 import NewsCard from "./NewsCard";
-import { AnimatePresence, motion } from "framer-motion";
+import { motion } from "framer-motion";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useMediaQuery } from "@/app/hooks/useMediaQuery";
+import { useLoadMoreScroll } from "@/app/hooks/useLoadMoreScroll";
 import CommonCategoryTabs from "../../common/CommonCategoryTabs";
 
 interface NewsListProps {
@@ -74,6 +75,10 @@ const NewsList = ({ data }: NewsListProps) => {
     filteredItems.length > initialVisibleCount &&
     visibleItems.length < filteredItems.length;
 
+  const { markPendingScroll, getRefForIndex } = useLoadMoreScroll(
+    visibleItems.length,
+  );
+
   return (
     <section className="top-spacing pb-100 overflow-hidden">
       <div className="container">
@@ -88,21 +93,30 @@ const NewsList = ({ data }: NewsListProps) => {
           />
         </div>
 
-        <motion.div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-30 gap-y-40 md:gap-y-80">
-          <AnimatePresence initial={false}>
-            {visibleItems.map((item) => (
-              <motion.div key={item.id}>
+        {filteredItems.length > 0 ? (
+          <motion.div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-30 gap-y-40 md:gap-y-80">
+            {visibleItems.map((item, index) => (
+              <motion.div key={item.id} ref={getRefForIndex(index)}>
                 <NewsCard {...item} />
               </motion.div>
             ))}
-          </AnimatePresence>
-        </motion.div>
+          </motion.div>
+        ) : (
+          <div className="flex py-60">
+            <p className="text-description-color text-subtitle">
+              No news found.
+            </p>
+          </div>
+        )}
         {hasMoreItems && (
           <motion.div className="flex justify-center mt-100">
             <PillBtn
               label={"Load More"}
               active={false}
-              onClick={() => updateParams({ page: String(currentPage + 1) })}
+                            onClick={() => {
+                markPendingScroll(visibleItems.length);
+                updateParams({ page: String(currentPage + 1) });
+              }}
               arrow={true}
             />
           </motion.div>

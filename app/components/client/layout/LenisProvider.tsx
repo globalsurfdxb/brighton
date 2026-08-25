@@ -41,7 +41,6 @@ export default function LenisProvider({
   const pathname = usePathname();
 
 useEffect(() => { 
-  // const lenis = new Lenis({ lerp: 0.1, syncTouch: true });
   const lenis = new Lenis({ lerp: 0.1 });
   lenisRef.current = lenis;
 
@@ -66,8 +65,6 @@ useEffect(() => {
     }
   }, 5000);
 
-  // Auto re-measure whenever page height changes for ANY reason —
-  // Load More, images loading in, accordions expanding, etc.
   let resizeRaf: number;
   const ro = new ResizeObserver(() => {
     cancelAnimationFrame(resizeRaf);
