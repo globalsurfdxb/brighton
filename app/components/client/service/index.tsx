@@ -12,6 +12,7 @@ import ServiceTabSection from "./sections/ServiceTabSection";
 import SectorsGrid from "./sections/SectorsGrid";
 import ProcessSection from "./sections/ProcessSection";
 import Cta from "../common/Cta";
+
 const Index = () => {
   return (
     <>
