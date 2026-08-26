@@ -6,28 +6,93 @@ export const categories = [
 export const subcategories = [
   {
     id: "ceiling-recessed-downlight",
-    title: "Ceiling Recessed Downlight",
+    category: "interior",
+    title: "Ceiling Recessed Downlights",
     icon: "/assets/images/products/interior/sub-categories/1.svg",
   },
   {
     id: "surface-mounted-downlight",
+    category: "interior",
     title: "Surface Mounted Downlight",
     icon: "/assets/images/products/interior/sub-categories/2.svg",
   },
   {
-    id: "ceiling-recessed-suspended-profiles",
-    title: "Ceiling Recessed - Surface - Suspended Profiles",
+    id: "ceiling-recessed-surface-suspended-profiles",
+    category: "interior",
+    title: "Ceiling Recessed / Surface / Suspended Profiles",
     icon: "/assets/images/products/interior/sub-categories/3.svg",
   },
   {
-    id: "ceiling-recessed-suspended-panel-light",
-    title: "Ceiling Recessed - Surface - Suspended Panel Light",
+    id: "ceiling-recessed-surface-suspended-panel-light",
+    category: "interior",
+    title: "Ceiling Recessed / Surface / Suspended Panel Light",
     icon: "/assets/images/products/interior/sub-categories/4.svg",
   },
   {
     id: "track-lighting",
+    category: "interior",
     title: "Track Lighting",
     icon: "/assets/images/products/interior/sub-categories/5.svg",
+  },
+  {
+    id: "inground-uplights",
+    category: "exterior",
+    title: "Inground Uplights",
+    icon: "/assets/images/products/interior/sub-categories/1.svg",
+  },
+  {
+    id: "inground-linear-uplights",
+    category: "exterior",
+    title: "Inground Linear Uplights",
+    icon: "/assets/images/products/interior/sub-categories/2.svg",
+  },
+  {
+    id: "bollard-lighting",
+    category: "exterior",
+    title: "Bollard Lighting",
+    icon: "/assets/images/products/interior/sub-categories/3.svg",
+  },
+  {
+    id: "projector-spike-light",
+    category: "exterior",
+    title: "Projector Spike Light",
+    icon: "/assets/images/products/interior/sub-categories/4.svg",
+  },
+  {
+    id: "wall-recessed-surface",
+    category: "exterior",
+    title: "Wall Recessed Surface",
+    icon: "/assets/images/products/interior/sub-categories/5.svg",
+  },
+  {
+    id: "weatherproof-lighting",
+    category: "exterior",
+    title: "Weatherproof Lighting",
+    icon: "/assets/images/products/interior/sub-categories/6.svg",
+  },
+  {
+    id: "bulkhead-lighting",
+    category: "exterior",
+    title: "Bulkhead Lighting",
+    icon: "/assets/images/products/interior/sub-categories/7.svg",
+  },
+  {
+    id: "led-neon-flex-lighting",
+    category: "exterior",
+    title: "LED Neon Flex Lighting",
+    icon: "/assets/images/products/interior/sub-categories/8.svg",
+  },
+  {
+    id: "led-strip-lighting",
+    category: "exterior",
+    title: "LED Strip Lighting",
+    icon: "/assets/images/products/interior/sub-categories/9.svg",
+  },
+  {
+    id: "led-street-lighting",
+    category: "exterior",
+    title: "LED Street Lighting",
+    icon: "/assets/images/products/interior/sub-categories/10.svg",
   },
 ];
 

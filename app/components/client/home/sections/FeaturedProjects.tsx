@@ -11,6 +11,7 @@ import "swiper/css";
 
 import AnimatedDividerTwo from "../../animations/AnimatedDividerTwo";
 import AnimatedTitle from "../../animations/AnimatedTitle";
+import Link from "next/link";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -187,27 +188,29 @@ export default function FeaturedProjects({
 
 function ProjectCard({ project }: { project: any }) {
   return (
-    <div className="featured-project-card flex flex-col group cursor-pointer">
-      <h3 className="text-subtitle text-primary line-clamp-1">
-        {project.title}
-      </h3>
-      <AnimatedDividerTwo
-        className="border-secondary mt-2 md:mt-5 mb-3.75 md:mb-40"
-        hoverColor="#0A0A0A"
-      />
-      <div className="relative w-full h-[200px] sm:h-[280px] md:h-[360px] 2xl:h-[420px] 3xl:h-[520px] rounded-[10px] overflow-hidden">
-        <Image
-          src={project.image}
-          alt={project.title}
-          fill
-          className="pointer-events-none object-cover group-hover:scale-105 transition-all duration-500 ease-in-out"
+    <Link href={`/projects/${project.title.toLowerCase().replace(/\s/g, "-")}`}>
+      <div className="featured-project-card flex flex-col group cursor-pointer">
+        <h3 className="text-subtitle text-primary line-clamp-1">
+          {project.title}
+        </h3>
+        <AnimatedDividerTwo
+          className="border-secondary mt-2 md:mt-5 mb-3.75 md:mb-40"
+          hoverColor="#0A0A0A"
         />
-        <div className="absolute top-3.75 md:top-5 right-3.75 md:right-5 rounded-full bg-black/50 px-3.75 md:px-[18.5px] py-[5px] md:py-[9.5px] flex justify-center items-center border border-secondary">
-          <span className="text-15 leading-none max-h-[9px] md:max-h-[11px] text-secondary font-itc-medium">
-            {project.location}
-          </span>
+        <div className="relative w-full h-[200px] sm:h-[280px] md:h-[360px] 2xl:h-[420px] 3xl:h-[520px] rounded-[10px] overflow-hidden">
+          <Image
+            src={project.image}
+            alt={project.title}
+            fill
+            className="pointer-events-none object-cover group-hover:scale-105 transition-all duration-500 ease-in-out"
+          />
+          <div className="absolute top-3.75 md:top-5 right-3.75 md:right-5 rounded-full bg-black/50 px-3.75 md:px-[18.5px] py-[5px] md:py-[9.5px] flex justify-center items-center border border-secondary">
+            <span className="text-15 leading-none max-h-[9px] md:max-h-[11px] text-secondary font-itc-medium">
+              {project.location}
+            </span>
+          </div>
         </div>
       </div>
-    </div>
+    </Link>
   );
 }

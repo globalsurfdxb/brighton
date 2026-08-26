@@ -82,7 +82,7 @@ export default function MobileNav({
             viewport={{ once: true }}
           >
             <Link
-              href="#"
+              href="/contact-us"
               className="btn-fill-center flex items-center justify-center gap-4 rounded-[20px] bg-primary max-h-[37px] py-[11px] px-[19px] group border border-transparent hover:border-secondary transition-all duration-500"
             >
               <span className="text-15 font-itc-medium uppercase leading-none text-white max-h-[11px] group-hover:text-primary transition-all duration-500">

@@ -251,7 +251,7 @@ export default function Header() {
                     >
                       <Link
                         href={item.href}
-                        className="flex items-center text-15 font-itc-medium uppercase gap-[7px] leading-none group text-description-color hover:text-primary transition-all duration-500"
+                        className="flex items-center text-15 font-itc-medium uppercase gap-[7px] text-trim group text-description-color hover:text-primary transition-all duration-500"
                       >
                         {item.label}
                         {item.hasDropdown && (
@@ -266,10 +266,10 @@ export default function Header() {
               <div className="flex items-center gap-1.5 xl:gap-2.5">
                 <motion.div variants={itemVariants}>
                   <Link
-                    href="#"
+                    href="/contact-us"
                     className="btn-fill-center hidden xl:flex items-center justify-center gap-4 rounded-[20px] bg-primary max-h-[36px] py-[11px] px-[19px] group border border-transparent hover:border-secondary transition-all duration-500"
                   >
-                    <span className="text-15 font-itc-medium uppercase leading-none text-secondary group-hover:text-primary max-h-[11px]">
+                    <span className="text-15 font-itc-medium uppercase text-trim text-secondary group-hover:text-primary">
                       Contact
                     </span>
                     <Image

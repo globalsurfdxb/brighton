@@ -1,4 +1,3 @@
-
 import Image from "next/image";
 import { overviewData } from "../data";
 import AnimatedDivider from "../../animations/AnimatedDivider";
@@ -6,6 +5,7 @@ import CustomButton from "../../common/CustomButton";
 import AnimatedTitle from "../../animations/AnimatedTitle";
 import Reveal from "../../animations/RevealItemsOneByOneAnimation";
 import { moveUpV2 } from "../../animations/motionVariants";
+import Link from "next/link";
 
 export default function Overview() {
   return (
@@ -42,82 +42,82 @@ export default function Overview() {
             variants={moveUpV2}
             delayRange={index * 0.14}
           >
-            <div
-              key={card.title}
-              className="group relative min-h-[325px] sm:min-h-[400px] md:min-h-auto md:aspect-6/5 w-full overflow-hidden rounded-[10px] 3xl:aspect-auto min-[1800px]:h-[760px]"
-            >
-              {/* Video wrapper handles fit + clipping; scaling happens here, isolated */}
-              <div className="absolute inset-0 overflow-hidden">
-                <video
-                  className="h-full w-full object-cover"
-                  src={card.video}
-                  poster={card.poster}
-                  autoPlay
-                  muted
-                  loop
-                  playsInline
-                  preload="auto"
-                />
-              </div>
-
-              {/* Default gradient desktop — fades out on hover */}
               <div
-                style={{
-                  background:
-                    "linear-gradient(180deg, rgba(0,0,0,.85) 0%, rgba(0,0,0,0) 56.16%)",
-                }}
-                className="hidden 2xl:block absolute inset-0 transition-opacity duration-500 group-hover:opacity-0"
-              />
+                key={card.title}
+                className="group relative min-h-[325px] sm:min-h-[400px] md:min-h-auto md:aspect-6/5 w-full overflow-hidden rounded-[10px] 3xl:aspect-auto min-[1800px]:h-[760px]"
+              >
+                {/* Video wrapper handles fit + clipping; scaling happens here, isolated */}
+                <div className="absolute inset-0 overflow-hidden">
+                  <video
+                    className="h-full w-full object-cover"
+                    src={card.video}
+                    poster={card.poster}
+                    autoPlay
+                    muted
+                    loop
+                    playsInline
+                    preload="auto"
+                  />
+                </div>
 
-              <div
-                style={{
-                  background:
-                    "linear-gradient(180deg, rgba(0,0,0,.85) 0%, rgba(0,0,0,0) 90.16%)",
-                }}
-                className="hidden md:block 2xl:hidden absolute inset-0 transition-opacity duration-500 group-hover:opacity-0"
-              />
-
-              {/* Default gradient mobile — fades out on hover */}
-              <div
-                style={{
-                  background:
-                    "linear-gradient(0deg, #000000 0%, rgba(0, 0, 0, 0) 49.85%)",
-                }}
-                className="md:hidden absolute inset-0"
-              />
-
-              {/* Hover gradient — fades in on hover */}
-              <div
-                style={{
-                  background:
-                    "linear-gradient(180deg, rgba(0, 0, 0, 0.85) 15.33%, rgba(0, 0, 0, 0) 89.87%)",
-                }}
-                className="hidden md:block absolute inset-0 opacity-0 transition-opacity duration-500 group-hover:opacity-100"
-              />
-
-              {/* Content */}
-              <div className="absolute bottom-0 left-0 md:top-0 flex flex-col p-5 sm:p-40 3xl:p-[45px]">
-                <AnimatedTitle
-                  tag="h3"
-                  text={card.title}
-                  className="text-subtitle text-white"
+                {/* Default gradient desktop — fades out on hover */}
+                <div
+                  style={{
+                    background:
+                      "linear-gradient(180deg, rgba(0,0,0,.85) 0%, rgba(0,0,0,0) 56.16%)",
+                  }}
+                  className="hidden 2xl:block absolute inset-0 transition-opacity duration-500 group-hover:opacity-0"
                 />
 
-                <div className="mt-2.5 md:mt-3.75 overflow-hidden">
-                  <p className="text-description text-secondary mb-3 2xl:mb-5 3xl:mb-[26px] max-w-[50ch] 2xl:translate-y-6 2xl:opacity-0 transition-all duration-500 ease-out delay-0 2xl:group-hover:translate-y-0 2xl:group-hover:opacity-100">
-                    {card.description}
-                  </p>
+                <div
+                  style={{
+                    background:
+                      "linear-gradient(180deg, rgba(0,0,0,.85) 0%, rgba(0,0,0,0) 90.16%)",
+                  }}
+                  className="hidden md:block 2xl:hidden absolute inset-0 transition-opacity duration-500 group-hover:opacity-0"
+                />
 
-                  <div className="2xl:translate-y-6 2xl:opacity-0 transition-all duration-500 ease-out delay-80 2xl:group-hover:translate-y-0 2xl:group-hover:opacity-100">
-                    <CustomButton
-                      text={card.button}
-                      link="#"
-                      btnClass="w-fit"
-                    />
+                {/* Default gradient mobile — fades out on hover */}
+                <div
+                  style={{
+                    background:
+                      "linear-gradient(0deg, #000000 0%, rgba(0, 0, 0, 0) 49.85%)",
+                  }}
+                  className="md:hidden absolute inset-0"
+                />
+
+                {/* Hover gradient — fades in on hover */}
+                <div
+                  style={{
+                    background:
+                      "linear-gradient(180deg, rgba(0, 0, 0, 0.85) 15.33%, rgba(0, 0, 0, 0) 89.87%)",
+                  }}
+                  className="hidden md:block absolute inset-0 opacity-0 transition-opacity duration-500 group-hover:opacity-100"
+                />
+
+                {/* Content */}
+                <div className="absolute bottom-0 left-0 md:top-0 flex flex-col p-5 sm:p-40 3xl:p-[45px]">
+                  <AnimatedTitle
+                    tag="h3"
+                    text={card.title}
+                    className="text-subtitle text-white"
+                  />
+
+                  <div className="mt-2.5 md:mt-3.75 overflow-hidden">
+                    <p className="text-description text-secondary mb-3 2xl:mb-5 3xl:mb-[26px] max-w-[50ch] 2xl:translate-y-6 2xl:opacity-0 transition-all duration-500 ease-out delay-0 2xl:group-hover:translate-y-0 2xl:group-hover:opacity-100">
+                      {card.description}
+                    </p>
+
+                    <div className="2xl:translate-y-6 2xl:opacity-0 transition-all duration-500 ease-out delay-80 2xl:group-hover:translate-y-0 2xl:group-hover:opacity-100">
+                      <CustomButton
+                        text={card.button}
+                        link={card.link}
+                        btnClass="w-fit"
+                      />
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
           </Reveal>
         ))}
       </div>

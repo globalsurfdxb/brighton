@@ -7,9 +7,11 @@ import AnimatedTitle from "../../animations/AnimatedTitle";
 import { moveUpV2 } from "../../animations/motionVariants";
 import Reveal from "../../animations/RevealItemsOneByOneAnimation";
 import { Swiper, SwiperSlide } from "swiper/react";
+import Link from "next/link";
 
 export function NewsCard({ image, title, date, category }: any) {
   return (
+    <Link href={`/news/${title.toLowerCase().replace(/ /g, "-")}`}>
     <div className="flex flex-col 2xl:flex-row gap-30 group cursor-pointer">
       <div className="relative h-[221px] sm:h-[230px] lg:h-[250px] 2xl:h-[220px] 3xl:h-[275px] w-auto shrink-0 aspect-348/275 rounded-[10px] overflow-hidden">
         <Image
@@ -44,6 +46,7 @@ export function NewsCard({ image, title, date, category }: any) {
         />
       </div>
     </div>
+    </Link>
   );
 }
 

@@ -3,8 +3,8 @@ export const heroData = {
   description:
     "Engineered in our in-house lab. Specified worldwide. Brighton designs and manufactures LED solutions where precision in light meets reliability in spec.",
   buttons: [
-    { text: "Download Catalogue", link: "#" },
-    { text: "View Products", link: "#" },
+    { text: "Download Catalogue", link: "/resources/digital-catalogue" },
+    { text: "View Products", link: "/lighting" },
   ],
   video: "/assets/videos/home/hero-bg.mp4",
   poster: "/assets/images/home/hero/hero-poster.jpg",
@@ -36,6 +36,7 @@ export const overviewData = {
       video: "/assets/videos/home/interior.mp4",
       poster: "/assets/images/home/overview/cards/1.jpg",
       imageAlt: "Interior Lighting",
+      link: "/lighting?category=interior",
     },
     {
       title: "Exterior Lighting",
@@ -44,6 +45,7 @@ export const overviewData = {
       video: "/assets/videos/home/exterior.mp4",
       poster: "/assets/images/home/overview/cards/2.jpg",
       imageAlt: "Exterior Lighting",
+      link: "/lighting?category=exterior",
     },
   ],
 };
@@ -150,12 +152,14 @@ export const servicesData = {
       description:
         "Tailored lighting solutions engineered to meet unique architectural, performance, and project requirements.",
       image: "/assets/images/home/services/bespoke.jpg",
+      link: "/services/bespoke-and-custom-solutions",
     },
     {
       title: "Technical Consulting",
       description:
         "Supporting architects, designers, and consultants with specification-led guidance",
       image: "/assets/images/home/services/consulting.jpg",
+      link: "/services/technical-consulting",
     },
   ],
 };

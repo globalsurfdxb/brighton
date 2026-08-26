@@ -15,6 +15,7 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useContainerInset } from "@/app/hooks/useContainerInset";
 import AnimatedTitle from "../../animations/AnimatedTitle";
+import Link from "next/link";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -208,26 +209,30 @@ export default function FeaturedProducts() {
           >
             {products.map((product, index) => (
               <SwiperSlide key={index}>
-                <div className="flex flex-col group featured-slide-inner">
-                  <div className="relative w-full h-[316px] md:h-[400px] 2xl:h-[420px] 3xl:h-[540px] rounded-[10px] overflow-hidden mb-30">
-                    <Image
-                      src={product.image}
-                      alt={product.title}
-                      fill
-                      className="featured-slide-image pointer-events-none object-cover group-hover:scale-105 transition-all duration-500 ease-in-out"
+                <Link
+                  href={`/lighting/${product.title.toLowerCase().replace(/\s/g, "-")}`}
+                >
+                  <div className="flex flex-col group featured-slide-inner">
+                    <div className="relative w-full h-[316px] md:h-[400px] 2xl:h-[420px] 3xl:h-[540px] rounded-[10px] overflow-hidden mb-30">
+                      <Image
+                        src={product.image}
+                        alt={product.title}
+                        fill
+                        className="featured-slide-image pointer-events-none object-cover group-hover:scale-105 transition-all duration-500 ease-in-out"
+                      />
+                    </div>
+                    <h3 className="text-subtitle text-primary line-clamp-1">
+                      {product.title}
+                    </h3>
+                    <AnimatedDividerTwo
+                      className="border-secondary mt-2.5 mb-2.5 md:mb-5"
+                      hoverColor="#0A0A0A"
                     />
+                    <p className="text-description-3 text-description-color">
+                      {product.label}
+                    </p>
                   </div>
-                  <h3 className="text-subtitle text-primary line-clamp-1">
-                    {product.title}
-                  </h3>
-                  <AnimatedDividerTwo
-                    className="border-secondary mt-2.5 mb-2.5 md:mb-5"
-                    hoverColor="#0A0A0A"
-                  />
-                  <p className="text-description-3 text-description-color">
-                    {product.label}
-                  </p>
-                </div>
+                </Link>
               </SwiperSlide>
             ))}
           </Swiper>
