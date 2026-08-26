@@ -1,4 +1,4 @@
-import type { NewsDetails } from "./sections/main";
+import type { NewsDetails } from "./sections/Main";
 
 export const newsDetails: NewsDetails = {
   title:

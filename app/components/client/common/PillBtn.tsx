@@ -5,8 +5,6 @@ interface PillBtnProps {
   active: boolean;
   onClick?: () => void;
   arrow?: boolean;
-  noHoverEffect?: boolean;
-  btnClassName?: string;
 }
 
 export default function PillBtn({
@@ -14,8 +12,6 @@ export default function PillBtn({
   active,
   onClick,
   arrow,
-  noHoverEffect,
-  btnClassName,
 }: PillBtnProps) {
   return (
     <button
@@ -26,11 +22,11 @@ export default function PillBtn({
           "--fill-color": "var(--color-primary, #0A0A0A)",
         } as React.CSSProperties
       }
-      className={`${noHoverEffect ? "" : "btn-fill-center cursor-pointer group"} rounded-full border border-secondary px-4.5 md:px-5 py-[15.5px] text-15 font-itc-medium leading-none transition-colors duration-500 max-h-9.25 md:max-h-10.5 flex items-center justify-center uppercase ${
+      className={`btn-fill-center rounded-full border border-secondary px-4.5 md:px-5 py-[15.5px] text-15 font-itc-medium leading-none transition-colors duration-500 max-h-9.25 md:max-h-10.5 flex items-center justify-center uppercase cursor-pointer group ${
         active
           ? "bg-primary text-white"
-          : `text-description-color ${noHoverEffect ? "" : "hover:text-white"}`
-      } ${btnClassName}`}
+          : "text-description-color hover:text-white"
+      }`}
     >
       <span className="max-h-[11px]">{label}</span>
       {arrow && (

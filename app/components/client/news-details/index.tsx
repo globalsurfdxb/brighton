@@ -1,4 +1,4 @@
-import Main from "./sections/main";
+import Main from "./sections/Main";
 import { newsDetails } from "./data";
 import Cta from "../common/Cta";
 import { ctaData } from "./data";

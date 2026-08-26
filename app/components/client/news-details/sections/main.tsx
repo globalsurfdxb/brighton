@@ -49,15 +49,15 @@ const Main = ({ data }: { data: NewsDetails }) => {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 xl:grid-cols-[18%_auto] 3xl:grid-cols-[308px_auto] gap-y-50 xl:gap-y-0 gap-x-100 3xl:gap-x-[155px]">
+          <div className="grid grid-cols-1 xl:grid-cols-[18%_auto] 3xl:grid-cols-[308px_auto] gap-y-30 xl:gap-y-0 gap-x-100 3xl:gap-x-[155px]">
             <div>
-              <div className="xl:sticky xl:top-100 xl:h-fit flex flex-row justify-between xl:flex-col gap-4 xl:gap-[26px]">
+              <div className="hidden xl:flex xl:sticky xl:top-100 xl:h-fit flex-row justify-between xl:flex-col gap-4 xl:gap-[26px]">
                 <div>
                   <h4 className="text-subtitle-2 uppercase text-description-color mb-[10px]">
                     Published
                   </h4>
                   <p className="text-subtitle-3 text-trim">
-                    {data.date.split("-").reverse().join(" - ")}
+                    {formatDate(data.date)}
                   </p>
                 </div>
                 <AnimatedDivider className="hidden xl:block border-secondary" />
@@ -68,7 +68,6 @@ const Main = ({ data }: { data: NewsDetails }) => {
                   <p className="text-subtitle-3 text-trim">{data.category}</p>
                 </div>
               </div>
-              <AnimatedDivider className="xl:hidden border-secondary mt-30" />
             </div>
 
             <div

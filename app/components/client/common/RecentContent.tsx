@@ -65,7 +65,7 @@ const RecentContent = ({ title, items, hrefPrefix }: RecentContentProps) => {
                   </div>
                   <div className="pb-4 flex justify-between border-b border-secondary text-description-color text-subtitle-2">
                     <p>{item.date.split("-").reverse().join(" - ")}</p>
-                    <p className="mr-60">{item.category}</p>
+                    <p className="mr-60 uppercase">{item.category}</p>
                   </div>
                   <div>
                     <h3 className="text-subtitle line-clamp-2">{item.title}</h3>
