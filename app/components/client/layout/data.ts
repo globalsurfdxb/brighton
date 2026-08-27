@@ -9,37 +9,32 @@ export type NavItem = {
 
 export const navItems: NavItem[] = [
   { label: "Interior", href: "#", hasDropdown: true, dropdownItems: [
-    { label: "Ceiling Recessed Downlights", href: "#" },
-    { label: "Surface Mounted Downlight", href: "#" },
-    { label: "Ceiling Recessed / Surface / Suspended Profiles", href: "#" },
-    { label: "Ceiling Recessed / Surface / Suspended Panel Light", href: "#" },
-    { label: "Track Lighting", href: "#" },
+    { label: "Ceiling Recessed Downlights", href: "/lighting?category=interior&subcategory=ceiling-recessed-downlight" },
+    { label: "Surface Mounted Downlight", href: "/lighting?category=interior&subcategory=surface-mounted-downlight" },
+    { label: "Ceiling Recessed / Surface / Suspended Profiles", href: "/lighting?category=interior&subcategory=ceiling-recessed-surface-suspended-profiles" },
+    { label: "Ceiling Recessed / Surface / Suspended Panel Light", href: "/lighting?category=interior&subcategory=ceiling-recessed-surface-suspended-panel-light" },
+    { label: "Track Lighting", href: "/lighting?category=interior&subcategory=track-lighting" },
   ] },
   { label: "Exterior", href: "#", hasDropdown: true, dropdownItems: [
-    { label: "Inground Uplights", href: "#" },
-    { label: "Inground Linear Uplights", href: "#" },
-    { label: "Bollard Lighting", href: "#" },
-    { label: "Projector Spike Light", href: "#" },
-    { label: "Wall Recessed Surface", href: "#" },
-    { label: "Weatherproof Lighting", href: "#" },
-    { label: "Bulkhead Lighting", href: "#" },
-    { label: "LED Neon Flex Lighting", href: "#" },
-    { label: "LED Strip Lighting", href: "#" },
-    { label: "LED Street Lighting", href: "#" },
+    { label: "Inground Uplights", href: "/lighting?category=exterior&subcategory=inground-uplights" },
+    { label: "Inground Linear Uplights", href: "/lighting?category=exterior&subcategory=inground-linear-uplights" },
+    { label: "Bollard Lighting", href: "/lighting?category=exterior&subcategory=bollard-lighting" },
+    { label: "Projector Spike Light", href: "/lighting?category=exterior&subcategory=projector-spike-light" },
+    { label: "Wall Recessed Surface", href: "/lighting?category=exterior&subcategory=wall-recessed-surface" },
+    { label: "Weatherproof Lighting", href: "/lighting?category=exterior&subcategory=weatherproof-lighting" },
+    { label: "Bulkhead Lighting", href: "/lighting?category=exterior&subcategory=bulkhead-lighting" },
+    { label: "LED Neon Flex Lighting", href: "/lighting?category=exterior&subcategory=led-neon-flex-lighting" },
+    { label: "LED Strip Lighting", href: "/lighting?category=exterior&subcategory=led-strip-lighting" },
+    { label: "LED Street Lighting", href: "/lighting?category=exterior&subcategory=led-street-lighting" },
   ] },
-  { label: "Projects", href: "#", hasDropdown: false,
-  //    dropdownItems: [
-  //   { label: "Filter: Sector", href: "#" },
-  //   { label: "Filter: Region", href: "#" },
-  //   { label: "Project Detail Pages", href: "#" },
-  // ] 
+  { label: "Projects", href: "/projects", hasDropdown: false,
 },
   { label: "Services", href: "#", hasDropdown: true, dropdownItems: [
-    { label: "Technical Consulting", href: "#" },
-    { label: "Bespoke / Custom Solutions", href: "#" },
+    { label: "Technical Consulting", href: "/services/technical-consulting" },
+    { label: "Bespoke / Custom Solutions", href: "/services/bespoke-and-custom-solutions" },
   ] },
   { label: "Resources", href: "#", hasDropdown: true, dropdownItems: [
-    { label: "Digital Catalogue", href: "#" },
+    { label: "Digital Catalogue", href: "/resources/digital-catalogue" },
     { label: "Downloads Hub", href: "#" },
   ] },
   { label: "Media", href: "#", hasDropdown: true, dropdownItems: [
@@ -47,10 +42,10 @@ export const navItems: NavItem[] = [
     { label: "Blogs", href: "/blog" },
   ] },
   { label: "About", href: "#", hasDropdown: true, dropdownItems: [
-    { label: "About Brighton", href: "#" },
-    { label: "Design Philosophy", href: "#" },
-    { label: "Technology", href: "#" },
-    { label: "Sustainability", href: "#" },
+    { label: "About Brighton", href: "/about" },
+    { label: "Design Philosophy", href: "/about/design-philosophy" },
+    { label: "Technology", href: "/about/technology" },
+    { label: "Sustainability", href: "/about/sustainability" },
     { label: "Certifications", href: "#" },
   ] },
 ];
@@ -69,32 +64,32 @@ export const footerColumns: FooterColumn[] = [
   {
     title: "Products",
     links: [
-      { label: "Interior Lighting", href: "#" },
-      { label: "Exterior Lighting", href: "#" },
+      { label: "Interior Lighting", href: "/lighting?category=interior" },
+      { label: "Exterior Lighting", href: "/lighting?category=exterior" },
     ],
   },
   {
     title: "Resources",
     links: [
-      { label: "Digital Catalogue", href: "#" },
+      { label: "Digital Catalogue", href: "/resources/digital-catalogue" },
       { label: "Downloads Hub", href: "#" },
-      { label: "Projects", href: "#" },
+      { label: "Projects", href: "/projects" },
     ],
   },
   {
     title: "About Brighton",
     links: [
-      { label: "Overview", href: "#" },
-      { label: "Design Philosophy", href: "#" },
-      { label: "Technology", href: "#" },
-      { label: "Sustainability", href: "#" },
+      { label: "Overview", href: "/about" },
+      { label: "Design Philosophy", href: "/about/design-philosophy" },
+      { label: "Technology", href: "/about/technology" },
+      { label: "Sustainability", href: "/about/sustainability" },
     ],
   },
   {
     title: "Services",
     links: [
-      { label: "Technical Consulting", href: "#" },
-      { label: "Bespoke/Custom Solutions", href: "#" },
+      { label: "Technical Consulting", href: "/services/technical-consulting" },
+      { label: "Bespoke/Custom Solutions", href: "/services/bespoke-and-custom-solutions" },
     ],
   },
   {

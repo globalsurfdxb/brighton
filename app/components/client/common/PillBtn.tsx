@@ -3,7 +3,7 @@ import Image from "next/image";
 interface PillBtnProps {
   label: string;
   active: boolean;
-  onClick: () => void;
+  onClick?: () => void;
   arrow?: boolean;
 }
 

@@ -3,11 +3,10 @@
 import AnimatedTitle from "../../animations/AnimatedTitle";
 import PillBtn from "../../common/PillBtn";
 import BlogCard from "./BlogCard";
-import { AnimatePresence, motion } from "framer-motion";
+import { motion } from "framer-motion";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useLayoutEffect, useRef, useState } from "react";
-import type { CSSProperties } from "react";
-import { useLenis } from "../../layout/LenisProvider";
+import { useLoadMoreScroll } from "@/app/hooks/useLoadMoreScroll";
+import CommonCategoryTabs from "../../common/CommonCategoryTabs";
 
 interface BlogListProps {
   data: {
@@ -20,15 +19,12 @@ interface BlogListProps {
       category: string;
       image: string;
     }[];
-    loadMoreText: string;
   };
 }
 
 const INITIAL_VISIBLE_COUNT = 6;
 const LOAD_MORE_COUNT = 6;
 const ALL_CATEGORY = "All";
-const SCROLL_OFFSET = 120;
-const noScrollAnchorStyle = { overflowAnchor: "none" } as CSSProperties;
 
 const getBlogCardSize = (index: number) => {
   const patternIndex = index % 4;
@@ -49,13 +45,10 @@ const BlogList = ({ data }: BlogListProps) => {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const { resize, scrollTo } = useLenis();
-  const firstNewCardRef = useRef<HTMLDivElement | null>(null);
-  const scrollFrameRef = useRef<number | null>(null);
-  const [pendingScrollIndex, setPendingScrollIndex] = useState<number | null>(null);
-  const [loadPage, setLoadPage] = useState(1);
 
   const selectedCategory = searchParams.get("category") || ALL_CATEGORY;
+  const page = Number(searchParams.get("page") || "1");
+  const currentPage = Number.isFinite(page) && page > 0 ? Math.floor(page) : 1;
 
   const updateParams = (nextParams: Record<string, string | null>) => {
     const params = new URLSearchParams(searchParams.toString());
@@ -70,15 +63,15 @@ const BlogList = ({ data }: BlogListProps) => {
     });
 
     const queryString = params.toString();
-    router.push(queryString ? `${pathname}?${queryString}` : pathname, { scroll: false });
+    router.push(queryString ? `${pathname}?${queryString}` : pathname, {
+      scroll: false,
+    });
   };
 
   const handleCategoryClick = (category: string) => {
-    setLoadPage(1);
-    setPendingScrollIndex(null);
-
     updateParams({
       category: category === ALL_CATEGORY ? null : category,
+      page: null,
     });
   };
 
@@ -87,120 +80,86 @@ const BlogList = ({ data }: BlogListProps) => {
       ? data.items
       : data.items.filter((item) => item.category === selectedCategory);
 
-  const visibleCount = INITIAL_VISIBLE_COUNT + (loadPage - 1) * LOAD_MORE_COUNT;
+  const visibleCount =
+    INITIAL_VISIBLE_COUNT + (currentPage - 1) * LOAD_MORE_COUNT;
   const visibleItems = filteredItems.slice(0, visibleCount);
   const visibleRows = chunkItems(visibleItems, 2);
-  const hasMoreItems = filteredItems.length > INITIAL_VISIBLE_COUNT && visibleItems.length < filteredItems.length;
 
-  useLayoutEffect(() => {
-    if (pendingScrollIndex === null || !firstNewCardRef.current) return;
+  const hasMoreItems =
+    filteredItems.length > INITIAL_VISIBLE_COUNT &&
+    visibleItems.length < filteredItems.length;
 
-    if (scrollFrameRef.current) {
-      window.cancelAnimationFrame(scrollFrameRef.current);
-    }
-
-    scrollFrameRef.current = window.requestAnimationFrame(() => {
-      if (!firstNewCardRef.current) return;
-
-      resize();
-      scrollTo(firstNewCardRef.current, { offset: -SCROLL_OFFSET, immediate: true });
-      setPendingScrollIndex(null);
-      scrollFrameRef.current = null;
-    });
-
-    return () => {
-      if (scrollFrameRef.current) {
-        window.cancelAnimationFrame(scrollFrameRef.current);
-        scrollFrameRef.current = null;
-      }
-    };
-  }, [pendingScrollIndex, resize, scrollTo, visibleItems.length]);
-
-  const handleLoadMore = () => {
-    if (document.activeElement instanceof HTMLElement) {
-      document.activeElement.blur();
-    }
-
-    setPendingScrollIndex(visibleItems.length);
-    setLoadPage((prevPage) => prevPage + 1);
-  };
+  const { markPendingScroll, getRefForIndex } = useLoadMoreScroll(
+    visibleItems.length,
+  );
 
   return (
-    <section className="mt-100 py-100" style={noScrollAnchorStyle}>
+    <section className="top-spacing pb-100 overflow-hidden">
       <div className="container">
-        <AnimatedTitle text={data.title} className="section-title mb-40 mr-60" />
-        <div className="flex flex-wrap gap-[5px] mb-40">
-          <PillBtn label="All" active={selectedCategory === ALL_CATEGORY} onClick={() => handleCategoryClick(ALL_CATEGORY)} />
-          {data.categories.map((category, index) => (
-            <PillBtn key={index} label={category} active={selectedCategory === category} onClick={() => handleCategoryClick(category)} />
-          ))}
+        <AnimatedTitle
+          text={data.title}
+          className="hero-title mb-100"
+        />
+        <div className="mb-40">
+          <CommonCategoryTabs
+            options={data.categories.map((cat) => ({ id: cat, label: cat }))}
+            active={selectedCategory}
+            allLabel="All"
+            allId={ALL_CATEGORY}
+            onChange={handleCategoryClick}
+          />
         </div>
+
+        {filteredItems.length > 0 ? (
           <motion.div
             key={selectedCategory}
-            className="flex flex-col gap-y-50 md:gap-y-70 lg:gap-y-80 xl:gap-y-90 3xl:gap-y-[100px]"
-            initial={{ opacity: 0, y: 18 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
+            className="flex flex-col gap-y-40 md:gap-y-80 lg:gap-y-100"
           >
-            <AnimatePresence initial={false}>
-              {visibleRows.map((row, rowIndex) => (
-                <motion.div
-                  key={`${selectedCategory}-${rowIndex}`}
-                  className="flex flex-col gap-y-50 md:gap-y-70 lg:flex-row lg:items-start lg:gap-x-50 xl:gap-x-80 2xl:gap-x-120 3xl:gap-x-[184px] "
-                  initial={{ opacity: 0, y: 22 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: 10 }}
-                  transition={{
-                    duration: 0.38,
-                    delay: Math.min(rowIndex * 0.04, 0.12),
-                    ease: [0.22, 1, 0.36, 1],
-                    layout: { duration: 0.35, ease: [0.22, 1, 0.36, 1] },
-                  }}
-                >
-                  {row.map((item, itemIndex) => {
-                    const itemPosition = rowIndex * 2 + itemIndex;
-                    const isFirstNewCard = itemPosition === pendingScrollIndex;
+            {visibleRows.map((row, rowIndex) => (
+              <div
+                key={`${selectedCategory}-${rowIndex}`}
+                className="grid grid-cols-1 sm:grid-cols-2 gap-y-40 md:gap-y-80 gap-x-30 lg:flex lg:flex-row lg:items-start lg:gap-x-100 2xl:gap-x-150 3xl:gap-x-[184px]"
+              >
+                {row.map((item, itemIndex) => {
+                  const itemPosition = rowIndex * 2 + itemIndex;
 
-                    return (
-                      <motion.div
-                        key={item.id}
-                        className="w-full lg:w-auto"
-                        ref={(node) => {
-                          if (isFirstNewCard) {
-                            firstNewCardRef.current = node;
-                          }
-                        }}
-                        initial={isFirstNewCard || itemPosition >= visibleItems.length - LOAD_MORE_COUNT ? { opacity: 0, y: 18 } : false}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.36, ease: [0.22, 1, 0.36, 1] }}
-                      >
-                        <BlogCard {...item} size={getBlogCardSize(itemPosition)} />
-                      </motion.div>
-                    );
-                  })}
-                </motion.div>
-              ))}
-            </AnimatePresence>
+                  return (
+                    <div
+                      key={item.id}
+                      className="w-full lg:w-auto"
+                      ref={getRefForIndex(itemPosition)}
+                    >
+                      <BlogCard
+                        {...item}
+                        size={getBlogCardSize(itemPosition)}
+                      />
+                    </div>
+                  );
+                })}
+              </div>
+            ))}
           </motion.div>
-        <AnimatePresence>
-          {hasMoreItems && (
-            <motion.div
-              className="flex justify-center mt-100"
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 12 }}
-              transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
-            >
-              <PillBtn
-                label={data.loadMoreText}
-                active={false}
-                onClick={handleLoadMore}
-                arrow={true}
-              />
-            </motion.div>
-          )}
-        </AnimatePresence>
+        ) : (
+          <div className="flex py-60">
+            <p className="text-description-color text-subtitle">
+              No blogs found.
+            </p>
+          </div>
+        )}
+
+        {hasMoreItems && (
+          <motion.div className="flex justify-center mt-100">
+            <PillBtn
+              label={"Load More"}
+              active={false}
+              onClick={() => {
+                markPendingScroll(visibleItems.length);
+                updateParams({ page: String(currentPage + 1) });
+              }}
+              arrow={true}
+            />
+          </motion.div>
+        )}
       </div>
     </section>
   );

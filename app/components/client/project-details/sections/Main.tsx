@@ -21,7 +21,7 @@ export default function Main() {
 
   return (
     <section style={{ paddingLeft: inset, paddingRight: isDesktop ? 0 : inset }} className="py-100 overflow-hidden xl:overflow-visible">
-      <div className="grid grid-cols-1 gap-5 md:gap-10 xl:grid-cols-[320px_1fr] xl:gap-16">
+      <div className="grid grid-cols-1 gap-5 md:gap-10 xl:grid-cols-[18%_auto] 3xl:grid-cols-[320px_1fr] xl:gap-16">
         {/* Left - sticky meta */}
         <aside className="xl:sticky xl:top-100 xl:h-fit">
           <div className="border-b border-black/10 py-3 md:py-5 first:pt-0">

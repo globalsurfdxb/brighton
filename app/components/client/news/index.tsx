@@ -4,12 +4,12 @@ import NewsList from "./section/NewsList";
 import { newsSection } from "./data";
 
 const Index = () => {
-  return ( 
+  return (
     <>
-    <NewsList data={newsSection} />
-    <Cta data={ctaData} />
+      <NewsList data={newsSection} />
+      <Cta data={ctaData} />
     </>
-   );
-}
- 
+  );
+};
+
 export default Index;

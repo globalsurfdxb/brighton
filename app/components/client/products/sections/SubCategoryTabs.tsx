@@ -1,28 +1,41 @@
 "use client";
 
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { Swiper, SwiperSlide } from "swiper/react";
 import type { Swiper as SwiperType } from "swiper";
 import "swiper/css";
 
-import { subcategories } from "../data";
+import { subcategories as allSubcategories } from "../data";
 import Reveal from "../../animations/RevealItemsOneByOneAnimation";
 import { moveUpV2 } from "../../animations/motionVariants";
 
 interface Props {
+  subcategories: typeof allSubcategories;
   active: string;
   onChange: (id: string) => void;
 }
 
-export default function SubCategoryTabs({ active, onChange }: Props) {
+export default function SubCategoryTabs({ subcategories, active, onChange }: Props) {
   const swiperRef = useRef<SwiperType | null>(null);
+  const [swiperReady, setSwiperReady] = useState(false);
+
+  useEffect(() => {
+    if (!swiperReady || !swiperRef.current) return;
+    const index = subcategories.findIndex((s) => s.id === active);
+    if (index !== -1) {
+      swiperRef.current.slideTo(index);
+    }
+  }, [active, swiperReady, subcategories]);
 
   return (
     <Swiper
-    speed={800}
+      speed={800}
       slidesPerView="auto"
-      onSwiper={(swiper) => (swiperRef.current = swiper)}
+      onSwiper={(swiper) => {
+        swiperRef.current = swiper;
+        setSwiperReady(true);
+      }}
       className="!overflow-visible"
     >
       {subcategories.map((sub, index) => {
@@ -38,10 +51,7 @@ export default function SubCategoryTabs({ active, onChange }: Props) {
                   } as React.CSSProperties
                 }
                 type="button"
-                onClick={() => {
-                  onChange(sub.id);
-                  swiperRef.current?.slideTo(index);
-                }}
+                onClick={() => onChange(sub.id)}
                 className={`btn-fill-center shrink-0 flex items-center gap-3 rounded-[10px] border border-secondary px-3 py-[15px] text-left transition-colors duration-500 3xl:min-w-[303px] ${
                   index !== subcategories.length - 1 ? "-mr-px" : ""
                 } ${
@@ -50,7 +60,7 @@ export default function SubCategoryTabs({ active, onChange }: Props) {
                     : "text-description-color hover:text-white z-10"
                 }`}
               >
-                <span className="flex h-10 w-10 lg:h-[70px] lg:w-[70px] shrink-0 items-center justify-center rounded-full bg-[#D9D9D9]">
+                <span className="flex 3xl:w-17.5 3xl:h-17.5 2xl:w-15 2xl:h-15 w-12 h-12 shrink-0 items-center justify-center rounded-full bg-[#D9D9D9]">
                   <Image
                     src={sub.icon}
                     alt=""

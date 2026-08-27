@@ -8,6 +8,7 @@ import { useLayoutEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import AnimatedTitle from "../../animations/AnimatedTitle";
+import Link from "next/link";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -103,7 +104,7 @@ export default function Services() {
   return (
     <section ref={sectionRef} className="w-full bg-primary">
       {/* Top bar */}
-      <div className="bg-primary pt-10 pb-5 md:py-30 2xl:py-[35px]">
+      <div className="bg-primary pt-10 pb-5 md:py-30 2xl:py-[35px] max-h-[120px]">
         <div className="container flex items-center">
           <AnimatedTitle
             tag="h3"
@@ -190,41 +191,45 @@ export default function Services() {
                     : "opacity-0 translate-y-4 pointer-events-none"
                 }`}
               >
-                <Image
-                  src="/assets/icons/top-right-secondary-60.svg"
-                  alt="arrow"
-                  width={60}
-                  height={60}
-                  className="pointer-events-none w-auto h-7 2xl:h-12 3xl:h-15"
-                />
+                <Link href={service.link}>
+                  <Image
+                    src="/assets/icons/top-right-secondary-60.svg"
+                    alt="arrow"
+                    width={60}
+                    height={60}
+                    className="pointer-events-none w-auto h-7 2xl:h-12 3xl:h-15"
+                  />
+                </Link>
               </div>
 
               {/* Arrow icon — fades in on hover of this column */}
-              <motion.div
-                className="absolute top-70 min-[1850px]:top-[72px] right-50 3xl:right-130 cursor-pointer hidden xl:block"
-                style={{ marginRight: inset }}
-                initial={false}
-                animate={{
-                  opacity: hoveredIndex === index ? 1 : 0,
-                  x: hoveredIndex === index ? 0 : -20,
-                  y: hoveredIndex === index ? 0 : 20,
-                }}
-                transition={{
-                  type: "spring",
-                  stiffness: 200,
-                  damping: 9,
-                  mass: 0.9,
-                  delay: hoveredIndex === index ? 0.1 : 0,
-                }}
-              >
-                <Image
-                  src="/assets/icons/top-right-secondary-60.svg"
-                  alt="arrow"
-                  width={60}
-                  height={60}
-                  className="pointer-events-none w-auto h-12 3xl:h-15"
-                />
-              </motion.div>
+              <Link href={service.link}>
+                <motion.div
+                  className="absolute top-70 min-[1850px]:top-[72px] right-50 3xl:right-130 cursor-pointer hidden xl:block"
+                  style={{ marginRight: inset }}
+                  initial={false}
+                  animate={{
+                    opacity: hoveredIndex === index ? 1 : 0,
+                    x: hoveredIndex === index ? 0 : -20,
+                    y: hoveredIndex === index ? 0 : 20,
+                  }}
+                  transition={{
+                    type: "spring",
+                    stiffness: 200,
+                    damping: 9,
+                    mass: 0.9,
+                    delay: hoveredIndex === index ? 0.1 : 0,
+                  }}
+                >
+                  <Image
+                    src="/assets/icons/top-right-secondary-60.svg"
+                    alt="arrow"
+                    width={60}
+                    height={60}
+                    className="pointer-events-none w-auto h-12 3xl:h-15"
+                  />
+                </motion.div>
+              </Link>
 
               {index === 0 && (
                 <motion.span
@@ -264,13 +269,15 @@ export default function Services() {
                 {service.description}
               </p>
 
-              <Image
-                src="/assets/icons/right-top-arrow-white-small.svg"
-                alt="arrow"
-                width={14}
-                height={14}
-                className="pointer-events-none w-auto h-3.5"
-              />
+              <Link href={service.link}>
+                <Image
+                  src="/assets/icons/right-top-arrow-white-small.svg"
+                  alt="arrow"
+                  width={14}
+                  height={14}
+                  className="pointer-events-none w-auto h-3.5"
+                />
+              </Link>
             </div>
           </div>
         ))}

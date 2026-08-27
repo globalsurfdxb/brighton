@@ -174,7 +174,12 @@ export default function Footer() {
 
         <div className="container grid grid-cols-2 lg:grid-cols-6 gap-x-6 gap-y-3.75 md:gap-y-8">
           <div className="col-span-2 text-description text-description-color hover:text-primary transition-colors duration-500 w-fit max-w-[35ch]">
-            <SectionDescription text={footerAddress.line} />
+            <Link
+              href={"https://maps.app.goo.gl/1Ze6x9FHGQF4eCPF8"}
+              target="_blank"
+            >
+              <SectionDescription text={footerAddress.line} />
+            </Link>
           </div>
 
           <div className="col-span-2 lg:col-start-3 text-subtitle flex flex-col">

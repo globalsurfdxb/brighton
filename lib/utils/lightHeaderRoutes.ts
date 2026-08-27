@@ -1,5 +1,5 @@
 export const LIGHT_HEADER_ROUTES = [
-  "/interior-lighting/*",
+  "/lighting/*",
   "/projects",
   "/resources/digital-catalogue",
   "/contact-us",

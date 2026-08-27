@@ -2,16 +2,13 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useRef } from "react";
-import { Swiper, SwiperSlide } from "swiper/react";
-import type { Swiper as SwiperType } from "swiper";
-import "swiper/css";
 
 import ProjectCard from "./ProjectCard";
 import PillBtn from "../../common/PillBtn";
 import FilterSelectDropDown from "../../common/FilterDropdown";
 import { categoryOptions, regionOptions, projects } from "../data";
 import AnimatedTitle from "../../animations/AnimatedTitle";
+import CommonCategoryTabs from "../../common/CommonCategoryTabs";
 
 const PAGE_SIZE = 10;
 
@@ -47,8 +44,6 @@ function withRowMeta(items: any[]) {
 export default function ProjectsSection() {
   const router = useRouter();
   const searchParams = useSearchParams();
-
-  const swiperRef = useRef<SwiperType | null>(null);
 
   const [category, setCategory] = useState(
     searchParams.get("category") || "all",
@@ -114,33 +109,15 @@ export default function ProjectsSection() {
       <AnimatedTitle className="hero-title mb-100" text="Projects" tag="h1" />
 
       <div className="mb-40 gap-5 flex flex-col lg:flex-row items-start lg:items-center justify-between">
-        <Swiper
-          speed={800}
-          slidesPerView="auto"
-          spaceBetween={5}
-          freeMode
-          grabCursor
-          allowTouchMove
-          touchStartPreventDefault={false}
-          onSwiper={(swiper) => {
-            swiperRef.current = swiper;
+        <CommonCategoryTabs
+          options={categoryOptions}
+          active={category}
+          allLabel="All"
+          onChange={(id) => {
+            setCategory(id);
+            updateFiltersInUrl(id, region);
           }}
-          className="w-full !overflow-visible"
-        >
-          {categoryOptions.map((cat, index) => (
-            <SwiperSlide key={cat.id} className="!w-auto">
-              <PillBtn
-                label={cat.label}
-                active={category === cat.id}
-                onClick={() => {
-                  setCategory(cat.id);
-                  updateFiltersInUrl(cat.id, region);
-                  swiperRef.current?.slideTo(index);
-                }}
-              />
-            </SwiperSlide>
-          ))}
-        </Swiper>
+        />
 
         <div>
           <FilterSelectDropDown

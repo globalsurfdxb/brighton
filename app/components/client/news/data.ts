@@ -85,13 +85,33 @@ export const newsItems = [
     category: "Awards",
     image: "/assets/images/news/news-12.jpg",
   },
+    {
+    id: 13,
+    title: "Designing for Longevity in Architectural Lighting",
+    date: "2026-05-14",
+    category: "Industry Insights",
+    image: "/assets/images/news/news-10.jpg",
+  },
+  {
+    id: 14,
+    title: "Designing for Longevity in Architectural Lighting",
+    date: "2026-05-14",
+    category: "New launch",
+    image: "/assets/images/news/news-11.jpg",
+  },
+  {
+    id: 15,
+    title: "Designing for Longevity in Architectural Lighting",
+    date: "2026-05-14",
+    category: "Awards",
+    image: "/assets/images/news/news-12.jpg",
+  },
 ];
 
 export const newsSection = {
   title: "News & Stories",
   categories: newsCategories,
   items: newsItems,
-  loadMoreText: "Load More",
 };
 
 export const ctaData = {
