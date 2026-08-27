@@ -67,7 +67,7 @@ export default function ScienceConsistency() {
                   onClick={() =>
                     scrollTo("#science-consistency", { offset: -15 })
                   }
-                  className="rounded-[10px] p-30 3xl:px-50 3xl:py-40 cursor-pointer relative"
+                  className={`rounded-[10px] 3xl:px-50 cursor-pointer relative transition-[padding] duration-500 ${isActive ? "p-40 3xl:py-50" : "p-30 3xl:py-40"}`}
                   style={{
                     background:
                       "linear-gradient(180deg, #FFFFFF 0%, #F5F5F5 100%)",

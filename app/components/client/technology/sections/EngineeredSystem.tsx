@@ -24,7 +24,7 @@ export default function EngineeredSystem() {
       />
 
       {/* Content */}
-      <div className="relative z-10 container py-150 min-[1800px]:py-[235px]">
+      <div className="relative z-10 container py-150 min-[1800px]:py-[230px]">
         <div>
           <AnimatedTitle
             text={engineeredSystemData.title}
