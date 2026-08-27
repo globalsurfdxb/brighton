@@ -5,16 +5,20 @@ import { gsap } from "gsap";
 import { useLenis } from "../layout/LenisProvider";
 import { usePathname } from "next/navigation";
 import { isLightHeaderRoute } from "@/lib/utils/lightHeaderRoutes";
+import { markIntroComplete } from "@/app/hooks/introSignal";
 
 const INTRO_ENABLED = process.env.NEXT_PUBLIC_SHOW_INTRO !== "false";
 
 if (typeof window !== "undefined") {
   window.__introComplete = !INTRO_ENABLED;
+  if (!INTRO_ENABLED) {
+    markIntroComplete();
+  }
 }
 
 export default function IntroAnimation() {
   const [shouldRender, setShouldRender] = useState(INTRO_ENABLED);
-    const pathname = usePathname();
+  const pathname = usePathname();
   const isLight = isLightHeaderRoute(pathname);
 
   const overlayRef = useRef<HTMLDivElement>(null);
@@ -36,7 +40,7 @@ export default function IntroAnimation() {
       unlock();
       document.documentElement.style.overflow = "";
       window.__introComplete = true;
-      window.dispatchEvent(new Event("introComplete"));
+      markIntroComplete();
       setShouldRender(false);
     };
 
