@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useMemo } from "react";
+import { useRouter, usePathname, useSearchParams } from "next/navigation";
 
 import ProjectCard from "./ProjectCard";
 import PillBtn from "../../common/PillBtn";
@@ -9,8 +9,8 @@ import FilterSelectDropDown from "../../common/FilterDropdown";
 import { categoryOptions, regionOptions, projects } from "../data";
 import AnimatedTitle from "../../animations/AnimatedTitle";
 import CommonCategoryTabs from "../../common/CommonCategoryTabs";
-
-const PAGE_SIZE = 10;
+import { useMediaQuery } from "@/app/hooks/useMediaQuery";
+import { useLoadMoreScroll } from "@/app/hooks/useLoadMoreScroll";
 
 function withRowMeta(items: any[]) {
   const sizes = [2, 3];
@@ -43,39 +43,48 @@ function withRowMeta(items: any[]) {
 
 export default function ProjectsSection() {
   const router = useRouter();
+  const pathname = usePathname();
   const searchParams = useSearchParams();
 
-  const [category, setCategory] = useState(
-    searchParams.get("category") || "all",
-  );
+  const isDesktop = useMediaQuery(768);
+  const initialVisibleCount = isDesktop ? 10 : 6;
+  const LOAD_MORE_COUNT = isDesktop ? 10 : 6;
 
-  const [region, setRegion] = useState<string | null>(
-    searchParams.get("region"),
-  );
-  const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
+  const category = searchParams.get("category") || "all";
+  const region = searchParams.get("region");
 
-  const updateFiltersInUrl = (
-    newCategory: string,
-    newRegion: string | null,
-  ) => {
+  const page = Number(searchParams.get("page") || "1");
+  const currentPage = Number.isFinite(page) && page > 0 ? Math.floor(page) : 1;
+
+  const updateParams = (nextParams: Record<string, string | null>) => {
     const params = new URLSearchParams(searchParams.toString());
 
-    if (newCategory === "all") {
-      params.delete("category");
-    } else {
-      params.set("category", newCategory);
-    }
+    Object.entries(nextParams).forEach(([key, value]) => {
+      if (!value) {
+        params.delete(key);
+        return;
+      }
 
-    if (!newRegion) {
-      params.delete("region");
-    } else {
-      params.set("region", newRegion.toLowerCase().replace(",", ""));
-    }
+      params.set(key, value);
+    });
 
     const queryString = params.toString();
-
-    router.push(queryString ? `?${queryString}` : "?", {
+    router.push(queryString ? `${pathname}?${queryString}` : pathname, {
       scroll: false,
+    });
+  };
+
+  const handleCategoryClick = (id: string) => {
+    updateParams({
+      category: id === "all" ? null : id,
+      page: null,
+    });
+  };
+
+  const handleRegionChange = (value: string | null) => {
+    updateParams({
+      region: value ? value.toLowerCase().replace(",", "") : null,
+      page: null,
     });
   };
 
@@ -87,22 +96,24 @@ export default function ProjectsSection() {
     });
   }, [category, region]);
 
-  // Reset pagination whenever the active filters change
-  useEffect(() => {
-    setVisibleCount(PAGE_SIZE);
-  }, [category, region]);
-
+  const visibleCount = initialVisibleCount + (currentPage - 1) * LOAD_MORE_COUNT;
   const visibleProjects = useMemo(
     () => filteredProjects.slice(0, visibleCount),
     [filteredProjects, visibleCount],
   );
+
+  const hasMore =
+    filteredProjects.length > initialVisibleCount &&
+    visibleProjects.length < filteredProjects.length;
 
   const rowMeta = useMemo(
     () => withRowMeta(visibleProjects),
     [visibleProjects],
   );
 
-  const hasMore = visibleCount < filteredProjects.length;
+  const { markPendingScroll, getRefForIndex } = useLoadMoreScroll(
+    visibleProjects.length,
+  );
 
   return (
     <section className="bg-white top-spacing pb-100 container overflow-hidden">
@@ -113,10 +124,7 @@ export default function ProjectsSection() {
           options={categoryOptions}
           active={category}
           allLabel="All"
-          onChange={(id) => {
-            setCategory(id);
-            updateFiltersInUrl(id, region);
-          }}
+          onChange={handleCategoryClick}
         />
 
         <div>
@@ -124,18 +132,19 @@ export default function ProjectsSection() {
             label="Region"
             options={regionOptions}
             value={region}
-            onChange={(value) => {
-              setRegion(value);
-              updateFiltersInUrl(category, value);
-            }}
+            onChange={handleRegionChange}
           />
         </div>
       </div>
 
       {filteredProjects.length > 0 ? (
         <div className="grid grid-cols-1 gap-x-30 gap-y-60 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-6">
-          {rowMeta.map(({ item, colSpanClass, heightClass }) => (
-            <div key={item.id} className={colSpanClass}>
+          {rowMeta.map(({ item, colSpanClass, heightClass }, index) => (
+            <div
+              key={item.id}
+              ref={getRefForIndex(index)}
+              className={colSpanClass}
+            >
               <ProjectCard project={item} heightClass={heightClass} />
             </div>
           ))}
@@ -153,7 +162,10 @@ export default function ProjectsSection() {
           <PillBtn
             label="Load More"
             active={false}
-            onClick={() => setVisibleCount((prev) => prev + PAGE_SIZE)}
+            onClick={() => {
+              markPendingScroll(visibleProjects.length);
+              updateParams({ page: String(currentPage + 1) });
+            }}
             arrow
           />
         </div>

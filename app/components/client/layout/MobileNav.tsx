@@ -25,7 +25,7 @@ const shutterVariants = {
   },
 };
 
-type SearchResult = { label: string; href: string; parentLabel?: string };
+export type SearchResult = { label: string; href: string; parentLabel?: string };
 
 export default function MobileNav({
   headerHeight,

@@ -12,7 +12,7 @@ export default function AboutIntro() {
           />
 
           <div
-            className="text-description-color text-description-4 lg:max-w-[60ch] xl:mr-60 min-[1900px]:mr-[154px]"
+            className="text-description-color text-description-4 lg:max-w-[60ch] min-[1900px]:max-w-[587px] xl:mr-60 min-[1900px]:mr-[154px]"
             dangerouslySetInnerHTML={{ __html: aboutIntroData.description }}
           />
         </div>
@@ -20,7 +20,7 @@ export default function AboutIntro() {
         <div className="flex mt-40 lg:mt-100 gap-100">
           {aboutIntroData.stats.map((stat, i) => (
             <div key={i} className="flex items-stretch gap-30">
-              <span className="w-px bg-secondary" />
+              <span className="w-px bg-secondary max-h-[85%] mt-[5px]" />
               <div>
                 <p className="section-title text-description-color">{stat.value}</p>
                 <p className="text-subtitle text-description-color mt-2.5 sm:mt-[14px]">{stat.label}</p>

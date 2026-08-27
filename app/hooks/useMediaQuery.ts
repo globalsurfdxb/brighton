@@ -7,18 +7,10 @@ export function useMediaQuery(minWidth: number) {
 
   useEffect(() => {
     const mediaQuery = window.matchMedia(`(min-width: ${minWidth}px)`);
-
-    const handleChange = () => {
-      setMatches(mediaQuery.matches);
-    };
-
+    const handleChange = () => setMatches(mediaQuery.matches);
     handleChange();
-
     mediaQuery.addEventListener("change", handleChange);
-
-    return () => {
-      mediaQuery.removeEventListener("change", handleChange);
-    };
+    return () => mediaQuery.removeEventListener("change", handleChange);
   }, [minWidth]);
 
   return matches;
