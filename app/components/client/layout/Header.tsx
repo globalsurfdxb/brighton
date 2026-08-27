@@ -334,12 +334,12 @@ export default function Header() {
                   </button>
                 </motion.div>
 
-                <motion.div variants={itemVariants}>
+                <motion.div className="xl:hidden" variants={itemVariants}>
                   <button
                     type="button"
                     aria-label={isMobileMenuOpen ? "Close menu" : "Open menu"}
                     onClick={() => setIsMobileMenuOpen((prev) => !prev)}
-                    className="xl:hidden flex h-9 w-9 items-center justify-center rounded-full border border-secondary group cursor-pointer transition-all duration-500"
+                    className="flex h-9 w-9 items-center justify-center rounded-full border border-secondary group cursor-pointer transition-all duration-500"
                   >
                     <MobileMenuIcon isOpen={isMobileMenuOpen} />
                   </button>

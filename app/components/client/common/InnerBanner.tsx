@@ -4,6 +4,7 @@ import { useLayoutEffect, useRef } from "react";
 import Image from "next/image";
 import gsap from "gsap";
 import AnimatedTitle from "../animations/AnimatedTitle";
+import { introPromise } from "@/app/hooks/introSignal";
 
 interface PageBannerProps {
   data: {
@@ -39,13 +40,18 @@ export default function InnerBanner({ data }: PageBannerProps) {
       });
     };
 
-    if (window.__introComplete) {
-      const id = requestAnimationFrame(play);
-      return () => cancelAnimationFrame(id);
-    }
+    let cancelled = false;
+    let rafId: number | null = null;
 
-    window.addEventListener("introComplete", play, { once: true });
-    return () => window.removeEventListener("introComplete", play);
+    introPromise.then(() => {
+      if (cancelled) return;
+      rafId = requestAnimationFrame(play);
+    });
+
+    return () => {
+      cancelled = true;
+      if (rafId !== null) cancelAnimationFrame(rafId);
+    };
   }, []);
 
   return (
