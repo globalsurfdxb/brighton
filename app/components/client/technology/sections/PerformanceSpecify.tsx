@@ -6,6 +6,7 @@ import { motion } from "framer-motion";
 import { performanceSpecifyData } from "../data";
 import AnimatedTitle from "../../animations/AnimatedTitle";
 
+
 export default function PerformanceSpecify() {
   const [activeIndex, setActiveIndex] = useState(1);
   const [openIndex, setOpenIndex] = useState(0);
