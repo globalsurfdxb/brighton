@@ -17,7 +17,7 @@ import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 import NavDropdown from "./Deskdropdown";
 import MobileMenuIcon from "./MobileMenuIcon";
-import MobileNav from "./MobileNav";
+import MobileNav, { SearchResult } from "./MobileNav";
 import { isLightHeaderRoute } from "@/lib/utils/lightHeaderRoutes";
 
 const containerVariants = {
@@ -85,6 +85,7 @@ export default function Header() {
   const paddingBoxRef = useRef<HTMLDivElement>(null);
   const itemRefs = useRef<Record<string, HTMLDivElement | null>>({});
   const closeTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const searchRef = useRef<HTMLDivElement>(null);
 
   const [dropdownLeft, setDropdownLeft] = useState(0);
   const [headerHeight, setHeaderHeight] = useState(0);
@@ -95,6 +96,24 @@ export default function Header() {
   const pathname = usePathname();
 
   const isLight = isLightHeaderRoute(pathname);
+
+  const searchIndex: SearchResult[] = navItems.flatMap((item) => {
+    const parent: SearchResult = { label: item.label, href: item.href };
+    const children: SearchResult[] =
+      item.dropdownItems?.map((sub) => ({
+        label: sub.label,
+        href: sub.href,
+        parentLabel: item.label,
+      })) ?? [];
+    return [parent, ...children];
+  });
+
+  const query = searchQuery.trim().toLowerCase();
+  const searchResults =
+    query.length > 0
+      ? searchIndex.filter((r) => r.label.toLowerCase().includes(query))
+      : [];
+  const isSearching = query.length > 0;
 
   useEffect(() => {
     registerHeaderSurface(surfaceRef.current);
@@ -177,6 +196,19 @@ export default function Header() {
 
     setHeaderHeight(finalHeight);
   }, [isMobileMenuOpen]);
+
+  useEffect(() => {
+    if (!isSearchOpen) return;
+
+    const handleClickOutside = (e: MouseEvent) => {
+      if (searchRef.current && !searchRef.current.contains(e.target as Node)) {
+        setIsSearchOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [isSearchOpen]);
 
   useEffect(() => {
     document.body.style.overflow = isMobileMenuOpen ? "hidden" : "";
@@ -282,7 +314,11 @@ export default function Header() {
                   </Link>
                 </motion.div>
 
-                <motion.div variants={itemVariants}>
+                <motion.div
+                  variants={itemVariants}
+                  ref={searchRef}
+                  className="relative"
+                >
                   <button
                     type="button"
                     aria-label={isSearchOpen ? "Close search" : "Search"}
@@ -332,6 +368,97 @@ export default function Header() {
                       )}
                     </AnimatePresence>
                   </button>
+
+                  <AnimatePresence>
+                    {isSearchOpen && (
+                      <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="absolute right-0 top-full mt-20 min-w-[320px] 3xl:min-w-[350px] -z-10"
+                      >
+                        {/* clip mask — nothing above this line is ever visible */}
+                        <div className="overflow-hidden">
+                          <motion.div
+                            initial={{ scaleY: 0, opacity: 0, y: -24 }}
+                            animate={{ scaleY: 1, opacity: 1, y: 0 }}
+                            exit={{ scaleY: 0, opacity: 0, y: -24 }}
+                            transition={{
+                              type: "spring",
+                              stiffness: 260,
+                              damping: 18,
+                            }}
+                            style={{ originY: 0 }}
+                            className="w-full rounded-[50px] border border-secondary bg-primary"
+                          >
+                            <div className="px-4 py-2">
+                              <input
+                                type="text"
+                                autoFocus
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                                placeholder="Search..."
+                                className="w-full outline-none text-15 leading-none font-itc-medium text-secondary placeholder:text-secondary"
+                              />
+                            </div>
+                          </motion.div>
+                        </div>
+
+                        {/* dropdown*/}
+                        <AnimatePresence>
+                          {isSearching && (
+                            <motion.ul
+                              initial={{
+                                clipPath: "inset(0 0 100% 0)",
+                                opacity: 0,
+                              }}
+                              animate={{
+                                clipPath: "inset(0 0 0% 0)",
+                                opacity: 1,
+                              }}
+                              exit={{
+                                clipPath: "inset(0 0 100% 0)",
+                                opacity: 0,
+                              }}
+                              transition={{
+                                duration: 0.4,
+                                ease: [0.65, 0, 0.35, 1],
+                              }}
+                              style={{ originY: 0 }}
+                              className="w-full mt-[2px] rounded-[10px] border border-secondary bg-white overflow-hidden max-h-64 overflow-y-auto max-w-[320px] 3xl:max-w-[350px]"
+                              data-lenis-prevent
+                            >
+                              {searchResults.length > 0 ? (
+                                searchResults.map((result, idx) => (
+                                  <li key={`${result.href}-${idx}`}>
+                                    <Link
+                                      href={result.href}
+                                      onClick={() => {
+                                        setIsSearchOpen(false);
+                                        setSearchQuery("");
+                                      }}
+                                      style={
+                                        {
+                                          "--fill-color": "#0A0A0A",
+                                        } as React.CSSProperties
+                                      }
+                                      className="relative flex items-center justify-between btn-fill-center px-4 py-3 text-subtitle-2 text-trim text-description-color border-b border-secondary rounded-b-[10px] hover:text-white transition-colors duration-500"
+                                    >
+                                      <span>{result.label}</span>
+                                    </Link>
+                                  </li>
+                                ))
+                              ) : (
+                                <li className="px-4 py-3 text-subtitle-2 text-description-color">
+                                  No results found.
+                                </li>
+                              )}
+                            </motion.ul>
+                          )}
+                        </AnimatePresence>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
                 </motion.div>
 
                 <motion.div className="xl:hidden" variants={itemVariants}>
@@ -347,58 +474,6 @@ export default function Header() {
               </div>
             </motion.div>
           </div>
-
-          <AnimatePresence>
-            {isSearchOpen && (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                className="absolute right-0 top-full mt-2 min-w-[280px] -z-10"
-              >
-                {/* clip mask — nothing above this line is ever visible */}
-                <div className="overflow-hidden">
-                  <motion.div
-                    initial={{ scaleY: 0, opacity: 0, y: -24 }}
-                    animate={{ scaleY: 1, opacity: 1, y: 0 }}
-                    exit={{ scaleY: 0, opacity: 0, y: -24 }}
-                    transition={{ type: "spring", stiffness: 260, damping: 18 }}
-                    style={{ originY: 0 }}
-                    className="w-full rounded-[50px] border border-secondary bg-primary"
-                  >
-                    <div className="px-4 py-2">
-                      <input
-                        type="text"
-                        autoFocus
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                        placeholder="Search..."
-                        className="w-full outline-none text-15 leading-none font-itc-medium text-secondary placeholder:text-secondary"
-                      />
-                    </div>
-                  </motion.div>
-                </div>
-
-                {/* dropdown*/}
-                <AnimatePresence>
-                  {searchQuery.length > 0 && (
-                    <motion.ul
-                      initial={{ clipPath: "inset(0 0 100% 0)", opacity: 0 }}
-                      animate={{ clipPath: "inset(0 0 0% 0)", opacity: 1 }}
-                      exit={{ clipPath: "inset(0 0 100% 0)", opacity: 0 }}
-                      transition={{ duration: 0.4, ease: [0.65, 0, 0.35, 1] }}
-                      style={{ originY: 0 }}
-                      className="w-full mt-[2px] rounded-[10px] border border-secondary bg-white overflow-hidden max-h-64 overflow-y-auto"
-                    >
-                      <li className="px-4 py-3 text-15 leading-none font-tasa text-primary hover:bg-primary hover:text-white transition-colors duration-500">
-                        Result item
-                      </li>
-                    </motion.ul>
-                  )}
-                </AnimatePresence>
-              </motion.div>
-            )}
-          </AnimatePresence>
           <AnimatePresence>
             {activeIndex !== null && navItems[activeIndex]?.dropdownItems && (
               <div
@@ -411,7 +486,10 @@ export default function Header() {
                 onMouseEnter={cancelClose}
                 onMouseLeave={scheduleClose}
               >
-                <NavDropdown isLight={isLight} items={navItems[activeIndex].dropdownItems!} />
+                <NavDropdown
+                  isLight={isLight}
+                  items={navItems[activeIndex].dropdownItems!}
+                />
               </div>
             )}
           </AnimatePresence>

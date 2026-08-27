@@ -73,13 +73,54 @@ export const projects = [
     region: "Dubai, UAE",
     image: "/assets/images/projects/8.jpg",
   },
+  {
+    id: "9",
+    title: "Masdar City",
+    category: "commercial",
+    categoryLabel: "Commercial",
+    region: "Abu Dhabi, UAE",
+    image: "/assets/images/projects/7.jpg",
+  },
+  {
+    id: "10",
+    title: "Beach Mansion",
+    category: "residential",
+    categoryLabel: "Residential",
+    region: "Dubai, UAE",
+    image: "/assets/images/projects/4.jpg",
+  },
+  {
+    id: "11",
+    title: "Six Senses",
+    category: "residential",
+    categoryLabel: "Residential",
+    region: "Dubai, UAE",
+    image: "/assets/images/projects/1.jpg",
+  },
+  {
+    id: "12",
+    title: "Masdar City",
+    category: "commercial",
+    categoryLabel: "Commercial",
+    region: "Abu Dhabi, UAE",
+    image: "/assets/images/projects/2.jpg",
+  },
+  {
+    id: "13",
+    title: "Peninsula Plot C",
+    category: "residential",
+    categoryLabel: "Residential",
+    region: "Dubai, UAE",
+    image: "/assets/images/projects/3.jpg",
+  },
 ];
 
 export const projectsCtaData = {
   title: "Let's Talk Lighting",
-  description: "Discuss your project, technical requirements, or product selection with our specialists.",
+  description:
+    "Discuss your project, technical requirements, or product selection with our specialists.",
   button: {
     text: "Connect With Us",
     href: "#",
-  }
-}
+  },
+};
