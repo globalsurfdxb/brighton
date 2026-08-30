@@ -68,31 +68,31 @@ export const subcategories = [
     id: "weatherproof-lighting",
     category: "exterior",
     title: "Weatherproof Lighting",
-    icon: "/assets/images/products/interior/sub-categories/6.svg",
+    icon: "/assets/images/products/interior/sub-categories/1.svg",
   },
   {
     id: "bulkhead-lighting",
     category: "exterior",
     title: "Bulkhead Lighting",
-    icon: "/assets/images/products/interior/sub-categories/7.svg",
+    icon: "/assets/images/products/interior/sub-categories/2.svg",
   },
   {
     id: "led-neon-flex-lighting",
     category: "exterior",
     title: "LED Neon Flex Lighting",
-    icon: "/assets/images/products/interior/sub-categories/8.svg",
+    icon: "/assets/images/products/interior/sub-categories/3.svg",
   },
   {
     id: "led-strip-lighting",
     category: "exterior",
     title: "LED Strip Lighting",
-    icon: "/assets/images/products/interior/sub-categories/9.svg",
+    icon: "/assets/images/products/interior/sub-categories/4.svg",
   },
   {
     id: "led-street-lighting",
     category: "exterior",
     title: "LED Street Lighting",
-    icon: "/assets/images/products/interior/sub-categories/10.svg",
+    icon: "/assets/images/products/interior/sub-categories/5.svg",
   },
 ];
 
