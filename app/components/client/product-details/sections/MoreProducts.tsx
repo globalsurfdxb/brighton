@@ -70,12 +70,12 @@ export default function MoreProducts() {
           >
             {products.map((product, index) => (
               <SwiperSlide key={index}>
-                <Reveal variants={moveUpV2} delayRange={index * 0.12}>
-                  <ProductCard
-                    key={product.id}
-                    product={product}
-                    bgColor="bg-white"
-                  />
+                <Reveal
+                  key={product.id}
+                  variants={moveUpV2}
+                  delayRange={index * 0.12}
+                >
+                  <ProductCard product={product} bgColor="bg-white" />
                 </Reveal>
               </SwiperSlide>
             ))}

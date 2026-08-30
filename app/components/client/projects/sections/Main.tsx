@@ -11,6 +11,9 @@ import AnimatedTitle from "../../animations/AnimatedTitle";
 import CommonCategoryTabs from "../../common/CommonCategoryTabs";
 import { useMediaQuery } from "@/app/hooks/useMediaQuery";
 import { useLoadMoreScroll } from "@/app/hooks/useLoadMoreScroll";
+import { motion } from "framer-motion";
+import { moveLeft, moveUpV2 } from "../../animations/motionVariants";
+import Reveal from "../../animations/RevealItemsOneByOneAnimation";
 
 function withRowMeta(items: any[]) {
   const sizes = [2, 3];
@@ -96,7 +99,8 @@ export default function ProjectsSection() {
     });
   }, [category, region]);
 
-  const visibleCount = initialVisibleCount + (currentPage - 1) * LOAD_MORE_COUNT;
+  const visibleCount =
+    initialVisibleCount + (currentPage - 1) * LOAD_MORE_COUNT;
   const visibleProjects = useMemo(
     () => filteredProjects.slice(0, visibleCount),
     [filteredProjects, visibleCount],
@@ -127,26 +131,33 @@ export default function ProjectsSection() {
           onChange={handleCategoryClick}
         />
 
-        <div>
+        <motion.div
+          variants={moveLeft(0.12)}
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: true }}
+        >
           <FilterSelectDropDown
             label="Region"
             options={regionOptions}
             value={region}
             onChange={handleRegionChange}
           />
-        </div>
+        </motion.div>
       </div>
 
       {filteredProjects.length > 0 ? (
         <div className="grid grid-cols-1 gap-x-30 gap-y-60 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-6">
           {rowMeta.map(({ item, colSpanClass, heightClass }, index) => (
-            <div
+            <Reveal
+              delayRange={index * 0.08}
+              variants={moveUpV2}
               key={item.id}
               ref={getRefForIndex(index)}
               className={colSpanClass}
             >
               <ProjectCard project={item} heightClass={heightClass} />
-            </div>
+            </Reveal>
           ))}
         </div>
       ) : (
