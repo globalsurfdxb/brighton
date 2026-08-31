@@ -9,12 +9,15 @@ import PlusMinusIcon from "../../technology/sections/PlusMinusIcon";
 import SectionDescription from "../../animations/SectionDescription";
 import Reveal from "../../animations/RevealItemsOneByOneAnimation";
 import { moveUpV2 } from "../../animations/motionVariants";
+import { useLenis } from "../../layout/LenisProvider";
 
 export default function EnergyEfficiency() {
   const [activeIndex, setActiveIndex] = useState(1);
   const [baseImage, setBaseImage] = useState(
     energyEfficiencyData.items[1].image,
   );
+
+  const { scrollTo } = useLenis();
 
   return (
     <section className="w-full py-100 overflow-hidden">
@@ -61,13 +64,19 @@ export default function EnergyEfficiency() {
               </motion.div>
             </div>
             {/* Right - accordion */}
-            <div className="flex flex-col gap-2.5 w-full lg:w-[50%] 2xl:max-w-[617px] self-center 3xl:self-start 3xl:pt-60 xl:pb-100 2xl:pb-0">
+            <div
+              id="energy-efficiency"
+              className="flex flex-col gap-2.5 w-full lg:w-[50%] 2xl:max-w-[617px] self-center 3xl:self-start 3xl:pt-60 xl:pb-100 2xl:pb-0"
+            >
               {energyEfficiencyData.items.map((item, i) => {
                 const isActive = activeIndex === i;
                 return (
                   <Reveal key={i} variants={moveUpV2} delayRange={0.1 * i}>
                     <div
                       onMouseEnter={() => setActiveIndex(i)}
+                      onClick={() =>
+                        scrollTo("#energy-efficiency", { offset: -15 })
+                      }
                       className="rounded-[10px] p-30 3xl:py-40 relative"
                       style={{
                         background:
