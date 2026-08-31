@@ -52,7 +52,7 @@ export default function SubCategoryTabs({ subcategories, active, onChange }: Pro
                 }
                 type="button"
                 onClick={() => onChange(sub.id)}
-                className={`btn-fill-center shrink-0 flex items-center gap-3 rounded-[10px] border border-secondary px-3 py-[15px] text-left transition-colors duration-500 3xl:min-w-[303px] ${
+                className={`cursor-pointer btn-fill-center shrink-0 flex items-center gap-3 rounded-[10px] border border-secondary px-3 py-[15px] text-left transition-colors duration-500 3xl:min-w-[303px] ${
                   index !== subcategories.length - 1 ? "-mr-px" : ""
                 } ${
                   isActive

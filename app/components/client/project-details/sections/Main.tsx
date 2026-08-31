@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import Image from "next/image";
 import { Swiper, SwiperSlide } from "swiper/react";
 import type { Swiper as SwiperType } from "swiper";
@@ -11,6 +11,7 @@ import SliderNavBtn from "../../common/Slidernavbtn";
 import { useContainerInset } from "@/app/hooks/useContainerInset";
 import { useMediaQuery } from "@/app/hooks/useMediaQuery";
 import AnimatedTitle from "../../animations/AnimatedTitle";
+import AnimatedDivider from "../../animations/AnimatedDivider";
 
 export default function Main() {
   const swiperRef = useRef<SwiperType | null>(null);
@@ -20,21 +21,31 @@ export default function Main() {
   const isDesktop = useMediaQuery(1280);
 
   return (
-    <section style={{ paddingLeft: inset, paddingRight: isDesktop ? 0 : inset }} className="py-100 overflow-hidden xl:overflow-visible">
-      <div className="grid grid-cols-1 gap-5 md:gap-10 xl:grid-cols-[18%_auto] 3xl:grid-cols-[320px_1fr] xl:gap-16">
+    <section
+      style={{ paddingLeft: inset, paddingRight: isDesktop ? 0 : inset }}
+      className="py-100 overflow-hidden xl:overflow-visible"
+    >
+      <div className="grid grid-cols-1 gap-5 md:gap-40 xl:grid-cols-[20%_auto] 3xl:grid-cols-[420px_1fr] 2xl:gap-[43px]">
         {/* Left - sticky meta */}
-        <aside className="xl:sticky xl:top-100 xl:h-fit">
-          <div className="border-b border-black/10 py-3 md:py-5 first:pt-0">
-            <p className="text-sm text-description-color">Location</p>
-            <p className="mt-1 text-base text-black">
+        <aside className="xl:sticky xl:top-100 xl:h-fit flex flex-col gap-3 md:gap-5 xl:gap-[26px]">
+          <div>
+            <p className="text-15 leading-[1.533333334] text-description-color mb-[5px] font-itc-book tracking-[-0.01em]">
+              Location
+            </p>
+            <p className="text-20 text-description-color font-itc-medium leading-[1.25] tracking-[-0.01em]">
               {projectDetailsData.location}
             </p>
+            <AnimatedDivider className="border-secondary mt-3 md:mt-5 xl:mt-[26px]" />
           </div>
-          <div className="border-b border-black/10 py-5">
-            <p className="text-sm text-description-color">Sector</p>
-            <p className="mt-1 text-base text-black">
+
+          <div>
+            <p className="text-15 leading-[1.533333334] text-description-color mb-[5px] font-itc-book tracking-[-0.01em]">
+              Sector
+            </p>
+            <p className="text-20 text-description-color leading-[1.25] tracking-[-0.01em] font-itc-medium">
               {projectDetailsData.sector}
             </p>
+            <AnimatedDivider className="border-secondary mt-3 md:mt-5 xl:mt-[26px]" />
           </div>
         </aside>
 
@@ -51,7 +62,7 @@ export default function Main() {
             spaceBetween={16}
             breakpoints={{
               1400: {
-                slidesPerView: 1.1,
+                slidesPerView: 1.166,
               },
             }}
             className="!overflow-visible"
@@ -83,11 +94,17 @@ export default function Main() {
             />
           </div>
 
-          <div className="mt-100">
-            <AnimatedTitle text={projectDetailsData.overviewTitle} className="section-title mb-30" />
+          <div
+            style={{ paddingRight: isDesktop ? inset : "auto" }}
+            className="mt-100"
+          >
+            <AnimatedTitle
+              text={projectDetailsData.overviewTitle}
+              className="section-title mb-30"
+            />
             <div>
               <div
-                className="text-description text-description-color"
+                className="news-content 2xl:mr-80 min-[1900]:max-w-[1202px]"
                 dangerouslySetInnerHTML={{
                   __html: projectDetailsData.overviewParagraphs,
                 }}

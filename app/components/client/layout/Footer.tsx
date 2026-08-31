@@ -201,9 +201,11 @@ export default function Footer() {
                 <Reveal key={i} variants={moveUpV2} delayRange={i * 0.1}>
                   <Link
                     key={social.label}
-                    href={social.href}
-                    target="_blank"
-                    rel="noopener noreferrer"
+                    href={social.href || "#"}
+                    {...(social.href !== "#" && {
+                      target: "_blank",
+                      rel: "noopener noreferrer",
+                    })}
                     className="hover:text-black transition-colors duration-500 w-fit"
                   >
                     {social.label}

@@ -14,7 +14,7 @@ export default function ProjectBanner({
   const router = useRouter();
 
   return (
-    <div className="relative flex max-h-[800px] h-[450px] lg:h-[580px] h-[90svh] w-full overflow-hidden">
+    <div className="relative flex max-h-[800px] h-[450px] lg:h-[580px] 2xl:h-[80svh] 3xl:h-[90svh] w-full overflow-hidden">
       <Image src={image} alt={title} fill priority className="object-cover" />
 
       <div

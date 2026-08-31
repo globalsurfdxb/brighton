@@ -136,6 +136,7 @@ export default function ProjectsSection() {
           initial="hidden"
           whileInView="show"
           viewport={{ once: true }}
+          className="w-fit"
         >
           <FilterSelectDropDown
             label="Region"

@@ -90,7 +90,7 @@ const ServiceTabSection = ({ data }: ServiceTabSectionProps) => {
                         type="button"
                         onClick={() => handleSelect(item.id)}
                         onMouseEnter={() => handleSelect(item.id)}
-                        className="cursor-pointer group flex items-center justify-between border-b border-secondary last:border-b-0 text-left pr-20 py-2 xl:py-3 first:pt-0 last:pb-0"
+                        className="group flex items-center justify-between border-b border-secondary last:border-b-0 text-left pr-20 py-2 xl:py-3 first:pt-0 last:pb-0"
                       >
                         <span
                           className={`text-subtitle-3 transition-colors duration-500 ${
