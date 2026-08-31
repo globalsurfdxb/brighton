@@ -101,7 +101,7 @@ export default function EnergyEfficiency() {
                             transition={{ duration: 0.3, ease: "easeOut" }}
                             className="overflow-hidden"
                           >
-                            <p className="text-description-4 text-description-color max-w-[80%] mt-30">
+                            <p className="text-description-4 text-description-color max-w-[83%] mt-30">
                               {item.description}
                             </p>
                             <div className="lg:hidden relative w-full aspect-[895/700] max-h-[280px] md:max-h-[380px] mt-30 rounded-[10px] overflow-hidden">
