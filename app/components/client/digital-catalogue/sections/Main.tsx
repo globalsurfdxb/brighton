@@ -5,6 +5,9 @@ import { useForm } from "react-hook-form";
 import FormInput from "@/app/components/client/forms/FormInput";
 import AnimatedTitle from "../../animations/AnimatedTitle";
 import CustomButton from "../../common/CustomButton";
+import { motion } from "framer-motion";
+import { moveRight, moveUp } from "../../animations/motionVariants";
+import SectionDescription from "../../animations/SectionDescription";
 
 interface CatalogueFormData {
   name: string;
@@ -34,7 +37,13 @@ export default function Main() {
 
         <div className="flex flex-col md:flex-row gap-40 lg:gap-60 xl:gap-130 min-[1900px]:gap-[184px]">
           {/* Left - catalogue cover */}
-          <div className="relative w-full md:w-[38%] lg:w-[35%] max-[639px]:max-h-[400px] max-[767px]:max-h-[450px] aspect-[587/747] 3xl:w-[587px] 3xl:h-[747px] shrink-0 rounded-[10px] overflow-hidden">
+          <motion.div
+            variants={moveRight(0.1)}
+            initial="hidden"
+            whileInView="show"
+            viewport={{ once: true }}
+            className="relative w-full md:w-[38%] lg:w-[35%] max-[639px]:max-h-[400px] max-[767px]:max-h-[450px] aspect-[587/747] 3xl:w-[587px] 3xl:h-[747px] shrink-0 rounded-[10px] overflow-hidden"
+          >
             <Image
               src="/assets/images/resources/catalogue.jpg"
               alt="Brighton Catalogue 2026"
@@ -62,50 +71,87 @@ export default function Main() {
                 CATALOGUE 2026
               </p>
             </div>
-          </div>
+          </motion.div>
 
           {/* Right - form */}
           <div className="w-full flex-1 lg:mt-80">
-            <p className="text-subtitle text-description-color max-w-[37ch] mb-80">
-              Please fill out the form below to access our latest product
-              catalogue.
-            </p>
+            <SectionDescription
+              text="Please fill out the form below to access our latest product
+              catalogue."
+              className="text-subtitle text-description-color max-w-[37ch] mb-80"
+              direction="y"
+            />
 
             <form onSubmit={handleSubmit(onSubmit)}>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-50 mb-30 md:mb-60">
-                <FormInput
-                  label="Name"
-                  required
-                  {...register("name", { required: "Name is required" })}
-                  error={errors.name?.message}
-                />
+                <motion.div
+                  variants={moveUp(0)}
+                  initial="hidden"
+                  whileInView="show"
+                  viewport={{ once: true }}
+                >
+                  <FormInput
+                    label="Name"
+                    required
+                    {...register("name", { required: "Name is required" })}
+                    error={errors.name?.message}
+                  />
+                </motion.div>
 
-                <FormInput
-                  label="Company"
-                  {...register("company")}
-                  error={errors.company?.message}
-                />
+                <motion.div
+                  variants={moveUp(0.05)}
+                  initial="hidden"
+                  whileInView="show"
+                  viewport={{ once: true }}
+                >
+                  <FormInput
+                    label="Company"
+                    {...register("company")}
+                    error={errors.company?.message}
+                  />
+                </motion.div>
 
-                <FormInput
-                  label="Email"
-                  type="email"
-                  required
-                  {...register("email", { required: "Email is required" })}
-                  error={errors.email?.message}
-                />
+                <motion.div
+                  variants={moveUp(0.1)}
+                  initial="hidden"
+                  whileInView="show"
+                  viewport={{ once: true }}
+                >
+                  <FormInput
+                    label="Email"
+                    type="email"
+                    required
+                    {...register("email", { required: "Email is required" })}
+                    error={errors.email?.message}
+                  />
+                </motion.div>
 
-                <FormInput
-                  label="Role"
-                  {...register("role")}
-                  error={errors.role?.message}
-                />
+                <motion.div
+                  variants={moveUp(0.15)}
+                  initial="hidden"
+                  whileInView="show"
+                  viewport={{ once: true }}
+                >
+                  <FormInput
+                    label="Role"
+                    {...register("role")}
+                    error={errors.role?.message}
+                  />
+                </motion.div>
               </div>
 
-              <CustomButton
-                text={"Download Catalogue"}
-                variant="2"
-                onClick={handleSubmit(onSubmit)}
-              />
+              <motion.div
+                variants={moveUp(0.2)}
+                initial="hidden"
+                whileInView="show"
+                viewport={{ once: true }}
+              >
+                <CustomButton
+                  text={"Download Catalogue"}
+                  variant="2"
+                  onClick={handleSubmit(onSubmit)}
+                />
+              </motion.div>
             </form>
           </div>
         </div>

@@ -19,7 +19,7 @@ export default function CertifiedCompliant() {
           <div className="order-1">
             <AnimatedTitle
               text={certifiedCompliantData.title}
-              className="section-title mb-2.5 sm:mb-30"
+              className="section-title mb-30"
             />
             <div
               className="text-description-4 text-description-color max-w-[120ch]"

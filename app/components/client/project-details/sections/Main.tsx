@@ -12,6 +12,9 @@ import { useContainerInset } from "@/app/hooks/useContainerInset";
 import { useMediaQuery } from "@/app/hooks/useMediaQuery";
 import AnimatedTitle from "../../animations/AnimatedTitle";
 import AnimatedDivider from "../../animations/AnimatedDivider";
+import { motion } from "framer-motion";
+import { moveRight, moveUp, moveUpV2 } from "../../animations/motionVariants";
+import Reveal from "../../animations/RevealItemsOneByOneAnimation";
 
 export default function Main() {
   const swiperRef = useRef<SwiperType | null>(null);
@@ -28,7 +31,12 @@ export default function Main() {
       <div className="grid grid-cols-1 gap-5 md:gap-40 xl:grid-cols-[20%_auto] 3xl:grid-cols-[420px_1fr] 2xl:gap-[43px]">
         {/* Left - sticky meta */}
         <aside className="xl:sticky xl:top-100 xl:h-fit flex flex-col gap-3 md:gap-5 xl:gap-[26px]">
-          <div>
+          <motion.div
+            variants={moveRight(0.1)}
+            initial="hidden"
+            whileInView="show"
+            viewport={{ once: true }}
+          >
             <p className="text-15 leading-[1.533333334] text-description-color mb-[5px] font-itc-book tracking-[-0.01em]">
               Location
             </p>
@@ -36,9 +44,14 @@ export default function Main() {
               {projectDetailsData.location}
             </p>
             <AnimatedDivider className="border-secondary mt-3 md:mt-5 xl:mt-[26px]" />
-          </div>
+          </motion.div>
 
-          <div>
+          <motion.div
+            variants={moveRight(0.15)}
+            initial="hidden"
+            whileInView="show"
+            viewport={{ once: true }}
+          >
             <p className="text-15 leading-[1.533333334] text-description-color mb-[5px] font-itc-book tracking-[-0.01em]">
               Sector
             </p>
@@ -46,7 +59,7 @@ export default function Main() {
               {projectDetailsData.sector}
             </p>
             <AnimatedDivider className="border-secondary mt-3 md:mt-5 xl:mt-[26px]" />
-          </div>
+          </motion.div>
         </aside>
 
         {/* Right - slider + overview */}
@@ -67,21 +80,29 @@ export default function Main() {
             }}
             className="!overflow-visible"
           >
-            {projectDetailsData.slides.map((slide) => (
+            {projectDetailsData.slides.map((slide, index) => (
               <SwiperSlide key={slide.id}>
-                <div className="relative aspect-[16/9] min-h-[240px] w-full overflow-hidden rounded-[10px]">
-                  <Image
-                    src={slide.image}
-                    alt={slide.alt}
-                    fill
-                    className="object-cover"
-                  />
-                </div>
+                <Reveal variants={moveUpV2} delayRange={index * 0.09}>
+                  <div className="relative aspect-[16/9] min-h-[240px] w-full overflow-hidden rounded-[10px]">
+                    <Image
+                      src={slide.image}
+                      alt={slide.alt}
+                      fill
+                      className="object-cover"
+                    />
+                  </div>
+                </Reveal>
               </SwiperSlide>
             ))}
           </Swiper>
 
-          <div className="mt-30 flex items-center gap-2.5">
+          <motion.div
+            variants={moveUp(0.1)}
+            initial="hidden"
+            whileInView="show"
+            viewport={{ once: true }}
+            className="mt-30 flex items-center gap-2.5"
+          >
             <SliderNavBtn
               direction="prev"
               disabled={isBeginning}
@@ -92,7 +113,7 @@ export default function Main() {
               disabled={isEnd}
               onClick={() => swiperRef.current?.slideNext()}
             />
-          </div>
+          </motion.div>
 
           <div
             style={{ paddingRight: isDesktop ? inset : "auto" }}
@@ -102,14 +123,16 @@ export default function Main() {
               text={projectDetailsData.overviewTitle}
               className="section-title mb-30"
             />
-            <div>
-              <div
-                className="news-content 2xl:mr-80 min-[1900]:max-w-[1202px]"
-                dangerouslySetInnerHTML={{
-                  __html: projectDetailsData.overviewParagraphs,
-                }}
-              />
-            </div>
+            <motion.div
+              variants={moveUp(0.1)}
+              initial="hidden"
+              whileInView="show"
+              viewport={{ once: true }}
+              className="news-content 2xl:mr-80 min-[1900]:max-w-[1202px]"
+              dangerouslySetInnerHTML={{
+                __html: projectDetailsData.overviewParagraphs,
+              }}
+            />
           </div>
         </div>
       </div>

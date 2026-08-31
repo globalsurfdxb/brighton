@@ -1,3 +1,4 @@
+import AnimatedCounter from "../../animations/AnimatedCounter";
 import AnimatedTitle from "../../animations/AnimatedTitle";
 import { aboutIntroData } from "../data";
 
@@ -22,7 +23,7 @@ export default function AboutIntro() {
             <div key={i} className="flex items-stretch gap-30">
               <span className="w-px bg-secondary max-h-[85%] mt-[5px]" />
               <div>
-                <p className="section-title text-description-color">{stat.value}</p>
+                <p className="section-title text-description-color"><AnimatedCounter to={stat.value} offset={15} /></p>
                 <p className="text-subtitle text-description-color mt-2.5 sm:mt-[14px]">{stat.label}</p>
               </div>
             </div>

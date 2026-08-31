@@ -5,6 +5,8 @@ import Image from "next/image";
 import AnimatedDivider from "../../animations/AnimatedDivider";
 import { formatDate } from "@/lib/utils/formatDate";
 import { SharePill } from "./SharePil";
+import { motion } from "framer-motion";
+import { moveLeft, moveRight } from "../../animations/motionVariants";
 
 export interface BlogDetails {
   title: string;
@@ -19,8 +21,13 @@ const Main = ({ data }: { data: BlogDetails }) => {
     <section className="top-spacing pb-100">
       <div className="container">
         <div>
-          <div className="mb-100 grid grid-cols-1 xl:grid-cols-[1.3fr_1fr] min-[1900px]:grid-cols-[1049px_auto] gap-x-80">
-            <div>
+          <div className="mb-100 grid grid-cols-1 xl:grid-cols-[1.3fr_1fr] min-[1900px]:grid-cols-[1049px_auto] gap-x-80 overflow-hidden">
+            <motion.div
+              variants={moveRight(0.1)}
+              initial="hidden"
+              whileInView="show"
+              viewport={{ once: true }}
+            >
               <Image
                 src={data.heroImage}
                 alt={data.title}
@@ -28,7 +35,7 @@ const Main = ({ data }: { data: BlogDetails }) => {
                 height={700}
                 className="rounded-[10px] w-full object-cover aspect-[1820/900] min-h-[280px] h-auto xl:min-h-[600px] 3xl:min-h-[800px]"
               />
-            </div>
+            </motion.div>
             <div className="flex md:justify-between">
               <div className="mt-40 xl:pt-80">
                 <AnimatedTitle
@@ -36,14 +43,26 @@ const Main = ({ data }: { data: BlogDetails }) => {
                   className="hero-title mb-40 xl:mb-80"
                 />
                 <div className="flex justify-between items-center">
-                  <p className="text-subtitle-2 text-description-color">
+                  <motion.p
+                    variants={moveRight(0.1)}
+                    initial="hidden"
+                    whileInView="show"
+                    viewport={{ once: true }}
+                    className="text-subtitle-2 text-description-color"
+                  >
                     {formatDate(data.date)}
-                  </p>
-                  <div className="flex items-center max-h-7.5 border border-secondary rounded-full py-2.25 px-4.5 xl:mr-50">
+                  </motion.p>
+                  <motion.div
+                    variants={moveLeft(0.15)}
+                    initial="hidden"
+                    whileInView="show"
+                    viewport={{ once: true }}
+                    className="flex items-center max-h-7.5 border border-secondary rounded-full py-2.25 px-4.5 xl:mr-50"
+                  >
                     <span className="text-description-color text-subtitle-2 text-trim uppercase">
                       {data.category}
                     </span>
-                  </div>
+                  </motion.div>
                 </div>
               </div>
             </div>

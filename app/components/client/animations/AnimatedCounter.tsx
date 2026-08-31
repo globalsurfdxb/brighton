@@ -7,6 +7,7 @@ interface AnimatedCounterProps {
   from?: number | string;
   to: number | string;
   duration?: number;
+  offset?: number;
 }
 
 function parseValue(value: number | string) {
@@ -36,6 +37,7 @@ export default function AnimatedCounter({
   from = 0,
   to,
   duration = 2,
+  offset,
 }: AnimatedCounterProps) {
   const numberRef = useRef<HTMLSpanElement>(null);
   const wrapperRef = useRef<HTMLSpanElement>(null);
@@ -46,19 +48,29 @@ export default function AnimatedCounter({
     [to],
   );
 
-  const start = useMemo(() => {
+  const start = useMemo(() => { 
+    if (offset !== undefined) {
+      return end - offset;
+    }
     if (typeof from === "string") {
       const match = from.match(/-?\d+(\.\d+)?/);
       return match ? parseFloat(match[0]) : 0;
     }
     return from;
-  }, [from]);
+  }, [from, offset, end]);
+
+  const padLength = useMemo(() => {
+    if (!hasNumber) return 0;
+    return Math.trunc(Math.abs(end)).toString().length;
+  }, [end, hasNumber]);
 
   useEffect(() => {
     if (numberRef.current && hasNumber) {
-      numberRef.current.textContent = start.toFixed(decimals);
+      numberRef.current.textContent = start
+        .toFixed(decimals)
+        .padStart(padLength + (decimals > 0 ? decimals + 1 : 0), "0");
     }
-  }, [start, decimals, hasNumber]);
+  }, [start, decimals, hasNumber, padLength]);
 
   useEffect(() => {
     if (!isInView || !hasNumber) return;
@@ -75,7 +87,9 @@ export default function AnimatedCounter({
       const progress = Math.min(elapsed / durationMs, 1);
       const eased = 1 - Math.pow(1 - progress, 3);
 
-      el.textContent = (start + (end - start) * eased).toFixed(decimals);
+      el.textContent = (start + (end - start) * eased)
+        .toFixed(decimals)
+        .padStart(padLength + (decimals > 0 ? decimals + 1 : 0), "0");
 
       if (progress < 1) {
         raf = requestAnimationFrame(step);

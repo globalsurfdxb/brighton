@@ -6,6 +6,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import AnimatedTitle from "../../animations/AnimatedTitle";
 import PlusMinusIcon from "../../technology/sections/PlusMinusIcon";
 import { useLenis } from "../../layout/LenisProvider";
+import Reveal from "../../animations/RevealItemsOneByOneAnimation";
+import { moveRight, moveUpV2 } from "../../animations/motionVariants";
 
 interface ServiceTabSectionProps {
   data: {
@@ -47,7 +49,13 @@ const ServiceTabSection = ({ data }: ServiceTabSectionProps) => {
 
         <div className="grid grid-cols-1 xl:grid-cols-2 2xl:grid-cols-[1.15fr_1fr] min-[1800px]:grid-cols-[895px_auto] gap-60 2xl:gap-80">
           {/* Image (desktop only) */}
-          <div className="relative hidden xl:block">
+          <motion.div
+            variants={moveRight(0.12)}
+            initial="hidden"
+            whileInView="show"
+            viewport={{ once: true }}
+            className="relative hidden xl:block"
+          >
             <div className="relative w-full rounded-[10px] overflow-hidden bg-cream-background lg:min-h-full 3xl:min-h-[720px]">
               <Image
                 src={baseImage}
@@ -74,63 +82,69 @@ const ServiceTabSection = ({ data }: ServiceTabSectionProps) => {
                 </motion.div>
               )}
             </div>
-          </div>
+          </motion.div>
 
           {/* Right side */}
           <div className="flex flex-col xl:pt-70 pb-50 3xl:pb-0">
             {/* ---- Desktop: two-column tab list ---- */}
             <div className="hidden xl:grid grid-cols-2 gap-x-40 3xl:gap-[45px] mb-100 3xl:mb-150">
               {columns.map((col, colIdx) => (
-                <div key={colIdx} className="flex flex-col">
-                  {col.map((item) => {
-                    const isActive = activeItem?.id === item.id;
-                    return (
-                      <button
-                        key={item.id}
-                        type="button"
-                        onClick={() => handleSelect(item.id)}
-                        onMouseEnter={() => handleSelect(item.id)}
-                        className="group flex items-center justify-between border-b border-secondary last:border-b-0 text-left pr-20 py-2 xl:py-3 first:pt-0 last:pb-0"
-                      >
-                        <span
-                          className={`text-subtitle-3 transition-colors duration-500 ${
-                            isActive
-                              ? "text-primary"
-                              : "text-description-color group-hover:text-primary"
-                          }`}
+                <Reveal
+                  key={colIdx}
+                  variants={moveUpV2}
+                  delayRange={colIdx * 0.1}
+                >
+                  <div className="flex flex-col">
+                    {col.map((item) => {
+                      const isActive = activeItem?.id === item.id;
+                      return (
+                        <button
+                          key={item.id}
+                          type="button"
+                          onClick={() => handleSelect(item.id)}
+                          onMouseEnter={() => handleSelect(item.id)}
+                          className="group flex items-center justify-between border-b border-secondary last:border-b-0 text-left pr-20 py-2 xl:py-3 first:pt-0 last:pb-0"
                         >
-                          {item.title}
-                        </span>
+                          <span
+                            className={`text-subtitle-3 transition-colors duration-500 ${
+                              isActive
+                                ? "text-primary"
+                                : "text-description-color group-hover:text-primary"
+                            }`}
+                          >
+                            {item.title}
+                          </span>
 
-                        <span className="relative h-7.5 w-7.5 shrink-0">
-                          <AnimatePresence>
-                            {isActive && (
-                              <motion.div
-                                initial={{ opacity: 0, x: -15 }}
-                                animate={{ opacity: 1, x: 0 }}
-                                exit={{ opacity: 0, x: -15 }}
-                                transition={{
-                                  type: "spring",
-                                  stiffness: 400,
-                                  damping: 25,
-                                }}
-                                className="absolute inset-0 flex items-center justify-center rounded-[5px] bg-black text-white"
-                              >
-                                <Image
-                                  src="/assets/icons/right-top-arrow-secondary.svg"
-                                  width={13.33}
-                                  height={13.33}
-                                  className="object-contain w-auto h-3.25 shrink-0"
-                                  alt="icon-arrow"
-                                />
-                              </motion.div>
-                            )}
-                          </AnimatePresence>
-                        </span>
-                      </button>
-                    );
-                  })}
-                </div>
+                          <span className="relative h-7.5 w-7.5 shrink-0">
+                            <AnimatePresence>
+                              {isActive && (
+                                <motion.div
+                                  initial={{ opacity: 0, x: -15 }}
+                                  animate={{ opacity: 1, x: 0 }}
+                                  exit={{ opacity: 0, x: -15 }}
+                                  transition={{
+                                    type: "spring",
+                                    stiffness: 400,
+                                    damping: 25,
+                                  }}
+                                  className="absolute inset-0 flex items-center justify-center rounded-[5px] bg-black text-white"
+                                >
+                                  <Image
+                                    src="/assets/icons/right-top-arrow-secondary.svg"
+                                    width={13.33}
+                                    height={13.33}
+                                    className="object-contain w-auto h-3.25 shrink-0"
+                                    alt="icon-arrow"
+                                  />
+                                </motion.div>
+                              )}
+                            </AnimatePresence>
+                          </span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </Reveal>
               ))}
             </div>
 
@@ -174,7 +188,9 @@ const ServiceTabSection = ({ data }: ServiceTabSectionProps) => {
                         setActiveId(isActive ? "" : item.id);
                         if (willOpen) {
                           setTimeout(() => {
-                            scrollTo(`#accordion-item-${item.id}`, { offset: -15 });
+                            scrollTo(`#accordion-item-${item.id}`, {
+                              offset: -15,
+                            });
                           }, 410);
                         }
                       }}
