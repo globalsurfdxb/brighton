@@ -63,16 +63,16 @@ export default function FilterSelectDropDown({
     <div
       ref={rootRef}
       onClick={() => setOpen((prev) => !prev)}
-      className={`relative w-full min-w-[200px] 2xl:min-w-[229px] cursor-pointer ${className}`}
+      className={`relative w-fit min-w-[200px] 2xl:min-w-[229px] cursor-pointer ${className}`}
     >
       <button
         type="button"
         aria-haspopup="listbox"
         aria-expanded={open}
-        className="flex w-full bg-cream-background items-center justify-between text-left border border-secondary rounded-[50px] gap-100 cursor-pointer px-4.5 md:px-5 py-[15px] text-15 leading-none font-itc-medium uppercase max-h-9.25 md:max-h-10.5"
+        className="inline-flex w-full bg-cream-background items-center justify-between text-left border border-secondary rounded-[50px] gap-2.5 cursor-pointer px-4.5 md:px-5 py-[15px] text-15 leading-none font-itc-medium uppercase max-h-9.25 md:max-h-10.5"
       >
         <span
-          className={`max-h-[11px] ${value ? "text-primary" : "text-description-color"}`}
+          className={`${value ? "text-primary" : "text-description-color"} text-nowrap text-trim`}
         >
           {value ?? label}
         </span>
@@ -80,6 +80,7 @@ export default function FilterSelectDropDown({
         <motion.div
           animate={{ rotate: open ? 180 : 0 }}
           transition={{ duration: 0.2, ease: "easeInOut" }}
+          className="shrink-0"
         >
           <Image
             src="/assets/icons/down-arrow.svg"

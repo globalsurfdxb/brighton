@@ -8,7 +8,7 @@ import { useRef } from "react";
 export function useRevealInView({
   delayRange = 0.22,
 }: { delayRange?: number } = {}) {
-  const ref = useRef(null);
+  const ref = useRef<HTMLDivElement | null>(null);
   const controls = useAnimation();
   const isInView = useInView(ref, { once: true, margin: "0px 0px -10px 0px" });
 

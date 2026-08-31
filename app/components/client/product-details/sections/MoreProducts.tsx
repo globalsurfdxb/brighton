@@ -1,13 +1,15 @@
 "use client";
 
 import { Swiper, SwiperSlide } from "swiper/react";
-
+import { motion } from "framer-motion";
 import "swiper/css";
 
 import { moreProductsData } from "../data";
 import AnimatedTitle from "../../animations/AnimatedTitle";
 import ProductCard from "../../products/sections/ProductCard";
 import CustomButton from "../../common/CustomButton";
+import { moveLeft, moveUpV2 } from "../../animations/motionVariants";
+import Reveal from "../../animations/RevealItemsOneByOneAnimation";
 
 export default function MoreProducts() {
   const { sectionTitle, products } = moreProductsData;
@@ -15,13 +17,25 @@ export default function MoreProducts() {
   return (
     <section className="w-full py-100 bg-cream-background overflow-hidden">
       <div className="container">
-        <div className="flex flex-col lg:flex-row lg:items-center justify-between mb-[30px] sm:mb-40 gap-2.5 lg:gap-0">
+        <div className="flex flex-col md:flex-row md:items-center justify-between mb-[30px] md:mb-40 gap-2.5 lg:gap-0">
           <AnimatedTitle
             tag="h2"
             text={sectionTitle}
             className="section-title"
           />
-          <CustomButton text="VIEW ALL FAMILIES" variant="2" link="#" btnClass="w-fit" />
+          <motion.div
+            variants={moveLeft(0)}
+            initial="hidden"
+            whileInView="show"
+            viewport={{ once: true }}
+          >
+            <CustomButton
+              text="VIEW ALL FAMILIES"
+              variant="2"
+              link="#"
+              btnClass="w-fit"
+            />
+          </motion.div>
         </div>
 
         {/* Slider */}
@@ -56,11 +70,13 @@ export default function MoreProducts() {
           >
             {products.map((product, index) => (
               <SwiperSlide key={index}>
-                <ProductCard
+                <Reveal
                   key={product.id}
-                  product={product}
-                  bgColor="bg-white"
-                />
+                  variants={moveUpV2}
+                  delayRange={index * 0.12}
+                >
+                  <ProductCard product={product} bgColor="bg-white" />
+                </Reveal>
               </SwiperSlide>
             ))}
           </Swiper>

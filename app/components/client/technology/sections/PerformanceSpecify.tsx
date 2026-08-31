@@ -28,7 +28,7 @@ export default function PerformanceSpecify() {
               <div
                 key={i}
                 onClick={() => setOpenIndex(isOpen ? -1 : i)}
-                className="cursor-pointer flex flex-col overflow-hidden border-secondary px-20 py-30 w-full"
+                className="flex flex-col overflow-hidden border-secondary px-20 py-30 w-full"
               >
                 <div className="flex items-center gap-4">
                   <div className="rounded-[10px] bg-primary flex items-center justify-center shrink-0 w-10 h-10 md:w-12.5 md:h-12.5">
@@ -72,7 +72,7 @@ export default function PerformanceSpecify() {
               <div
                 key={i}
                 onMouseEnter={() => setActiveIndex(i)}
-                className={`h-[362px] cursor-pointer flex flex-col overflow-hidden transition-[flex-grow, padding] duration-500 ease-in-out basis-0 min-w-[120px] ${
+                className={`h-[362px] flex flex-col overflow-hidden transition-[flex-grow, padding] duration-500 ease-in-out basis-0 min-w-[120px] ${
                   isActive
                     ? "grow-[1.8] md:grow-[2.5] xl:grow-[3.4105] px-40 3xl:px-60"
                     : "grow-[1] px-20"
