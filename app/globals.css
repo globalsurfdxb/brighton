@@ -100,7 +100,8 @@ input:-webkit-autofill:active {
 
 
 /* 60px → 26px at 420px, 60px at 1920px */
---text-60: clamp(34px, 1.71vw + 27.16px, 60px);
+--text-60: clamp(34px, 1.73333vw + 26.73px, 60px);
+
 
 /* 55px → 30px at 420px, 55px at 1920px */
 --text-55: clamp(30px, 1.667vw + 23px, 55px);

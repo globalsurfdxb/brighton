@@ -116,7 +116,7 @@ export default function GuidingPrinciples() {
         />
         <SectionDescription
           direction="y"
-          className="text-subtitle max-w-[50ch] text-description-color pb-40 lg::pb-100"
+          className="text-subtitle max-w-[50ch] text-description-color pb-40 lg:pb-100"
           text={guidingPrinciplesData.description}
         />
 

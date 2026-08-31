@@ -47,9 +47,9 @@ const BlogCard = ({
           fill
         />
       </div>
-      <div className="pb-4 flex justify-between text-description-color text-subtitle-2">
-        <p>{formatDate(date)}</p>
-        <p className="mr-80 uppercase">{category}</p>
+      <div className="pb-4 flex justify-between min-[1900px]:items-center text-description-color text-subtitle-2">
+        <p className="min-[1900px]:min-h-[19px]">{formatDate(date)}</p>
+        <p className="mr-80 uppercase min-[1900px]:min-h-[19px]">{category}</p>
       </div>
       <AnimatedDividerTwo
         className="border-secondary mb-30"

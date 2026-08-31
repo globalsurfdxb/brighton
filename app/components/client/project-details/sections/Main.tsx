@@ -72,10 +72,15 @@ export default function Main() {
             }}
             speed={800}
             slidesPerView={1.15}
-            spaceBetween={16}
+            spaceBetween={15}
             breakpoints={{
               1400: {
-                slidesPerView: 1.166,
+                slidesPerView: 1.16,
+                spaceBetween: 25,
+              },
+              1800: {
+                slidesPerView: 1.164,
+                spaceBetween: 32,
               },
             }}
             className="!overflow-visible"
@@ -83,7 +88,7 @@ export default function Main() {
             {projectDetailsData.slides.map((slide, index) => (
               <SwiperSlide key={slide.id}>
                 <Reveal variants={moveUpV2} delayRange={index * 0.09}>
-                  <div className="relative aspect-[16/9] min-h-[240px] w-full overflow-hidden rounded-[10px]">
+                  <div className="relative aspect-[16/9] min-h-[240px] w-full overflow-hidden rounded-[10px] cursor-grab">
                     <Image
                       src={slide.image}
                       alt={slide.alt}
@@ -128,7 +133,7 @@ export default function Main() {
               initial="hidden"
               whileInView="show"
               viewport={{ once: true }}
-              className="news-content 2xl:mr-80 min-[1900]:max-w-[1202px]"
+              className="news-content 2xl:mr-80 min-[1900px]:max-w-[1202px]"
               dangerouslySetInnerHTML={{
                 __html: projectDetailsData.overviewParagraphs,
               }}

@@ -69,7 +69,7 @@ export default function FilterSelectDropDown({
         type="button"
         aria-haspopup="listbox"
         aria-expanded={open}
-        className="inline-flex w-full bg-cream-background items-center justify-between text-left border border-secondary rounded-[50px] gap-2.5 cursor-pointer px-4.5 md:px-5 py-[15px] text-15 leading-none font-itc-medium uppercase max-h-9.25 md:max-h-10.5"
+        className="inline-flex w-full bg-cream-background items-center justify-between text-left border border-secondary rounded-[50px] gap-2.5 cursor-pointer px-4.5 md:px-[19px] py-[15px] text-15 leading-none font-itc-medium uppercase max-h-9.25 md:max-h-10.5"
       >
         <span
           className={`${value ? "text-primary" : "text-description-color"} text-nowrap text-trim`}
@@ -85,7 +85,7 @@ export default function FilterSelectDropDown({
           <Image
             src="/assets/icons/down-arrow.svg"
             alt="chevron-down"
-            className="w-auto sm:h-[10px] h-[9px] mr-[2px] sm:mr-0 pointer-events-none"
+            className="w-auto h-[9px] mr-[2px] sm:mr-0 pointer-events-none"
             width={30}
             height={30}
           />

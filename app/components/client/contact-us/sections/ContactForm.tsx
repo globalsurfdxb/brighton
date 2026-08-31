@@ -1,35 +1,33 @@
 "use client";
 
 import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import FormInput from "@/app/components/client/forms/FormInput";
 import CustomButton from "../../common/CustomButton";
 import FormTextArea from "../../forms/FormTextArea";
 import { motion } from "framer-motion";
 import { moveUp } from "../../animations/motionVariants";
-
-interface ContactFormData {
-  name: string;
-  email: string;
-  phone: string;
-  company: string;
-  role: string;
-  message: string;
-}
+import {
+  contactFormSchema,
+  ContactFormValues,
+} from "@/lib/validations/contactFormSchema";
 
 export default function ContactForm() {
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<ContactFormData>();
+  } = useForm<ContactFormValues>({
+    resolver: zodResolver(contactFormSchema),
+  });
 
-  const onSubmit = (data: ContactFormData) => {
+  const onSubmit = (data: ContactFormValues) => {
     console.log(data);
   };
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
-      <div className="grid grid-cols-1 gap-4 md:gap-50 mb-30 md:mb-40">
+      <div className="grid grid-cols-1 gap-4 md:gap-40 mb-30 md:mb-40">
         <motion.div
           initial="hidden"
           whileInView="show"
@@ -39,7 +37,7 @@ export default function ContactForm() {
           <FormInput
             label="Name"
             required
-            {...register("name", { required: "Name is required" })}
+            {...register("name")}
             error={errors.name?.message}
           />
         </motion.div>
@@ -55,12 +53,13 @@ export default function ContactForm() {
             label="Email"
             type="email"
             required
-            {...register("email", { required: "Email is required" })}
+            {...register("email")}
             error={errors.email?.message}
           />
           <FormInput
             label="Phone"
             {...register("phone")}
+            type="number"
             error={errors.phone?.message}
           />
         </motion.div>

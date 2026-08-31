@@ -1,7 +1,6 @@
 import { GrLinkedinOption } from "react-icons/gr";
 import { VscTwitter } from "react-icons/vsc";
 import { FaFacebookF } from "react-icons/fa";
-import { moveUpV2 } from "../../animations/motionVariants";
 import AnimatedTitle from "../../animations/AnimatedTitle";
 import { motion } from "framer-motion";
 
@@ -61,7 +60,7 @@ export const SharePill = ({ title }: { title: string }) => {
                     "--fill-color": "var(--color-primary, #0A0A0A)",
                   } as React.CSSProperties
                 }
-                className="group flex w-10 h-10 3xl:w-12 3xl:h-12 items-center justify-center rounded-full border border-secondary btn-fill-center"
+                className="cursor-pointer group flex w-10 h-10 3xl:w-12 3xl:h-12 items-center justify-center rounded-full border border-secondary btn-fill-center"
               >
                 <Icon
                   aria-hidden

@@ -13,7 +13,7 @@ import Image from "next/image";
 import { useRef, useState } from "react";
 import AnimatedTitle from "../animations/AnimatedTitle";
 import Reveal from "../animations/RevealItemsOneByOneAnimation";
-import { moveLeft, moveUp, moveUpV2 } from "../animations/motionVariants";
+import { moveUp, moveUpV2 } from "../animations/motionVariants";
 import SectionDescription from "../animations/SectionDescription";
 import { useLenis } from "./LenisProvider";
 
