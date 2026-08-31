@@ -29,7 +29,7 @@ const FormTextArea = forwardRef<HTMLTextAreaElement, FormTextAreaProps>(
 
     return (
       <div
-        className="relative w-full pb-3 md:pb-[14px] 2xl:pb-5 cursor-text h-[80px] lg:h-[100px] xl:h-[140px] flex items-end"
+        className="relative w-full pb-3 md:pb-[14px] 2xl:pb-5 cursor-text h-[80px] lg:h-[100px] xl:h-[140px] 3xl:h-[160px] flex items-end"
         onClick={() => localRef.current?.focus()}
       >
         <textarea

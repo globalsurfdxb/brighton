@@ -35,7 +35,7 @@ export const navItems: NavItem[] = [
   ] },
   { label: "Resources", href: "#", hasDropdown: true, dropdownItems: [
     { label: "Digital Catalogue", href: "/resources/digital-catalogue" },
-    { label: "Downloads Hub", href: "#" },
+    // { label: "Downloads Hub", href: "#" },
   ] },
   { label: "Media", href: "#", hasDropdown: true, dropdownItems: [
     { label: "News & Stories", href: "/news" },
@@ -46,7 +46,7 @@ export const navItems: NavItem[] = [
     { label: "Design Philosophy", href: "/about/design-philosophy" },
     { label: "Technology", href: "/about/technology" },
     { label: "Sustainability", href: "/about/sustainability" },
-    { label: "Certifications", href: "#" },
+    // { label: "Certifications", href: "#" },
   ] },
 ];
 
@@ -72,7 +72,7 @@ export const footerColumns: FooterColumn[] = [
     title: "Resources",
     links: [
       { label: "Digital Catalogue", href: "/resources/digital-catalogue" },
-      { label: "Downloads Hub", href: "#" },
+      // { label: "Downloads Hub", href: "#" },
       { label: "Projects", href: "/projects" },
     ],
   },
@@ -104,7 +104,7 @@ export const footerColumns: FooterColumn[] = [
     links: [
       { label: "Warranty", href: "#" },
       { label: "Newsletter", href: "#" },
-      { label: "Certificates", href: "#" },
+      // { label: "Certificates", href: "#" },
     ],
   },
 ];

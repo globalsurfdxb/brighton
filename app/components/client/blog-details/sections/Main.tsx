@@ -37,7 +37,7 @@ const Main = ({ data }: { data: BlogDetails }) => {
               />
             </motion.div>
             <div className="flex md:justify-between">
-              <div className="mt-40 xl:pt-80">
+              <div className="pt-40 xl:pt-80">
                 <AnimatedTitle
                   text={data.title}
                   className="hero-title mb-40 xl:mb-80"
@@ -82,7 +82,7 @@ const Main = ({ data }: { data: BlogDetails }) => {
                   whileInView="show"
                   viewport={{ once: true }}
                 >
-                  <h4 className="text-subtitle-2 uppercase text-description-color mb-[10px]">
+                  <h4 className="text-subtitle-2 uppercase text-description-color mb-[10px] 3xl:min-h-[19px]">
                     Published
                   </h4>
                   <p className="text-subtitle-3 text-trim">
@@ -96,7 +96,7 @@ const Main = ({ data }: { data: BlogDetails }) => {
                   whileInView="show"
                   viewport={{ once: true }}
                 >
-                  <h4 className="text-subtitle-2 uppercase text-description-color mb-[10px]">
+                  <h4 className="text-subtitle-2 uppercase text-description-color mb-[10px] 3xl:min-h-[19px]">
                     Topic
                   </h4>
                   <p className="text-subtitle-3">{data.category}</p>
@@ -110,7 +110,7 @@ const Main = ({ data }: { data: BlogDetails }) => {
               initial="hidden"
               whileInView="show"
               viewport={{ once: true }}
-              className="news-content 2xl:mr-80 min-[1900]:mr-[156px]"
+              className="news-content 2xl:mr-80 min-[1900px]:mr-[156px]"
               dangerouslySetInnerHTML={{ __html: data.content }}
             />
           </div>

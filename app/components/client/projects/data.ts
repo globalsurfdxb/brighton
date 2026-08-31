@@ -79,7 +79,7 @@ export const projects = [
     category: "commercial",
     categoryLabel: "Commercial",
     region: "Abu Dhabi, UAE",
-    image: "/assets/images/projects/7.jpg",
+    image: "/assets/images/projects/2.jpg",
   },
   {
     id: "10",

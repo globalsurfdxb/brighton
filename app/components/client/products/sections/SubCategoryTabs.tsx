@@ -16,7 +16,11 @@ interface Props {
   onChange: (id: string) => void;
 }
 
-export default function SubCategoryTabs({ subcategories, active, onChange }: Props) {
+export default function SubCategoryTabs({
+  subcategories,
+  active,
+  onChange,
+}: Props) {
   const swiperRef = useRef<SwiperType | null>(null);
   const [swiperReady, setSwiperReady] = useState(false);
 
@@ -36,14 +40,19 @@ export default function SubCategoryTabs({ subcategories, active, onChange }: Pro
         swiperRef.current = swiper;
         setSwiperReady(true);
       }}
-      className="!overflow-visible"
+      className="!overflow-visible [&_.swiper-wrapper]:!items-stretch [&_.swiper-slide]:!h-auto"
     >
       {subcategories.map((sub, index) => {
         const isActive = active === sub.id;
 
         return (
           <SwiperSlide key={sub.id} className="!w-auto">
-            <Reveal key={index} variants={moveUpV2} delayRange={index * 0.03}>
+            <Reveal
+              key={index}
+              variants={moveUpV2}
+              delayRange={index * 0.03}
+              className="h-full"
+            >
               <button
                 style={
                   {
@@ -52,7 +61,7 @@ export default function SubCategoryTabs({ subcategories, active, onChange }: Pro
                 }
                 type="button"
                 onClick={() => onChange(sub.id)}
-                className={`cursor-pointer btn-fill-center shrink-0 flex items-center gap-3 rounded-[10px] border border-secondary px-3 py-[15px] text-left transition-colors duration-500 3xl:min-w-[303px] ${
+                className={`h-full cursor-pointer btn-fill-center shrink-0 flex items-center gap-3 rounded-[10px] border border-secondary px-3 py-[15px] text-left transition-colors duration-500 3xl:min-w-[303px] ${
                   index !== subcategories.length - 1 ? "-mr-px" : ""
                 } ${
                   isActive
