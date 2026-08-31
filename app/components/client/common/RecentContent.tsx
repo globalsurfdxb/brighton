@@ -24,10 +24,7 @@ const RecentContent = ({ title, items, hrefPrefix }: RecentContentProps) => {
   return (
     <section className="py-100 bg-cream-background overflow-hidden">
       <div className="container">
-        <AnimatedTitle
-          text={title}
-          className="section-title mb-40"
-        />
+        <AnimatedTitle text={title} className="section-title mb-40" />
         <Swiper
           spaceBetween={15}
           speed={300}
@@ -48,7 +45,7 @@ const RecentContent = ({ title, items, hrefPrefix }: RecentContentProps) => {
           {items.map((item) => (
             <SwiperSlide key={item.id}>
               <Link href={`/${hrefPrefix}/${item.id}`}>
-                <div className="flex flex-col gap-30 relative">
+                <div className="flex flex-col gap-30 relative group">
                   <div
                     className={`relative rounded-[10px] overflow-hidden bg-secondary ${
                       hrefPrefix === "blog"
@@ -59,7 +56,7 @@ const RecentContent = ({ title, items, hrefPrefix }: RecentContentProps) => {
                     <Image
                       src={item.image || "/assets/images/placeholder.png"}
                       alt={item.title}
-                      className="object-cover pointer-events-none"
+                      className="object-cover pointer-events-none group-hover:scale-105 transition-transform duration-500"
                       fill
                     />
                   </div>

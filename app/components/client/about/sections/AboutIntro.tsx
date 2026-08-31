@@ -1,5 +1,6 @@
 import AnimatedCounter from "../../animations/AnimatedCounter";
 import AnimatedTitle from "../../animations/AnimatedTitle";
+import SectionDescription from "../../animations/SectionDescription";
 import { aboutIntroData } from "../data";
 
 export default function AboutIntro() {
@@ -12,9 +13,11 @@ export default function AboutIntro() {
             className="section-title max-w-[18ch]"
           />
 
-          <div
+          <SectionDescription
+            as="div"
+            direction="y"
             className="text-description-color text-description-4 lg:max-w-[60ch] min-[1900px]:max-w-[587px] xl:mr-60 min-[1900px]:mr-[154px]"
-            dangerouslySetInnerHTML={{ __html: aboutIntroData.description }}
+            html={aboutIntroData.description}
           />
         </div>
 
@@ -23,8 +26,10 @@ export default function AboutIntro() {
             <div key={i} className="flex items-stretch gap-30">
               <span className="w-px bg-secondary max-h-[85%] mt-[5px]" />
               <div>
-                <p className="section-title text-description-color"><AnimatedCounter to={stat.value} offset={15} /></p>
-                <p className="text-subtitle text-description-color mt-2.5 sm:mt-[14px]">{stat.label}</p>
+                <p className="section-title text-description-color">
+                  <AnimatedCounter to={stat.value} offset={15} />
+                </p>
+                <AnimatedTitle text={stat.label} className="text-subtitle text-description-color mt-2.5 sm:mt-[14px]" />
               </div>
             </div>
           ))}

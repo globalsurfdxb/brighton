@@ -4,6 +4,8 @@ import { useForm } from "react-hook-form";
 import FormInput from "@/app/components/client/forms/FormInput";
 import CustomButton from "../../common/CustomButton";
 import FormTextArea from "../../forms/FormTextArea";
+import { motion } from "framer-motion";
+import { moveUp } from "../../animations/motionVariants";
 
 interface ContactFormData {
   name: string;
@@ -28,14 +30,27 @@ export default function ContactForm() {
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <div className="grid grid-cols-1 gap-4 md:gap-50 mb-30 md:mb-40">
-        <FormInput
-          label="Name"
-          required
-          {...register("name", { required: "Name is required" })}
-          error={errors.name?.message}
-        />
+        <motion.div
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: true }}
+          variants={moveUp(0.02)}
+        >
+          <FormInput
+            label="Name"
+            required
+            {...register("name", { required: "Name is required" })}
+            error={errors.name?.message}
+          />
+        </motion.div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-30">
+        <motion.div
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: true }}
+          variants={moveUp(0.06)}
+          className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-30"
+        >
           <FormInput
             label="Email"
             type="email"
@@ -48,32 +63,60 @@ export default function ContactForm() {
             {...register("phone")}
             error={errors.phone?.message}
           />
-        </div>
+        </motion.div>
 
-        <FormInput
-          label="Company"
-          {...register("company")}
-          error={errors.company?.message}
-        />
+        <motion.div
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: true }}
+          variants={moveUp(0.1)}
+        >
+          <FormInput
+            label="Company"
+            {...register("company")}
+            error={errors.company?.message}
+          />
+        </motion.div>
 
-        <FormInput
-          label="Role"
-          {...register("role")}
-          error={errors.role?.message}
-        />
+        <motion.div
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: true }}
+          variants={moveUp(0.14)}
+        >
+          <FormInput
+            label="Role"
+            {...register("role")}
+            error={errors.role?.message}
+          />
+        </motion.div>
 
-        <FormTextArea
-          label="Message"
-          {...register("message")}
-          error={errors.message?.message}
-        />
+        <motion.div
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: true }}
+          variants={moveUp(0.18)}
+        >
+          <FormTextArea
+            label="Message"
+            {...register("message")}
+            error={errors.message?.message}
+          />
+        </motion.div>
       </div>
 
-      <CustomButton
-        text="Submit"
-        variant="2"
-        onClick={handleSubmit(onSubmit)}
-      />
+      <motion.div
+        initial="hidden"
+        whileInView="show"
+        viewport={{ once: true }}
+        variants={moveUp(0.22)}
+      >
+        <CustomButton
+          text="Submit"
+          variant="2"
+          onClick={handleSubmit(onSubmit)}
+        />
+      </motion.div>
     </form>
   );
 }

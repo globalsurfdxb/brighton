@@ -1,17 +1,20 @@
-import Image from "next/image";
 import { socialsData } from "../data";
 import AnimatedDivider from "../../animations/AnimatedDivider";
 import Link from "next/link";
+import Tilt3DImage from "../../common/Tilt3DImage";
+import Image from "next/image";
+import Reveal from "../../animations/RevealItemsOneByOneAnimation";
+import { moveUpV2 } from "../../animations/motionVariants";
 
 export default function Socials() {
   return (
     <section className="w-full">
-      <div className="relative w-full h-[253px] md:h-[400px] 2xl:h-[500px] 3xl:h-[600px]">
-        <Image
+      <div className="relative w-full h-[253px] md:h-[400px] 2xl:h-[500px] 3xl:h-[600px] overflow-hidden">
+        <Tilt3DImage
           src={socialsData.image}
           alt={socialsData.imageAlt}
-          fill
-          className="object-cover object-center"
+          imgClassName="object-cover object-center"
+          reveal
         />
       </div>
 
@@ -19,24 +22,28 @@ export default function Socials() {
         <AnimatedDivider className="border-secondary" />
         <div className="grid grid-cols-2 xl:grid-cols-[62%_1fr] 3xl:grid-cols-[1078px_1fr]">
           {socialsData.socials.map((item, i) => (
-            <div key={i}>
-              <Link
-                href={item.href}
-                className="inline-flex items-end gap-3 lg:gap-6.25 py-5 lg:py-50 cursor-pointer"
-              >
-                <p className="text-subtitle md:section-title text-trim">{item.title}</p>
-                <Image
-                  src={item.icon}
-                  alt={item.title}
-                  width={20}
-                  height={20}
-                  className="w-auto h-4 md:h-5"
-                />
-              </Link>
-              {i < socialsData.socials.length - 2 && (
-                <AnimatedDivider className="border-secondary" />
-              )}
-            </div>
+            <Reveal key={i} variants={moveUpV2} delayRange={i * 0.12}>
+              <div>
+                <Link
+                  href={item.href}
+                  className="inline-flex items-end gap-3 lg:gap-6.25 py-5 lg:py-50 cursor-pointer"
+                >
+                  <p className="text-subtitle md:section-title text-trim">
+                    {item.title}
+                  </p>
+                  <Image
+                    src={item.icon}
+                    alt={item.title}
+                    width={20}
+                    height={20}
+                    className="w-auto h-4 md:h-5"
+                  />
+                </Link>
+                {i < socialsData.socials.length - 2 && (
+                  <AnimatedDivider className="border-secondary" />
+                )}
+              </div>
+            </Reveal>
           ))}
         </div>
         <AnimatedDivider className="border-secondary" />

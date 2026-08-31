@@ -5,11 +5,14 @@ import Image from "next/image";
 import { motion } from "framer-motion";
 import { performanceSpecifyData } from "../data";
 import AnimatedTitle from "../../animations/AnimatedTitle";
-
+import { moveUp } from "../../animations/motionVariants";
+import { useLenis } from "../../layout/LenisProvider";
 
 export default function PerformanceSpecify() {
   const [activeIndex, setActiveIndex] = useState(1);
   const [openIndex, setOpenIndex] = useState(0);
+
+  const { scrollTo } = useLenis();
 
   return (
     <section className="w-full py-100 overflow-x-auto">
@@ -20,14 +23,24 @@ export default function PerformanceSpecify() {
         />
 
         {/* Mobile / tablet accordion layout */}
-        <div className="grid grid-cols-1 gap-x-50 md:grid-cols-2 divide-y divide-secondary xl:hidden">
+        <motion.div
+          id="performance-specify"
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: true }}
+          variants={moveUp(0.1)}
+          className="grid grid-cols-1 gap-x-50 md:grid-cols-2 divide-y divide-secondary xl:hidden"
+        >
           {performanceSpecifyData.items.map((item, i) => {
             const isOpen = openIndex === i;
 
             return (
               <div
                 key={i}
-                onClick={() => setOpenIndex(isOpen ? -1 : i)}
+                onClick={() => {
+                  setOpenIndex(isOpen ? -1 : i);
+                  scrollTo("#performance-specify", { offset: -15 });
+                }}
                 className="flex flex-col overflow-hidden border-secondary px-20 py-30 w-full"
               >
                 <div className="flex items-center gap-4">
@@ -61,10 +74,16 @@ export default function PerformanceSpecify() {
               </div>
             );
           })}
-        </div>
+        </motion.div>
 
         {/* Desktop horizontal expand layout */}
-        <div className="hidden xl:flex divide-x divide-secondary border-x border-secondary">
+        <motion.div
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: true }}
+          variants={moveUp(0.1)}
+          className="hidden xl:flex divide-x divide-secondary border-x border-secondary"
+        >
           {performanceSpecifyData.items.map((item, i) => {
             const isActive = activeIndex === i;
 
@@ -121,7 +140,7 @@ export default function PerformanceSpecify() {
               </div>
             );
           })}
-        </div>
+        </motion.div>
       </div>
     </section>
   );
