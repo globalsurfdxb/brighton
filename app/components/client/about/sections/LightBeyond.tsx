@@ -11,7 +11,7 @@ import { motion } from "framer-motion";
 export default function LightBeyond() {
   return (
     <section className="w-full py-100">
-      <div className="container">
+      <div className="container overflow-hidden">
         <div className="flex flex-col lg:flex-row justify-between gap-30 lg:gap-0 items-stretch">
           {/* Left */}
           <div className="w-full lg:w-1/2 flex flex-col flex-1 self-center py-50 xl:py-0">
@@ -33,12 +33,13 @@ export default function LightBeyond() {
           </div>
 
           {/* Right */}
-          <motion.div 
-          variants={moveLeft(0.1)}
-          initial="hidden"
-          whileInView="show"
-          viewport={{ once: true }}
-          className="w-full lg:w-1/2 relative max-[767px]:max-h-[280px] max-[1023px]:max-h-[450px] aspect-[895/700] min-[1800px]:w-[895px] min-[1800px]:h-[700px] rounded-[10px] overflow-hidden">
+          <motion.div
+            variants={moveLeft(0.1)}
+            initial="hidden"
+            whileInView="show"
+            viewport={{ once: true }}
+            className="w-full lg:w-1/2 relative max-[767px]:max-h-[280px] max-[1023px]:max-h-[450px] aspect-[895/700] min-[1800px]:w-[895px] min-[1800px]:h-[700px] rounded-[10px] overflow-hidden"
+          >
             <Image
               src={lightBeyondData.image}
               alt={lightBeyondData.imageAlt}
