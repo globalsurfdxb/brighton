@@ -29,7 +29,7 @@ export default function ImageDescription({ data }: ImageDescriptionProps) {
           <div className="w-full lg:w-1/2 flex flex-col flex-1 self-center py-20 xl:py-0">
             <AnimatedTitle
               text={data.title}
-              className="section-title mb-2.5 sm:mb-30"
+              className="section-title mb-30"
             />
             <p className="text-description-4 text-description-color">
               {data.description}

@@ -7,6 +7,8 @@ import { motion } from "framer-motion";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useLoadMoreScroll } from "@/app/hooks/useLoadMoreScroll";
 import CommonCategoryTabs from "../../common/CommonCategoryTabs";
+import Reveal from "../../animations/RevealItemsOneByOneAnimation";
+import { moveUpV2 } from "../../animations/motionVariants";
 
 interface BlogListProps {
   data: {
@@ -96,10 +98,7 @@ const BlogList = ({ data }: BlogListProps) => {
   return (
     <section className="top-spacing pb-100 overflow-hidden">
       <div className="container">
-        <AnimatedTitle
-          text={data.title}
-          className="hero-title mb-100"
-        />
+        <AnimatedTitle text={data.title} className="hero-title mb-100" />
         <div className="mb-40">
           <CommonCategoryTabs
             options={data.categories.map((cat) => ({ id: cat, label: cat }))}
@@ -111,34 +110,37 @@ const BlogList = ({ data }: BlogListProps) => {
         </div>
 
         {filteredItems.length > 0 ? (
-          <motion.div
+          <div
             key={selectedCategory}
             className="flex flex-col gap-y-40 md:gap-y-80 lg:gap-y-100"
           >
             {visibleRows.map((row, rowIndex) => (
-              <div
+              <Reveal
+                variants={moveUpV2}
                 key={`${selectedCategory}-${rowIndex}`}
-                className="grid grid-cols-1 sm:grid-cols-2 gap-y-40 md:gap-y-80 gap-x-30 lg:flex lg:flex-row lg:items-start lg:gap-x-100 2xl:gap-x-150 3xl:gap-x-[184px]"
+                delayRange={rowIndex * 0.1}
               >
-                {row.map((item, itemIndex) => {
-                  const itemPosition = rowIndex * 2 + itemIndex;
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-40 md:gap-y-80 gap-x-30 lg:flex lg:flex-row lg:items-start lg:gap-x-100 2xl:gap-x-150 3xl:gap-x-[184px]">
+                  {row.map((item, itemIndex) => {
+                    const itemPosition = rowIndex * 2 + itemIndex;
 
-                  return (
-                    <div
-                      key={item.id}
-                      className="w-full lg:w-auto"
-                      ref={getRefForIndex(itemPosition)}
-                    >
-                      <BlogCard
-                        {...item}
-                        size={getBlogCardSize(itemPosition)}
-                      />
-                    </div>
-                  );
-                })}
-              </div>
+                    return (
+                      <div
+                        key={item.id}
+                        className="w-full lg:w-auto"
+                        ref={getRefForIndex(itemPosition)}
+                      >
+                        <BlogCard
+                          {...item}
+                          size={getBlogCardSize(itemPosition)}
+                        />
+                      </div>
+                    );
+                  })}
+                </div>
+              </Reveal>
             ))}
-          </motion.div>
+          </div>
         ) : (
           <div className="flex py-60">
             <p className="text-description-color text-subtitle">

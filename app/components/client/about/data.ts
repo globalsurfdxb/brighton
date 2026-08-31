@@ -8,7 +8,7 @@ export const aboutIntroData = {
   title: "Lighting That Shapes Architecture",
   description: `<p>Since 2020, Brighton Lighting & Controls has been delivering advanced architectural lighting solutions that combine technology, precision engineering, and timeless design. We create lighting systems that enhance the way people experience spaces—inside and out.</p><p><br></p><p>From commercial developments and hospitality projects to healthcare and public environments, we provide comprehensive lighting solutions that balance performance, aesthetics, and sustainability.</p>`,
   stats: [
-    { value: "2,000+", label: "Products" },
+    { value: "2000+", label: "Products" },
     { value: "75+", label: "Product Families" },
   ],
 };

@@ -8,6 +8,8 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useMediaQuery } from "@/app/hooks/useMediaQuery";
 import { useLoadMoreScroll } from "@/app/hooks/useLoadMoreScroll";
 import CommonCategoryTabs from "../../common/CommonCategoryTabs";
+import Reveal from "../../animations/RevealItemsOneByOneAnimation";
+import { moveUpV2 } from "../../animations/motionVariants";
 
 interface NewsListProps {
   data: {
@@ -94,13 +96,19 @@ const NewsList = ({ data }: NewsListProps) => {
         </div>
 
         {filteredItems.length > 0 ? (
-          <motion.div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-30 gap-y-40 md:gap-y-80">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-30 gap-y-40 md:gap-y-80">
             {visibleItems.map((item, index) => (
-              <motion.div key={item.id} ref={getRefForIndex(index)}>
-                <NewsCard {...item} />
-              </motion.div>
+              <Reveal
+                variants={moveUpV2}
+                delayRange={index * 0.08}
+                key={item.id}
+              >
+                <div ref={getRefForIndex(index)}>
+                  <NewsCard {...item} />
+                </div>
+              </Reveal>
             ))}
-          </motion.div>
+          </div>
         ) : (
           <div className="flex py-60">
             <p className="text-description-color text-subtitle">
@@ -113,7 +121,7 @@ const NewsList = ({ data }: NewsListProps) => {
             <PillBtn
               label={"Load More"}
               active={false}
-                            onClick={() => {
+              onClick={() => {
                 markPendingScroll(visibleItems.length);
                 updateParams({ page: String(currentPage + 1) });
               }}

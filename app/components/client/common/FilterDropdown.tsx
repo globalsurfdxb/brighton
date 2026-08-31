@@ -63,7 +63,7 @@ export default function FilterSelectDropDown({
     <div
       ref={rootRef}
       onClick={() => setOpen((prev) => !prev)}
-      className={`relative w-fit min-w-[200px] 2xl:min-w-[229px] cursor-pointer ${className}`}
+      className={`relative w-full min-w-[200px] 2xl:min-w-[229px] cursor-pointer ${className}`}
     >
       <button
         type="button"

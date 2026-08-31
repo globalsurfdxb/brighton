@@ -86,7 +86,7 @@ export default function ProjectsSection() {
 
   const handleRegionChange = (value: string | null) => {
     updateParams({
-      region: value ? value.toLowerCase().replace(",", "") : null,
+      region: value,
       page: null,
     });
   };
@@ -123,11 +123,12 @@ export default function ProjectsSection() {
     <section className="bg-white top-spacing pb-100 container overflow-hidden">
       <AnimatedTitle className="hero-title mb-100" text="Projects" tag="h1" />
 
-      <div className="mb-40 gap-5 flex flex-col lg:flex-row items-start lg:items-center justify-between">
+      <div className="mb-40 gap-3 sm:gap-5 flex flex-col sm:flex-row items-start sm:items-center md:flex-wrap justify-between">
         <CommonCategoryTabs
           options={categoryOptions}
           active={category}
           allLabel="All"
+          mobileAllLabel="Sectors"
           onChange={handleCategoryClick}
         />
 
@@ -136,7 +137,7 @@ export default function ProjectsSection() {
           initial="hidden"
           whileInView="show"
           viewport={{ once: true }}
-          className="w-fit"
+          className="w-full md:w-fit"
         >
           <FilterSelectDropDown
             label="Region"
