@@ -1,6 +1,11 @@
+"use client";
+
 import { contactData } from "../data";
 import AnimatedTitle from "../../animations/AnimatedTitle";
 import ContactForm from "./ContactForm";
+import SectionDescription from "../../animations/SectionDescription";
+import { motion } from "framer-motion";
+import { moveRight, moveUp } from "../../animations/motionVariants";
 
 export default function ContactSection() {
   return (
@@ -14,24 +19,40 @@ export default function ContactSection() {
         {/* Row 2 - address/phone/email + description */}
         <div className="grid grid-cols-1 lg:grid-cols-2 3xl:grid-cols-[1fr_895px] gap-30 lg:gap-0 mb-50">
           <div className="flex flex-col gap-3 md:gap-7.5">
-            <p
+            <SectionDescription
+              as="div"
+              direction="y"
+              html={contactData.address}
               className="text-description-4 text-description-color"
-              dangerouslySetInnerHTML={{ __html: contactData.address }}
             />
-            <div className="text-description-4 text-primary">
+            <motion.div
+              initial="hidden"
+              whileInView="show"
+              viewport={{ once: true }}
+              variants={moveUp(0.1)}
+              className="text-description-4 text-primary"
+            >
               <p>Phone: {contactData.phone}</p>
               <p>Email: {contactData.email}</p>
-            </div>
+            </motion.div>
           </div>
 
-          <p className="text-subtitle text-description-color max-w-[47ch] xl:mr-60 min-[1900px]:mr-[154px]">
-            {contactData.description}
-          </p>
+          <SectionDescription
+            direction="y"
+            text={contactData.description}
+            className="text-subtitle text-description-color max-w-[47ch] xl:mr-60 min-[1900px]:mr-[154px]"
+          />
         </div>
 
         {/* Row 3 - map + form */}
         <div className="grid grid-cols-1 lg:grid-cols-2 3xl:grid-cols-[1fr_895px] items-end gap-100 lg:gap-0">
-          <div className="w-full min-h-[280px] lg:w-[80%] aspect-[741/466] 3xl:w-[741px] rounded-[10px] overflow-hidden">
+          <motion.div
+            initial="hidden"
+            whileInView="show"
+            viewport={{ once: true }}
+            variants={moveRight(0.15)}
+            className="w-full min-h-[280px] lg:w-[80%] aspect-[741/466] 3xl:w-[741px] rounded-[10px] overflow-hidden"
+          >
             <iframe
               src={contactData.mapLink}
               width="100%"
@@ -40,7 +61,7 @@ export default function ContactSection() {
               loading="lazy"
               referrerPolicy="no-referrer-when-downgrade"
             />
-          </div>
+          </motion.div>
 
           <ContactForm />
         </div>

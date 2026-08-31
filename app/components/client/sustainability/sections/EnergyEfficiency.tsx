@@ -6,6 +6,9 @@ import { motion, AnimatePresence } from "framer-motion";
 import { energyEfficiencyData } from "../data";
 import AnimatedTitle from "../../animations/AnimatedTitle";
 import PlusMinusIcon from "../../technology/sections/PlusMinusIcon";
+import SectionDescription from "../../animations/SectionDescription";
+import Reveal from "../../animations/RevealItemsOneByOneAnimation";
+import { moveUpV2 } from "../../animations/motionVariants";
 
 export default function EnergyEfficiency() {
   const [activeIndex, setActiveIndex] = useState(1);
@@ -23,9 +26,11 @@ export default function EnergyEfficiency() {
               text={energyEfficiencyData.title}
               className="section-title mb-30 sm:mb-50 2xl:mb-60"
             />
-            <p className="text-description-4 text-description-color lg:max-w-[78%] 2xl:max-w-full ">
-              {energyEfficiencyData.description}
-            </p>
+            <SectionDescription
+              direction="y"
+              text={energyEfficiencyData.description}
+              className="text-description-4 text-description-color lg:max-w-[78%] 2xl:max-w-full "
+            />
           </div>
 
           {/* Middle - image */}
@@ -60,57 +65,58 @@ export default function EnergyEfficiency() {
               {energyEfficiencyData.items.map((item, i) => {
                 const isActive = activeIndex === i;
                 return (
-                  <div
-                    key={i}
-                    onMouseEnter={() => setActiveIndex(i)}
-                    className="rounded-[10px] p-30 3xl:py-40 relative"
-                    style={{
-                      background:
-                        "linear-gradient(180deg, #FFFFFF 0%, #F5F5F5 100%)",
-                    }}
-                  >
+                  <Reveal key={i} variants={moveUpV2} delayRange={0.1 * i}>
                     <div
-                      className={`absolute right-20 flex items-center justify-between transition-all duration-300 ${
-                        isActive ? "top-20" : "top-1/2 -translate-y-1/2"
-                      }`}
+                      onMouseEnter={() => setActiveIndex(i)}
+                      className="rounded-[10px] p-30 3xl:py-40 relative"
+                      style={{
+                        background:
+                          "linear-gradient(180deg, #FFFFFF 0%, #F5F5F5 100%)",
+                      }}
                     >
                       <div
-                        className={`w-8 h-8 3xl:w-10 3xl:h-10 flex items-center justify-center rounded-[5px] transition-colors duration-500 ${
-                          isActive ? "bg-primary" : "bg-secondary"
+                        className={`absolute right-20 flex items-center justify-between transition-all duration-300 ${
+                          isActive ? "top-20" : "top-1/2 -translate-y-1/2"
                         }`}
                       >
-                        <PlusMinusIcon isActive={isActive} />
-                      </div>
-                    </div>
-                    <AnimatedTitle
-                      tag={"h3"}
-                      className="text-subtitle text-primary text-trim max-w-[90%]"
-                      text={item.title}
-                    />
-                    <AnimatePresence initial={false}>
-                      {isActive && (
-                        <motion.div
-                          initial={{ height: 0, opacity: 0 }}
-                          animate={{ height: "auto", opacity: 1 }}
-                          exit={{ height: 0, opacity: 0 }}
-                          transition={{ duration: 0.3, ease: "easeOut" }}
-                          className="overflow-hidden"
+                        <div
+                          className={`w-8 h-8 3xl:w-10 3xl:h-10 flex items-center justify-center rounded-[5px] transition-colors duration-500 ${
+                            isActive ? "bg-primary" : "bg-secondary"
+                          }`}
                         >
-                          <p className="text-description-4 text-description-color max-w-[80%] mt-30">
-                            {item.description}
-                          </p>
-                          <div className="lg:hidden relative w-full aspect-[895/700] max-h-[280px] md:max-h-[380px] mt-30 rounded-[10px] overflow-hidden">
-                            <Image
-                              src={item.image}
-                              alt={item.imageAlt}
-                              fill
-                              className="object-cover object-center"
-                            />
-                          </div>
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
-                  </div>
+                          <PlusMinusIcon isActive={isActive} />
+                        </div>
+                      </div>
+                      <AnimatedTitle
+                        tag={"h3"}
+                        className="text-subtitle text-primary text-trim max-w-[90%]"
+                        text={item.title}
+                      />
+                      <AnimatePresence initial={false}>
+                        {isActive && (
+                          <motion.div
+                            initial={{ height: 0, opacity: 0 }}
+                            animate={{ height: "auto", opacity: 1 }}
+                            exit={{ height: 0, opacity: 0 }}
+                            transition={{ duration: 0.3, ease: "easeOut" }}
+                            className="overflow-hidden"
+                          >
+                            <p className="text-description-4 text-description-color max-w-[80%] mt-30">
+                              {item.description}
+                            </p>
+                            <div className="lg:hidden relative w-full aspect-[895/700] max-h-[280px] md:max-h-[380px] mt-30 rounded-[10px] overflow-hidden">
+                              <Image
+                                src={item.image}
+                                alt={item.imageAlt}
+                                fill
+                                className="object-cover object-center"
+                              />
+                            </div>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                    </div>
+                  </Reveal>
                 );
               })}
             </div>

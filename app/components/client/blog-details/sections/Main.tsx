@@ -6,7 +6,7 @@ import AnimatedDivider from "../../animations/AnimatedDivider";
 import { formatDate } from "@/lib/utils/formatDate";
 import { SharePill } from "./SharePil";
 import { motion } from "framer-motion";
-import { moveLeft, moveRight } from "../../animations/motionVariants";
+import { moveLeft, moveRight, moveUp } from "../../animations/motionVariants";
 
 export interface BlogDetails {
   title: string;
@@ -44,7 +44,7 @@ const Main = ({ data }: { data: BlogDetails }) => {
                 />
                 <div className="flex justify-between items-center">
                   <motion.p
-                    variants={moveRight(0.1)}
+                    variants={moveRight(0.15)}
                     initial="hidden"
                     whileInView="show"
                     viewport={{ once: true }}
@@ -53,7 +53,7 @@ const Main = ({ data }: { data: BlogDetails }) => {
                     {formatDate(data.date)}
                   </motion.p>
                   <motion.div
-                    variants={moveLeft(0.15)}
+                    variants={moveLeft(0.2)}
                     initial="hidden"
                     whileInView="show"
                     viewport={{ once: true }}
@@ -76,26 +76,40 @@ const Main = ({ data }: { data: BlogDetails }) => {
                 <SharePill title={data.title} />
               </div>
               <div className="hidden xl:flex flex-col gap-4 xl:gap-[26px]">
-                <div>
+                <motion.div
+                  variants={moveRight(0.1)}
+                  initial="hidden"
+                  whileInView="show"
+                  viewport={{ once: true }}
+                >
                   <h4 className="text-subtitle-2 uppercase text-description-color mb-[10px]">
                     Published
                   </h4>
                   <p className="text-subtitle-3 text-trim">
                     {formatDate(data.date)}
                   </p>
-                </div>
+                </motion.div>
                 <AnimatedDivider className="hidden xl:block border-secondary" />
-                <div>
+                <motion.div
+                  variants={moveRight(0.15)}
+                  initial="hidden"
+                  whileInView="show"
+                  viewport={{ once: true }}
+                >
                   <h4 className="text-subtitle-2 uppercase text-description-color mb-[10px]">
                     Topic
                   </h4>
                   <p className="text-subtitle-3">{data.category}</p>
-                </div>
+                </motion.div>
               </div>
             </div>
 
             <AnimatedDivider className="xl:hidden border-secondary" />
-            <div
+            <motion.div
+              variants={moveUp(0.12)}
+              initial="hidden"
+              whileInView="show"
+              viewport={{ once: true }}
               className="news-content 2xl:mr-80 min-[1900]:mr-[156px]"
               dangerouslySetInnerHTML={{ __html: data.content }}
             />

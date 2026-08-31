@@ -67,7 +67,7 @@ const ProcessSection = ({ data }: ProcessSectionProps) => {
 
               return (
                 <SwiperSlide key={item.id}>
-                  <div className="relative flex flex-col p-50 3xl:pb-80 min-[1800px]:pb-[78px] rounded-[10px] border border-secondary overflow-hidden h-full">
+                  <div className="relative flex flex-col p-50 rounded-[10px] border border-secondary overflow-hidden h-full">
                     <div
                       style={{
                         background:

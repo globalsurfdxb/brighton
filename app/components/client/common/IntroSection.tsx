@@ -18,7 +18,7 @@ interface IntroSectionProps {
 const IntroSection = ({ data, className }: IntroSectionProps) => {
   return (
     <section>
-      <div className="container">
+      <div className="container overflow-hidden">
         <div className={`xl:ml-[30%] 3xl:ml-115.75 py-100 ${className}`}>
           <SectionDescription
             direction="y"

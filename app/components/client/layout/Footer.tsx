@@ -13,7 +13,7 @@ import Image from "next/image";
 import { useRef, useState } from "react";
 import AnimatedTitle from "../animations/AnimatedTitle";
 import Reveal from "../animations/RevealItemsOneByOneAnimation";
-import { moveUpV2 } from "../animations/motionVariants";
+import { moveLeft, moveUp, moveUpV2 } from "../animations/motionVariants";
 import SectionDescription from "../animations/SectionDescription";
 import { useLenis } from "./LenisProvider";
 
@@ -178,23 +178,31 @@ export default function Footer() {
               href={"https://maps.app.goo.gl/1Ze6x9FHGQF4eCPF8"}
               target="_blank"
             >
-              <SectionDescription text={footerAddress.line} />
+              <SectionDescription direction="y" text={footerAddress.line} />
             </Link>
           </div>
 
-          <div className="col-span-2 lg:col-start-3 text-subtitle flex flex-col">
-            <Link
-              className="w-fit hover:text-description-color transition-colors duration-500"
-              href={`tel:${footerContact.phone}`}
+          <div className="col-span-2 lg:col-start-3 text-subtitle">
+            <motion.div
+              initial="hidden"
+              whileInView="show"
+              variants={moveUp(0.1)}
+              viewport={{ once: true }}
+              className="flex flex-col"
             >
-              {footerContact.phone}
-            </Link>
-            <Link
-              className="w-fit hover:text-description-color transition-colors duration-500"
-              href={`mailto:${footerContact.email}`}
-            >
-              {footerContact.email}
-            </Link>
+              <Link
+                className="w-fit hover:text-description-color transition-colors duration-500"
+                href={`tel:${footerContact.phone}`}
+              >
+                {footerContact.phone}
+              </Link>
+              <Link
+                className="w-fit hover:text-description-color transition-colors duration-500"
+                href={`mailto:${footerContact.email}`}
+              >
+                {footerContact.email}
+              </Link>
+            </motion.div>
 
             <div className="flex flex-wrap gap-6 sm:gap-x-30 gap-y-2 text-description text-description-color mt-3.75 md:mt-30">
               {footerSocials.map((social, i) => (
@@ -215,7 +223,13 @@ export default function Footer() {
             </div>
           </div>
 
-          <div className="mt-3.75 md:mt-0 col-span-2 lg:col-start-5 flex flex-wrap gap-x-30 gap-y-2 text-description text-description-color">
+          <motion.div
+            initial="hidden"
+            whileInView="show"
+            variants={moveUp(0.1)}
+            viewport={{ once: true }}
+            className="mt-3.75 md:mt-0 col-span-2 lg:col-start-5 flex flex-wrap gap-x-30 gap-y-2 text-description text-description-color"
+          >
             <Link href={"#"}>
               <button className="btn-fill-center cursor-pointer max-h-[51px] md:max-h-[80px] rounded-[50px] border border-secondary px-[30px] sm:px-8 3xl:px-[39.5px] py-[15.5px] lg:py-6 3xl:py-[27px] transition-colors duration-500 group w-full flex items-center justify-center gap-2.5 sm:gap-4 bg-primary">
                 <span className="text-subtitle text-28 md:text-24 3xl:text-28  !leading-none text-white max-h-[21px] group-hover:text-primary">
@@ -230,7 +244,7 @@ export default function Footer() {
                 />
               </button>
             </Link>
-          </div>
+          </motion.div>
         </div>
       </div>
 

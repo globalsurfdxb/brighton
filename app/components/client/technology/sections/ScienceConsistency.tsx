@@ -7,6 +7,8 @@ import { scienceConsistencyData } from "../data";
 import AnimatedTitle from "../../animations/AnimatedTitle";
 import PlusMinusIcon from "./PlusMinusIcon";
 import { useLenis } from "../../layout/LenisProvider";
+import { moveRight, moveUpV2 } from "../../animations/motionVariants";
+import Reveal from "../../animations/RevealItemsOneByOneAnimation";
 
 export default function ScienceConsistency() {
   const [activeIndex, setActiveIndex] = useState(1);
@@ -17,7 +19,7 @@ export default function ScienceConsistency() {
 
   return (
     <section className="w-full py-100 bg-cream-background">
-      <div className="container">
+      <div className="container overflow-hidden">
         <AnimatedTitle
           text={scienceConsistencyData.title}
           className="section-title mb-5 sm:mb-40"
@@ -28,7 +30,13 @@ export default function ScienceConsistency() {
           className="flex flex-col lg:flex-row gap-30 items-stretch"
         >
           {/* Left - image */}
-          <div className="hidden lg:block relative w-full lg:w-[50%] xl:w-[52%] shrink-0 aspect-[895/700] 3xl:w-[895px] 3xl:h-[700px] rounded-[10px] overflow-hidden">
+          <motion.div
+            initial="hidden"
+            whileInView="show"
+            viewport={{ once: true }}
+            variants={moveRight(0.1)}
+            className="hidden lg:block relative w-full lg:w-[50%] xl:w-[52%] shrink-0 aspect-[895/700] 3xl:w-[895px] 3xl:h-[700px] rounded-[10px] overflow-hidden"
+          >
             <Image
               src={baseImage}
               alt=""
@@ -53,7 +61,7 @@ export default function ScienceConsistency() {
                 className="object-cover object-center pointer-events-none"
               />
             </motion.div>
-          </div>
+          </motion.div>
 
           {/* Right - accordion */}
           <div className="flex flex-col gap-30 w-full lg:flex-1 lg:pb-[50px] xl:pb-0">
@@ -61,63 +69,64 @@ export default function ScienceConsistency() {
               const isActive = activeIndex === i;
 
               return (
-                <div
-                  key={i}
-                  onMouseEnter={() => setActiveIndex(i)}
-                  onClick={() =>
-                    scrollTo("#science-consistency", { offset: -15 })
-                  }
-                  className={`rounded-[10px] 3xl:px-50 relative transition-[padding] duration-500 ${isActive ? "p-40 3xl:py-50" : "p-30 3xl:py-40"}`}
-                  style={{
-                    background:
-                      "linear-gradient(180deg, #FFFFFF 0%, #F5F5F5 100%)",
-                  }}
-                >
+                <Reveal key={i} variants={moveUpV2} delayRange={0.1 * i}>
                   <div
-                    className={`absolute right-20 flex items-center justify-between transition-all duration-300 ${
-                      isActive ? "top-20" : "top-1/2 -translate-y-1/2"
-                    }`}
+                    onMouseEnter={() => setActiveIndex(i)}
+                    onClick={() =>
+                      scrollTo("#science-consistency", { offset: -15 })
+                    }
+                    className={`rounded-[10px] 3xl:px-50 relative transition-[padding] duration-500 ${isActive ? "p-6 sm:p-40 3xl:py-50" : "p-30 3xl:py-40"}`}
+                    style={{
+                      background:
+                        "linear-gradient(180deg, #FFFFFF 0%, #F5F5F5 100%)",
+                    }}
                   >
                     <div
-                      className={`w-8 h-8 3xl:w-10 3xl:h-10 flex items-center justify-center rounded-[5px] transition-colors duration-500 ${
-                        isActive ? "bg-primary" : "bg-secondary"
+                      className={`absolute right-20 flex items-center justify-between transition-all duration-300 ${
+                        isActive ? "top-20" : "top-1/2 -translate-y-1/2"
                       }`}
                     >
-                      <PlusMinusIcon isActive={isActive} />
-                    </div>
-                  </div>
-                  <AnimatedTitle
-                    tag={"h3"}
-                    className="text-subtitle text-primary text-trim max-w-[88%]"
-                    text={item.title}
-                  />
-
-                  <AnimatePresence initial={false}>
-                    {isActive && (
-                      <motion.div
-                        initial={{ height: 0, opacity: 0 }}
-                        animate={{ height: "auto", opacity: 1 }}
-                        exit={{ height: 0, opacity: 0 }}
-                        transition={{ duration: 0.45, ease: "easeOut" }}
-                        className="overflow-hidden"
+                      <div
+                        className={`w-8 h-8 3xl:w-10 3xl:h-10 flex items-center justify-center rounded-[5px] transition-colors duration-500 ${
+                          isActive ? "bg-primary" : "bg-secondary"
+                        }`}
                       >
-                        <p className="text-description-4 text-description-color max-w-[80%] mt-30">
-                          {item.description}
-                        </p>
+                        <PlusMinusIcon isActive={isActive} />
+                      </div>
+                    </div>
+                    <AnimatedTitle
+                      tag={"h3"}
+                      className="text-subtitle text-primary text-trim max-w-[88%]"
+                      text={item.title}
+                    />
 
-                        {/* Mobile / Tablet image */}
-                        <div className="lg:hidden relative w-full aspect-[895/700] max-h-[280px] md:max-h-[380px] mt-30 rounded-[10px] overflow-hidden">
-                          <Image
-                            src={item.image}
-                            alt={item.imageAlt}
-                            fill
-                            className="object-cover object-center"
-                          />
-                        </div>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </div>
+                    <AnimatePresence initial={false}>
+                      {isActive && (
+                        <motion.div
+                          initial={{ height: 0, opacity: 0 }}
+                          animate={{ height: "auto", opacity: 1 }}
+                          exit={{ height: 0, opacity: 0 }}
+                          transition={{ duration: 0.45, ease: "easeOut" }}
+                          className="overflow-hidden"
+                        >
+                          <p className="text-description-4 text-description-color max-w-[80%] mt-30">
+                            {item.description}
+                          </p>
+
+                          {/* Mobile / Tablet image */}
+                          <div className="lg:hidden relative w-full aspect-[895/700] max-h-[280px] md:max-h-[380px] mt-30 rounded-[10px] overflow-hidden">
+                            <Image
+                              src={item.image}
+                              alt={item.imageAlt}
+                              fill
+                              className="object-cover object-center"
+                            />
+                          </div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </div>
+                </Reveal>
               );
             })}
           </div>
