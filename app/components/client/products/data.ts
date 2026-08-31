@@ -19,13 +19,13 @@ export const subcategories = [
   {
     id: "ceiling-recessed-surface-suspended-profiles",
     category: "interior",
-    title: "Ceiling Recessed / Surface / Suspended Profiles",
+    title: "Ceiling Recessed - Surface - Suspended Profiles",
     icon: "/assets/images/products/interior/sub-categories/3.svg",
   },
   {
     id: "ceiling-recessed-surface-suspended-panel-light",
     category: "interior",
-    title: "Ceiling Recessed / Surface / Suspended Panel Light",
+    title: "Ceiling Recessed - Surface - Suspended Panel Light",
     icon: "/assets/images/products/interior/sub-categories/4.svg",
   },
   {
