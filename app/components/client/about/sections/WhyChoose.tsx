@@ -32,7 +32,7 @@ export default function WhyChoose() {
         >
           {whyChooseData.items.map((item, i) => (
             <SwiperSlide key={i}>
-              <Reveal variants={moveUpV2} delayRange={i * 0.12} className="h-full">
+              <Reveal variants={moveUpV2} delayRange={i * 0.08} className="h-full">
                 <div className="border border-secondary rounded-[10px] p-40 -mr-px relative h-full">
                   <div
                     className="absolute inset-0 rounded-[10px]"
