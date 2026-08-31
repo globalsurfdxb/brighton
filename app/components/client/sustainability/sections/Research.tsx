@@ -29,7 +29,7 @@ export default function Research() {
         <div>
           <AnimatedTitle
             text={researchData.title}
-            className="section-title text-white mb-30 max-w-[15ch]"
+            className="section-title text-white mb-30 max-w-[25ch]"
           />
           <SectionDescription
             as="div"

@@ -2,28 +2,28 @@
 
 import Image from "next/image";
 import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import FormInput from "@/app/components/client/forms/FormInput";
 import AnimatedTitle from "../../animations/AnimatedTitle";
 import CustomButton from "../../common/CustomButton";
 import { motion } from "framer-motion";
 import { moveRight, moveUp } from "../../animations/motionVariants";
 import SectionDescription from "../../animations/SectionDescription";
-
-interface CatalogueFormData {
-  name: string;
-  company: string;
-  email: string;
-  role: string;
-}
+import {
+  catalogueFormSchema,
+  CatalogueFormValues,
+} from "@/lib/validations/catalogueFormSchema";
 
 export default function Main() {
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<CatalogueFormData>();
+  } = useForm<CatalogueFormValues>({
+    resolver: zodResolver(catalogueFormSchema),
+  });
 
-  const onSubmit = (data: CatalogueFormData) => {
+  const onSubmit = (data: CatalogueFormValues) => {
     console.log(data);
   };
 
@@ -83,7 +83,7 @@ export default function Main() {
             />
 
             <form onSubmit={handleSubmit(onSubmit)}>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-50 mb-30 md:mb-60">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-40 mb-30 md:mb-60">
                 <motion.div
                   variants={moveUp(0)}
                   initial="hidden"
@@ -93,7 +93,7 @@ export default function Main() {
                   <FormInput
                     label="Name"
                     required
-                    {...register("name", { required: "Name is required" })}
+                    {...register("name")}
                     error={errors.name?.message}
                   />
                 </motion.div>
@@ -121,7 +121,7 @@ export default function Main() {
                     label="Email"
                     type="email"
                     required
-                    {...register("email", { required: "Email is required" })}
+                    {...register("email")}
                     error={errors.email?.message}
                   />
                 </motion.div>

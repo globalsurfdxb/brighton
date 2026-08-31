@@ -45,8 +45,8 @@ export const certifiedCompliantData = {
 
 export const researchData = {
   image: "/assets/images/sustainability/research.jpg",
-  imageAlt: "Research, Innovation & Human Wellbeing  ",
-  title: "Engineered as One System",
+  imageAlt: "Research, Innovation & Human Wellbeing",
+  title: "Research, Innovation & Human Wellbeing",
   description:
     "<p>Research plays a vital role at Brighton. Extensive application knowledge forms the foundation of our user-oriented design process, including in-depth studies of user acceptance, visual comfort and human wellbeing. Our research activities focus particularly on understanding the effects of light on people, ensuring that performance, comfort and sustainability are addressed in equal measure.</p><br/><p>This research shapes our design work directly — including how we approach lighting for the environments where light matters most to people’s quality of life, such as elderly care.</p>",
 };
