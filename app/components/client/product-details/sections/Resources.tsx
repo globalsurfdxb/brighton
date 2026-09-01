@@ -22,7 +22,7 @@ export default function SpecifierResources() {
                 textColor="text-foreground"
                 iconSrc="/assets/icons/certificates/1.svg"
                 arrowIcon="/assets/icons/certificates/resource_down_arrow.svg"
-                arrowSize={"h-3 w-3 xl:h-[18px] xl:w-[18px]"}
+                arrowSize={"h-3 w-3 xl:h-[18px] xl:w-[18px] 3xl:h-5 3xl:w-5"}
               />
             </Reveal>
           ))}
@@ -39,6 +39,7 @@ export default function SpecifierResources() {
               <ResourceCard
                 item={certification}
                 bgColor="bg-cream-background"
+                btnBgColor="bg-white"
                 textColor="text-foreground"
                 iconSrc="/assets/icons/certificates/2.svg"
                 arrowIcon="/assets/icons/certificates/resource_plus.svg"

@@ -57,11 +57,19 @@ export const blogItems = [
   {
     id: 7,
     title:
-      "Designing for Longevity Through Precision, Performance, and Innovation",
+      "Designing for Longevity Through Precision, Performance, and Innovation Designing for Longevity Through Precision, Performance, and Innovation",
     date: "14/05/2026",
     category: "Technology",
-    image: "/assets/images/blog/blog-6.jpg",
+    image: "/assets/images/blog/blog-1.jpg",
   },
+  //   {
+  //   id: 8,
+  //   title:
+  //     "Designing for Longevity Through Precision, Performance, and Innovation",
+  //   date: "14/05/2026",
+  //   category: "Technology",
+  //   image: "/assets/images/blog/blog-2.jpg",
+  // },
 ];
 
 export const blogSection = {

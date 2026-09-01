@@ -556,7 +556,7 @@ export const resourceData = {
       name: "Datasheet",
       meta: "2.4 MB",
       action: "Download",
-      href: "/downloads/spin-datasheet.pdf",
+      href: "#",
     },
     {
       id: "photometric",
@@ -564,7 +564,7 @@ export const resourceData = {
       name: "Photometric File",
       meta: "160 KB",
       action: "Download",
-      href: "/downloads/spin-photometric.ies",
+      href: "#",
     },
     {
       id: "cad",
@@ -572,7 +572,7 @@ export const resourceData = {
       name: "2D Drawings (CAD)",
       meta: "2.4 MB",
       action: "Download",
-      href: "/downloads/spin-drawings.dwg",
+      href: "#",
     },
     {
       id: "revit",
@@ -580,7 +580,7 @@ export const resourceData = {
       name: "Revit Family (BIM)",
       meta: "1.6 MB",
       action: "Download",
-      href: "/downloads/spin-revit.rfa",
+      href: "#",
     },
     {
       id: "imagery",
@@ -588,7 +588,7 @@ export const resourceData = {
       name: "High-Res Imagery",
       meta: "12 MB",
       action: "Download",
-      href: "/downloads/spin-imagery.zip",
+      href: "#",
     },
     {
       id: "qr",
@@ -596,7 +596,7 @@ export const resourceData = {
       name: "QR Code · Variant Link",
       meta: "PNG + SVG",
       action: "Opens this exact configuration",
-      href: "/downloads/spin-qr.zip",
+      href: "#",
     },
   ],
   certifications: [
@@ -604,19 +604,19 @@ export const resourceData = {
       id: "cert-1",
       fileType: "PDF",
       name: "Certificate Name",
-      href: "/downloads/certificate-1.pdf",
+      href: "#",
     },
     {
       id: "cert-2",
       fileType: "PDF",
       name: "Certificate Name",
-      href: "/downloads/certificate-2.pdf",
+      href: "#",
     },
     {
       id: "cert-3",
       fileType: "PDF",
       name: "Certificate Name",
-      href: "/downloads/certificate-3.pdf",
+      href: "#",
     },
   ],
 };
