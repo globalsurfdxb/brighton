@@ -12,18 +12,21 @@ interface AnimatedTitleProps {
   text: string;
   className?: string;
   tag?: ElementType;
+  skipIntroWait?: boolean;
 }
 
 export default function AnimatedTitle({
   text,
   className = "",
   tag = "h2",
+  skipIntroWait = false,
 }: AnimatedTitleProps) {
   const rootRef = useRef<HTMLHeadingElement>(null);
   const introComplete = useIntroComplete();
+  const readyToAnimate = skipIntroWait || introComplete;
 
   useLayoutEffect(() => {
-    if (!rootRef.current || !introComplete) return;
+    if (!rootRef.current || !readyToAnimate) return;
 
     const chars = rootRef.current.querySelectorAll(".animated-char");
 
@@ -61,7 +64,7 @@ export default function AnimatedTitle({
     }, rootRef);
 
     return () => ctx.revert();
-  }, [introComplete]);
+  }, [readyToAnimate]);
 
   const Tag = tag;
   const words = text.split(" ");
