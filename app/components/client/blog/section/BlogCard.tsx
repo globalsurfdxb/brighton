@@ -10,6 +10,7 @@ interface BlogCardProps {
   category: string;
   image: string;
   size?: "big" | "small";
+  isLoneCard?: boolean;
 }
 
 const cardSizeClasses = {
@@ -30,12 +31,15 @@ const BlogCard = ({
   category,
   image,
   size = "big",
+  isLoneCard = false,
 }: BlogCardProps) => {
   return (
     <Link
       href={`/blog/${id}`}
       key={id}
-      className={`flex w-full flex-col relative group ${cardSizeClasses[size]}`}
+      className={`flex w-full flex-col relative group ${
+        isLoneCard ? "lg:!w-1/2" : cardSizeClasses[size]
+      }`}
     >
       <div
         className={`w-full relative overflow-hidden rounded-[10px] max-sm:max-h-[280px] mb-30 ${imageSizeClasses[size]}`}

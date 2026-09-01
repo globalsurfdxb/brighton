@@ -1,8 +1,8 @@
 "use client";
 
-import { forwardRef } from "react";
+import { forwardRef, useRef } from "react";
 
-interface FormInputProps extends Omit<
+interface FormInputProps extends Omit <
   React.InputHTMLAttributes<HTMLInputElement>,
   "name"
 > {
@@ -14,15 +14,26 @@ interface FormInputProps extends Omit<
 
 const FormInput = forwardRef<HTMLInputElement, FormInputProps>(
   ({ label, name, type = "text", required = false, error, ...rest }, ref) => {
+    const inputRef = useRef<HTMLInputElement>(null);
+
+    const setRefs = (node: HTMLInputElement | null) => {
+      inputRef.current = node;
+      if (typeof ref === "function") ref(node);
+      else if (ref) ref.current = node;
+    };
+
     return (
-      <div className="relative w-full pb-[calc(25px+20px)] md:pb-[calc(40px+20px)]">
+      <div
+        className="relative w-full pb-[calc(25px+20px)] md:pb-[calc(40px+20px)]"
+        onClick={() => inputRef.current?.focus()}
+      >
         <input
           id={name}
           type={type}
           name={name}
           required={required}
           placeholder=" "
-          ref={ref}
+          ref={setRefs}
           {...rest}
           className="peer absolute left-0 bottom-5 w-full bg-transparent text-description-4 text-description-color outline-none"
         />
@@ -49,11 +60,11 @@ const FormInput = forwardRef<HTMLInputElement, FormInputProps>(
         </label>
 
         {/* base line */}
-        <span className="absolute left-0 bottom-5 w-full h-px bg-description-color/30" />
+        <span className="absolute left-0 bottom-5 w-full h-px bg-secondary" />
         {/* animated fill line */}
         <span
           className={`absolute left-0 bottom-5 h-px transition-all duration-500 ease-in-out
-            ${error ? "w-full bg-red-500" : "w-0 bg-secondary peer-focus:w-full"}`}
+            ${error ? "w-full bg-red-500" : "w-0 bg-description-color peer-focus:w-full"}`}
         />
         <span className="absolute left-0 bottom-0 h-5 text-[14px] font-itc-book text-red-500 pt-[2px]">
           {error ?? ""}

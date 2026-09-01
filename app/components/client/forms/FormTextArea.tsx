@@ -64,11 +64,11 @@ const FormTextArea = forwardRef<HTMLTextAreaElement, FormTextAreaProps>(
           )}
         </label>
 
-        <span className="absolute left-0 bottom-5 w-full h-px bg-description-color/30" />
+        <span className="absolute left-0 bottom-5 w-full h-px bg-secondary" />
 
         <span
           className={`absolute left-0 bottom-5 h-px transition-all duration-500 ease-in-out ${
-            error ? "w-full bg-red-500" : "w-0 bg-secondary peer-focus:w-full"
+            error ? "w-full bg-red-500" : "w-0 bg-description-color peer-focus:w-full"
           }`}
         />
 

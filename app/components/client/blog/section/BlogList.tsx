@@ -133,6 +133,7 @@ const BlogList = ({ data }: BlogListProps) => {
                         <BlogCard
                           {...item}
                           size={getBlogCardSize(itemPosition)}
+                          isLoneCard={row.length === 1}
                         />
                       </div>
                     );

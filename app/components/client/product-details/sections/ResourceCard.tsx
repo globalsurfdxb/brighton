@@ -10,6 +10,7 @@ type CardProps = {
     action?: string;
   };
   bgColor?: string;
+  btnBgColor?: string;
   textColor?: string;
   iconSrc: string;
   arrowIcon: string;
@@ -40,6 +41,7 @@ export function ResourceCard({
   iconSrc,
   arrowIcon,
   arrowSize = "",
+  btnBgColor = "bg-transparent",
 }: CardProps) {
   return (
     <div
@@ -66,7 +68,7 @@ export function ResourceCard({
 
       <Link
         href={item.href}
-        className={`flex items-center justify-center w-7 h-7 xl:w-10 xl:h-10 rounded-[5px] border border-secondary shrink-0 cursor-pointer group btn-fill-center`}
+        className={`flex items-center justify-center w-7 h-7 xl:w-10 xl:h-10 rounded-[5px] border border-secondary shrink-0 cursor-pointer group btn-fill-center ${btnBgColor}`}
         style={{
           "--fill-color": "var(--color-primary, #0A0A0A)",
         } as React.CSSProperties}
