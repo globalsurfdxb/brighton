@@ -24,7 +24,7 @@ export default function EnergyEfficiency() {
       <div className="container">
         <div className="flex flex-col 2xl:flex-row items-start">
           {/* Left - title + description */}
-          <div className="w-full 2xl:w-auto 2xl:max-w-[30%] min-[1900px]:max-w-[463px] mr-40 3xl:mr-80 mb-40 2xl:mb-0">
+          <div className="w-full 2xl:w-auto 2xl:max-w-[30%] min-[1900px]:max-w-[463px] 2xl:pt-60 mr-40 3xl:mr-80 mb-40 2xl:mb-0">
             <AnimatedTitle
               text={energyEfficiencyData.title}
               className="section-title mb-30 sm:mb-50 2xl:mb-60"
@@ -77,7 +77,7 @@ export default function EnergyEfficiency() {
                       onClick={() =>
                         scrollTo("#energy-efficiency", { offset: -15 })
                       }
-                      className="rounded-[10px] p-30 3xl:py-40 relative"
+                      className={`rounded-[10px] px-30 relative  ${isActive ? "py-50" : "py-40"}`}
                       style={{
                         background:
                           "linear-gradient(180deg, #FFFFFF 0%, #F5F5F5 100%)",

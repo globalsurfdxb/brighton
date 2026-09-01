@@ -19,7 +19,7 @@ export default function SliderNavBtn({
       onClick={onClick}
       disabled={disabled}
       aria-label={direction === "prev" ? "Previous slide" : "Next slide"}
-        style={{ "--fill-color": "#0A0A0A" } as React.CSSProperties}
+      style={{ "--fill-color": "#0A0A0A" } as React.CSSProperties}
       className="btn-fill-center cursor-pointer group select-none flex items-center justify-center max-h-9.25 md:max-h-10.5 py-2 px-5 lg:px-[28px] rounded-[50px] border border-secondary  disabled:opacity-40 disabled:cursor-not-allowed"
     >
       <Image

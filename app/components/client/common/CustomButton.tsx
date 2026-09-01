@@ -5,6 +5,7 @@ import Image from "next/image";
 import { useLenis } from "../layout/LenisProvider";
 
 interface CustomButtonProps {
+  type?: "button" | "submit" | "reset";
   text: string;
   link?: string;
   btnClass?: string;
@@ -17,6 +18,7 @@ interface CustomButtonProps {
 }
 
 export default function CustomButton({
+  type = "button",
   text,
   link,
   btnClass = "",
@@ -93,7 +95,7 @@ export default function CustomButton({
   if (!link) {
     return (
       <button
-        type="button"
+        type={type as "button" | "submit" | "reset"}
         onClick={handleClick}
         className={sharedClassName}
         style={sharedStyle}
