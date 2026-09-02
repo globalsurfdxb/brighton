@@ -10,7 +10,7 @@ export default function AdminLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="flex h-screen bg-white">
+    <div className="flex h-screen bg-cream-background">
       {/* Sidebar */}
       <aside className="w-64 bg-white shadow-md flex flex-col h-screen overflow-y-auto border-r border-secondary">
         <div className="flex-1">
@@ -44,9 +44,9 @@ export default function AdminLayout({
       </aside>
 
       {/* Main Content */}
-      <main className="flex-1 overflow-hidden">
+      <main className="flex-1 overflow-hidden pb-5 mt-15 border-t border-secondary">
         {/* Scrollable Content */}
-        <div className="h-full overflow-y-auto px-8 pb-8 pt-15 bg-cream-background">
+        <div className="h-full overflow-y-auto mx-8 pt-5 bg-cream-background">
           {children}
         </div>
       </main>

@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-const aboutSchema = new mongoose.Schema({
+const technologySchema = new mongoose.Schema({
   seo: {
     metaTitle: { type: String },
     metaDescription: { type: String },
@@ -14,21 +14,17 @@ const aboutSchema = new mongoose.Schema({
   firstSection: {
     isHidden: { type: Boolean, default: false },
     title: { type: String },
-    description: { type: String },
-    items: {
-      type: [
-        {
-          value: { type: String },
-          label: { type: String },
-        },
-      ],
-      default: [],
-    },
   },
   secondSection: {
     isHidden: { type: Boolean, default: false },
+    title: { type: String },
+    description: { type: String },
     Image: { type: String },
     ImageAlt: { type: String },
+  },
+  thirdSection: {
+    isHidden: { type: Boolean, default: false },
+    title: { type: String },
     items: {
       type: [
         {
@@ -39,41 +35,42 @@ const aboutSchema = new mongoose.Schema({
       default: [],
     },
   },
-  thirdSection: {
+  fourthSection: {
     isHidden: { type: Boolean, default: false },
     title: { type: String },
-    subTitle: { type: String },
     description: { type: String },
     image: { type: String },
     imageAlt: { type: String },
   },
-  fourthSection: {
+  fifthSection: {
     isHidden: { type: Boolean, default: false },
     title: { type: String },
     items: {
       type: [
         {
-          image: { type: String },
-          imageAlt: { type: String },
           title: { type: String },
+          description: { type: String },
+          icon: { type: String },
+          iconAlt: { type: String },
         },
       ],
       default: [],
     },
   },
-  fifthSection: {
-    isHidden: { type: Boolean, default: false },
-    title: { type: String },
-    description: { type: String },
-    image: { type: String },
-    imageAlt: { type: String },
-  },
   sixthSection: {
     isHidden: { type: Boolean, default: false },
     title: { type: String },
-    description: { type: String },
-    image: { type: String },
-    imageAlt: { type: String },
+    items: {
+      type: [
+        {
+          title: { type: String },
+          description: { type: String },
+          image: { type: String },
+          imageAlt: { type: String },
+        },
+      ],
+      default: [],
+    },
   },
   ctaSection: {
     isHidden: { type: Boolean, default: false },
@@ -84,4 +81,5 @@ const aboutSchema = new mongoose.Schema({
   },
 });
 
-export default mongoose.models.about || mongoose.model("about", aboutSchema);
+export default mongoose.models.technology ||
+  mongoose.model("technology", technologySchema);

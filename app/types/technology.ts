@@ -10,53 +10,52 @@ export interface BannerSection {
   title: string;
 }
 
-export interface FirstSectionItem {
-  value: string;
-  label: string;
-}
-
 export interface FirstSection {
   isHidden: boolean;
   title: string;
-  description: string;
-  items: FirstSectionItem[];
-}
-
-export interface SecondSectionItem {
-  title: string;
-  description: string;
 }
 
 export interface SecondSection {
   isHidden: boolean;
+  title: string;
+  description: string;
   Image: string;
   ImageAlt: string;
-  items: SecondSectionItem[];
+}
+
+export interface ThirdSectionItem {
+  title: string;
+  description: string;
 }
 
 export interface ThirdSection {
   isHidden: boolean;
   title: string;
-  subTitle: string;
-  description: string;
-  image: string;
-  imageAlt: string;
-}
-
-export interface FourthSectionItem {
-  image: string;
-  imageAlt: string;
-  title: string;
+  items: ThirdSectionItem[];
 }
 
 export interface FourthSection {
   isHidden: boolean;
   title: string;
-  items: FourthSectionItem[];
+  description: string;
+  image: string;
+  imageAlt: string;
+}
+
+export interface FifthSectionItem {
+  title: string;
+  description: string;
+  icon: string;
+  iconAlt: string;
 }
 
 export interface FifthSection {
   isHidden: boolean;
+  title: string;
+  items: FifthSectionItem[];
+}
+
+export interface SixthSectionItem {
   title: string;
   description: string;
   image: string;
@@ -66,9 +65,7 @@ export interface FifthSection {
 export interface SixthSection {
   isHidden: boolean;
   title: string;
-  description: string;
-  image: string;
-  imageAlt: string;
+  items: SixthSectionItem[];
 }
 
 export interface CtaSection {
@@ -79,7 +76,7 @@ export interface CtaSection {
   buttonLink: string;
 }
 
-export interface AboutDoc {
+export interface TechnologyDoc {
   _id: string;
   seo?: Seo;
   bannerSection: BannerSection;
@@ -92,6 +89,6 @@ export interface AboutDoc {
   ctaSection: CtaSection;
 }
 
-export interface GetAboutResult {
-  about: AboutDoc;
+export interface GetTechnologyResult {
+  technology: TechnologyDoc;
 }

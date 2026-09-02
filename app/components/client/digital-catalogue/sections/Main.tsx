@@ -45,7 +45,7 @@ export default function Main() {
             className="relative w-full md:w-[38%] lg:w-[35%] max-[639px]:max-h-[400px] max-[767px]:max-h-[450px] aspect-[587/747] 3xl:w-[587px] 3xl:h-[747px] shrink-0 rounded-[10px] overflow-hidden"
           >
             <Image
-              src="/assets/images/resources/catalogue.jpg"
+              src="/assets/images/resources/catalogue.png"
               alt="Brighton Catalogue 2026"
               fill
               className="object-cover object-center"

@@ -6,6 +6,7 @@ import ContactForm from "./ContactForm";
 import SectionDescription from "../../animations/SectionDescription";
 import { motion } from "framer-motion";
 import { moveRight, moveUp } from "../../animations/motionVariants";
+import Link from "next/link";
 
 export default function ContactSection() {
   return (
@@ -20,20 +21,31 @@ export default function ContactSection() {
         <div className="grid grid-cols-1 lg:grid-cols-2 3xl:grid-cols-[1fr_895px] gap-30 lg:gap-0 mb-50">
           <div className="flex flex-col gap-3 md:gap-7.5">
             <SectionDescription
+              link="https://maps.app.goo.gl/1Ze6x9FHGQF4eCPF8"
               as="div"
               direction="y"
               html={contactData.address}
-              className="text-description-4 text-description-color"
+              className="text-description-4 text-description-color hover:text-primary transition-colors duration-500"
             />
             <motion.div
               initial="hidden"
               whileInView="show"
               viewport={{ once: true }}
               variants={moveUp(0.1)}
-              className="text-description-4 text-primary"
+              className="text-description-4 text-primary flex flex-col"
             >
-              <p>Phone: {contactData.phone}</p>
-              <p>Email: {contactData.email}</p>
+              <Link
+                className="hover:text-description-color transition-colors duration-500"
+                href={`tel:${contactData.phone}`}
+              >
+                Phone: {contactData.phone}
+              </Link>
+              <Link
+                className="hover:text-description-color transition-colors duration-500"
+                href={`mailto:${contactData.email}`}
+              >
+                Email: {contactData.email}
+              </Link>
             </motion.div>
           </div>
 

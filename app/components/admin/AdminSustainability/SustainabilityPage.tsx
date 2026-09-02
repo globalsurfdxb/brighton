@@ -13,7 +13,7 @@ import { RiDeleteBinLine } from "react-icons/ri";
 import TinyEditor from "../common/TinyMceEditor";
 import CustomButton from "../../client/common/CustomButton";
 
-interface AboutForm {
+interface SustainabilityForm {
   seo: { metaTitle: string; metaDescription: string; script: string };
   bannerSection: {
     image: string;
@@ -22,20 +22,17 @@ interface AboutForm {
   };
   firstSection: {
     isHidden: boolean;
-    title: string;
     description: string;
-    items: { value: string; label: string }[];
   };
   secondSection: {
     isHidden: boolean;
-    Image: string;
-    ImageAlt: string;
-    items: { title: string; description: string }[];
+    title: string;
+    description: string;
+    items: { title: string; description: string; image: string; imageAlt: string }[];
   };
   thirdSection: {
     isHidden: boolean;
     title: string;
-    subTitle: string;
     description: string;
     image: string;
     imageAlt: string;
@@ -43,12 +40,14 @@ interface AboutForm {
   fourthSection: {
     isHidden: boolean;
     title: string;
-    items: { image: string; imageAlt: string; title: string }[];
+    description: string;
+    image: string;
+    imageAlt: string;
   };
   fifthSection: {
     isHidden: boolean;
     title: string;
-    description: string;
+    subTitle: string;
     image: string;
     imageAlt: string;
   };
@@ -68,52 +67,36 @@ interface AboutForm {
   };
 }
 
-export default function AboutPage() {
+export default function SustainabilityPage() {
   const { register, handleSubmit, setValue, control, watch } =
-    useForm<AboutForm>();
+    useForm<SustainabilityForm>();
 
-  const {
-    fields: firstItems,
-    append: appendFirst,
-    remove: removeFirst,
-    replace: replaceFirst,
-  } = useFieldArray({ control, name: "firstSection.items" });
   const {
     fields: secondItems,
     append: appendSecond,
     remove: removeSecond,
     replace: replaceSecond,
   } = useFieldArray({ control, name: "secondSection.items" });
-  const {
-    fields: fourthItems,
-    append: appendFourth,
-    remove: removeFourth,
-    replace: replaceFourth,
-  } = useFieldArray({ control, name: "fourthSection.items" });
 
   const fetchData = async () => {
     try {
-      const res = await fetch("/api/admin/about");
+      const res = await fetch("/api/admin/sustainability");
       if (res.ok) {
         const { data } = await res.json();
         setValue("seo", data.seo);
         setValue("bannerSection", data.bannerSection);
         setValue("firstSection.isHidden", data.firstSection?.isHidden);
-        setValue("firstSection.title", data.firstSection?.title);
         setValue("firstSection.description", data.firstSection?.description);
         setValue("secondSection.isHidden", data.secondSection?.isHidden);
-        setValue("secondSection.Image", data.secondSection?.Image);
-        setValue("secondSection.ImageAlt", data.secondSection?.ImageAlt);
+        setValue("secondSection.title", data.secondSection?.title);
+        setValue("secondSection.description", data.secondSection?.description);
         setValue("thirdSection", data.thirdSection);
-        setValue("fourthSection.isHidden", data.fourthSection?.isHidden);
-        setValue("fourthSection.title", data.fourthSection?.title);
+        setValue("fourthSection", data.fourthSection);
         setValue("fifthSection", data.fifthSection);
         setValue("sixthSection", data.sixthSection);
         setValue("ctaSection", data.ctaSection);
 
-        replaceFirst(data.firstSection?.items || []);
         replaceSecond(data.secondSection?.items || []);
-        replaceFourth(data.fourthSection?.items || []);
       } else {
         const { message } = await res.json();
         toast.error(message);
@@ -123,9 +106,9 @@ export default function AboutPage() {
     }
   };
 
-  const onSubmit = async (data: AboutForm) => {
+  const onSubmit = async (data: SustainabilityForm) => {
     try {
-      const res = await fetch("/api/admin/about", {
+      const res = await fetch("/api/admin/sustainability", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
@@ -195,8 +178,6 @@ export default function AboutPage() {
             First Section
           </Label>
           <div className="p-5 flex flex-col gap-4">
-            <Label className="font-bold">Title</Label>
-            <Input {...register("firstSection.title")} placeholder="Title" />
             <Label className="font-bold">Description</Label>
             <Controller
               name="firstSection.description"
@@ -208,41 +189,6 @@ export default function AboutPage() {
                 />
               )}
             />
-            <div className="flex items-center justify-between mt-2">
-              <Label className="font-bold">Items</Label>
-              <Button
-                type="button"
-                addItem
-                onClick={() => appendFirst({ value: "", label: "" })}
-              >
-                + Add Item
-              </Button>
-            </div>
-            <div className="grid grid-cols-2 gap-4">
-              {firstItems.map((field, index) => (
-                <div
-                  key={field.id}
-                  className="border border-black/10 rounded-lg p-4 flex flex-col gap-3"
-                >
-                  <div className="flex items-center justify-between">
-                    <Label className="font-bold">Item {index + 1}</Label>
-                    <Button type="button" onClick={() => removeFirst(index)}>
-                      <RiDeleteBinLine size={16} />
-                    </Button>
-                  </div>
-                  <Label className="font-bold">Value</Label>
-                  <Input
-                    {...register(`firstSection.items.${index}.value`)}
-                    placeholder="Value"
-                  />
-                  <Label className="font-bold">Label</Label>
-                  <Input
-                    {...register(`firstSection.items.${index}.label`)}
-                    placeholder="Label"
-                  />
-                </div>
-              ))}
-            </div>
           </div>
         </AdminItemContainer>
 
@@ -261,32 +207,21 @@ export default function AboutPage() {
             Second Section
           </Label>
           <div className="p-5 flex flex-col gap-4">
-            <div className="grid grid-cols-2 gap-4">
-              <div className="flex flex-col gap-2">
-                <Label className="font-bold">Image</Label>
-                <Controller
-                  name="secondSection.Image"
-                  control={control}
-                  render={({ field }) => (
-                    <ImageUploader
-                      value={field.value}
-                      onChange={field.onChange}
-                    />
-                  )}
-                />
-                <Label className="font-bold">Image Alt</Label>
-                <Input
-                  {...register("secondSection.ImageAlt")}
-                  placeholder="Image Alt"
-                />
-              </div>
-            </div>
+            <Label className="font-bold">Title</Label>
+            <Input {...register("secondSection.title")} placeholder="Title" />
+            <Label className="font-bold">Description</Label>
+            <Textarea
+              {...register("secondSection.description")}
+              placeholder="Description"
+            />
             <div className="flex items-center justify-between mt-2">
               <Label className="font-bold">Items</Label>
               <Button
                 type="button"
                 addItem
-                onClick={() => appendSecond({ title: "", description: "" })}
+                onClick={() =>
+                  appendSecond({ title: "", description: "", image: "", imageAlt: "" })
+                }
               >
                 + Add Item
               </Button>
@@ -303,6 +238,22 @@ export default function AboutPage() {
                       <RiDeleteBinLine size={16} />
                     </Button>
                   </div>
+                  <Label className="font-bold">Image</Label>
+                  <Controller
+                    name={`secondSection.items.${index}.image`}
+                    control={control}
+                    render={({ field }) => (
+                      <ImageUploader
+                        value={field.value}
+                        onChange={field.onChange}
+                      />
+                    )}
+                  />
+                  <Label className="font-bold">Image Alt</Label>
+                  <Input
+                    {...register(`secondSection.items.${index}.imageAlt`)}
+                    placeholder="Image Alt"
+                  />
                   <Label className="font-bold">Title</Label>
                   <Input
                     {...register(`secondSection.items.${index}.title`)}
@@ -356,11 +307,6 @@ export default function AboutPage() {
                   {...register("thirdSection.title")}
                   placeholder="Title"
                 />
-                <Label className="font-bold">Sub Title</Label>
-                <Input
-                  {...register("thirdSection.subTitle")}
-                  placeholder="Sub Title"
-                />
                 <Label className="font-bold">Description</Label>
                 <Textarea
                   {...register("thirdSection.description")}
@@ -386,55 +332,37 @@ export default function AboutPage() {
             Fourth Section
           </Label>
           <div className="p-5 flex flex-col gap-4">
-            <Label className="font-bold">Title</Label>
-            <Input {...register("fourthSection.title")} placeholder="Title" />
-            <div className="flex items-center justify-between mt-2">
-              <Label className="font-bold">Items</Label>
-              <Button
-                type="button"
-                addItem
-                onClick={() =>
-                  appendFourth({ image: "", imageAlt: "", title: "" })
-                }
-              >
-                + Add Item
-              </Button>
-            </div>
             <div className="grid grid-cols-2 gap-4">
-              {fourthItems.map((field, index) => (
-                <div
-                  key={field.id}
-                  className="border border-black/10 rounded-lg p-4 flex flex-col gap-3"
-                >
-                  <div className="flex items-center justify-between">
-                    <Label className="font-bold">Item {index + 1}</Label>
-                    <Button type="button" onClick={() => removeFourth(index)}>
-                      <RiDeleteBinLine size={16} />
-                    </Button>
-                  </div>
-                  <Label className="font-bold">Image</Label>
-                  <Controller
-                    name={`fourthSection.items.${index}.image`}
-                    control={control}
-                    render={({ field }) => (
-                      <ImageUploader
-                        value={field.value}
-                        onChange={field.onChange}
-                      />
-                    )}
-                  />
-                  <Label className="font-bold">Image Alt</Label>
-                  <Input
-                    {...register(`fourthSection.items.${index}.imageAlt`)}
-                    placeholder="Image Alt"
-                  />
-                  <Label className="font-bold">Title</Label>
-                  <Input
-                    {...register(`fourthSection.items.${index}.title`)}
-                    placeholder="Title"
-                  />
-                </div>
-              ))}
+              <div className="flex flex-col gap-2">
+                <Label className="font-bold">Image</Label>
+                <Controller
+                  name="fourthSection.image"
+                  control={control}
+                  render={({ field }) => (
+                    <ImageUploader
+                      value={field.value}
+                      onChange={field.onChange}
+                    />
+                  )}
+                />
+                <Label className="font-bold">Image Alt</Label>
+                <Input
+                  {...register("fourthSection.imageAlt")}
+                  placeholder="Image Alt"
+                />
+              </div>
+              <div className="flex flex-col gap-2">
+                <Label className="font-bold">Title</Label>
+                <Input
+                  {...register("fourthSection.title")}
+                  placeholder="Title"
+                />
+                <Label className="font-bold">Description</Label>
+                <Textarea
+                  {...register("fourthSection.description")}
+                  placeholder="Description"
+                />
+              </div>
             </div>
           </div>
         </AdminItemContainer>
@@ -476,10 +404,10 @@ export default function AboutPage() {
                   {...register("fifthSection.title")}
                   placeholder="Title"
                 />
-                <Label className="font-bold">Description</Label>
-                <Textarea
-                  {...register("fifthSection.description")}
-                  placeholder="Description"
+                <Label className="font-bold">Sub Title</Label>
+                <Input
+                  {...register("fifthSection.subTitle")}
+                  placeholder="Sub Title"
                 />
               </div>
             </div>
@@ -533,7 +461,7 @@ export default function AboutPage() {
           </div>
         </AdminItemContainer>
 
-        {/* Seventh Section */}
+        {/* CTA Section */}
         <AdminItemContainer>
           <Label
             main
