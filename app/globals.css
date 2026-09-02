@@ -460,7 +460,7 @@ body {
 }
 
 .news-content ul li {
-  @apply text-description-4 text-description-color;
+  @apply text-description-4 text-description-color leading-[1.25];
 }
 
 .news-content ul li::marker {

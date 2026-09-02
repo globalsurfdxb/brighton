@@ -14,7 +14,6 @@ import {
   Briefcase,
   FolderKanban,
   LayoutGrid,
-  FormIcon,
   Settings,
   Phone,
 } from "lucide-react";
@@ -53,16 +52,6 @@ const AdminNavbar = () => {
       children: [
         { name: "Main Page", href: "/4dm1n-br1ght0n/contact" },
         { name: "Enquiries", href: "/4dm1n-br1ght0n/contact/enquiry" },
-      ],
-    },
-    {
-      name: "Forms",
-      href: "/4dm1n-br1ght0n/forms/contact-enquiry",
-      icon: FormIcon,
-      hasChild: true,
-      children: [
-        { name: "Contact Enquiries", href: "/4dm1n-br1ght0n/forms/contact-enquiry" },
-        { name: "Catalog Enquiries", href: "/4dm1n-br1ght0n/forms/catalog-enquiry" },
       ],
     },
     { name: "Settings", href: "/4dm1n-br1ght0n/settings", icon: Settings },
