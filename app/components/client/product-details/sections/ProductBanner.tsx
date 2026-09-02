@@ -32,7 +32,7 @@ export default function ProductBanner() {
                 transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
               >
                 <Image
-                  src={images[activeIndex].src}
+                  src={images[activeIndex].src || "/assets/images/placeholder.png"}
                   alt={images[activeIndex].alt}
                   fill
                   className="pointer-events-none object-cover"
@@ -54,7 +54,7 @@ export default function ProductBanner() {
                 }`}
               >
                 <Image
-                  src={img.src}
+                  src={img.src || "/assets/images/placeholder.png"}
                   alt={img.alt}
                   fill
                   className="pointer-events-none object-cover"

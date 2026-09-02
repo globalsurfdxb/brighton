@@ -46,11 +46,11 @@ export default function PerformanceSpecify() {
                 <div className="flex items-center gap-4">
                   <div className="rounded-[10px] bg-primary flex items-center justify-center shrink-0 w-10 h-10 md:w-12.5 md:h-12.5">
                     <Image
-                      src={item.icon}
+                      src={item.icon || "/assets/images/placeholder.png"}
                       alt={item.title}
                       width={50}
                       height={50}
-                      className="h-6 md:h-[28.57px] object-contain w-auto"
+                      className="h-6 md:h-[28.57px] object-contain w-auto pointer-events-none"
                     />
                   </div>
                   <p className="text-subtitle-2 uppercase text-description-color">
@@ -111,11 +111,11 @@ export default function PerformanceSpecify() {
                   className="rounded-[10px] bg-primary flex items-center justify-center shrink-0"
                 >
                   <Image
-                    src={item.icon}
+                    src={item.icon || "/assets/images/placeholder.png"}
                     alt={item.title}
                     width={50}
                     height={50}
-                    className={`${isActive ? "h-10" : "h-[28.57px]"} object-contain w-auto transition-[height] duration-500 ease-in-out`}
+                    className={`${isActive ? "h-10" : "h-[28.57px]"} object-contain w-auto transition-[height] duration-500 ease-in-out pointer-events-none`}
                   />
                 </motion.div>
 

@@ -54,7 +54,7 @@ export default function QualityAssurance() {
                   <div className="flex items-center gap-5 border border-secondary rounded-[10px] p-3 sm:p-5 3xl:p-30 -mr-px -mb-px">
                     <div className="w-10 h-10 md:w-12 md:h-12 3xl:w-15 3xl:h-15 shrink-0 rounded-[5px] bg-primary flex items-center justify-center">
                       <Image
-                        src={item.icon}
+                        src={item.icon || "/assets/images/placeholder.png"}
                         alt={item.title}
                         width={40}
                         height={40}

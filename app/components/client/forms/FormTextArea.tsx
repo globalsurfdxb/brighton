@@ -39,7 +39,7 @@ const FormTextArea = forwardRef<HTMLTextAreaElement, FormTextAreaProps>(
           required={required}
           placeholder={placeholder ?? " "}
           {...rest}
-          className="peer w-full bg-transparent text-description-4 text-description-color outline-none resize-none placeholder:text-transparent block p-0 leading-3 overflow-x-auto overflow-y-hidden whitespace-nowrap"
+          className="peer w-full bg-transparent text-description-4 text-description-color outline-none resize-none placeholder:text-transparent block pt-3 leading-3 overflow-x-auto overflow-y-hidden whitespace-nowrap"
         />
 
         <label

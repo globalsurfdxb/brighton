@@ -45,7 +45,7 @@ const BlogCard = ({
         className={`w-full relative overflow-hidden rounded-[10px] max-sm:max-h-[280px] mb-30 ${imageSizeClasses[size]}`}
       >
         <Image
-          src={image}
+          src={image || "/assets/images/placeholder.png"}
           alt={title}
           className="w-full h-full object-cover pointer-events-none group-hover:scale-105 transition-transform duration-500 ease-in-out"
           fill

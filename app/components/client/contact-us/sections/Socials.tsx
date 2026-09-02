@@ -34,11 +34,11 @@ export default function Socials() {
                     text={item.title}
                   />
                   <Image
-                    src={item.icon}
+                    src={item.icon || "/assets/images/placeholder.png"}
                     alt={item.title}
                     width={20}
                     height={20}
-                    className="w-auto h-4 md:h-5 group-hover:scale-120 transition-all duration-500 ease-in-out"
+                    className="w-auto h-4 md:h-5 group-hover:scale-120 transition-all duration-500 ease-in-out pointer-events-none"
                   />
                 </Link>
                 {i < socialsData.socials.length - 2 && (

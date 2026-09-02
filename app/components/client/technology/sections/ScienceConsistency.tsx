@@ -38,7 +38,7 @@ export default function ScienceConsistency() {
             className="hidden lg:block relative w-full lg:w-[50%] xl:w-[52%] shrink-0 aspect-[895/700] 3xl:w-[895px] 3xl:h-[700px] rounded-[10px] overflow-hidden"
           >
             <Image
-              src={baseImage}
+              src={baseImage || "/assets/images/placeholder.png"}
               alt=""
               fill
               className="object-cover object-center pointer-events-none"
@@ -55,7 +55,7 @@ export default function ScienceConsistency() {
               className="absolute inset-0"
             >
               <Image
-                src={scienceConsistencyData.items[activeIndex].image}
+                src={scienceConsistencyData.items[activeIndex].image || "/assets/images/placeholder.png"}
                 alt={scienceConsistencyData.items[activeIndex].imageAlt}
                 fill
                 className="object-cover object-center pointer-events-none"
@@ -116,10 +116,10 @@ export default function ScienceConsistency() {
                           {/* Mobile / Tablet image */}
                           <div className="lg:hidden relative w-full aspect-[895/700] max-h-[280px] md:max-h-[380px] mt-30 rounded-[10px] overflow-hidden">
                             <Image
-                              src={item.image}
+                              src={item.image || "/assets/images/placeholder.png"}
                               alt={item.imageAlt}
                               fill
-                              className="object-cover object-center"
+                              className="object-cover object-center pointer-events-none"
                             />
                           </div>
                         </motion.div>

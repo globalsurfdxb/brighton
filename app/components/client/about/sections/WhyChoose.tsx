@@ -44,11 +44,11 @@ export default function WhyChoose() {
                   <div className="relative h-full flex flex-col gap-[90px] lg:gap-200 3xl:gap-[209px]">
                     <div className="3xl:w-17.5 3xl:h-17.5 2xl:w-15 2xl:h-15 w-12 h-12 rounded-[5px] bg-primary flex items-center justify-center shrink-0">
                       <Image
-                        src={item.icon}
+                        src={item.icon || "/assets/images/placeholder.png"}
                         alt={item.title}
                         width={48}
                         height={48}
-                        className="h-6 2xl:h-9 3xl:h-12 w-auto 3xl:w-12"
+                        className="h-6 2xl:h-9 3xl:h-12 w-auto 3xl:w-12 pointer-events-none"
                       />
                     </div>
                     <p className="text-subtitle">{item.title}</p>

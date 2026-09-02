@@ -452,7 +452,7 @@ body {
 }
 
 .news-content img {
-  @apply rounded-[10px] w-full h-auto max-h-[600px] object-cover;
+  @apply rounded-[10px] w-full h-auto max-h-[600px] object-cover pointer-events-none;
 }
 
 .news-content ul {

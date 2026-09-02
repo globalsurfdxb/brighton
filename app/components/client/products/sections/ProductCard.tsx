@@ -73,67 +73,7 @@ export default function ProductCard({
               className="object-contain pointer-events-none"
             />
           </motion.div>
-          {/* Hover image — feathered reveal during motion, full solid image at rest */}
-          {/* <AnimatePresence>
-            {isHovered && product.hoverImage && (
-              <motion.div
-                className="absolute inset-0 rounded-t-2xl overflow-hidden"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.4, ease: "easeInOut" }}
-                style={{
-                  WebkitMaskImage: maskImage,
-                  maskImage: maskImage,
-                  WebkitMaskRepeat: "no-repeat",
-                  maskRepeat: "no-repeat",
-                }}
-              >
-                <motion.div
-                  className="relative h-full w-full"
-                  initial={{ scale: 1.15 }}
-                  animate={{ scale: 1 }}
-                  exit={{ scale: 1.15 }}
-                  transition={{ duration: 0.65, ease: [0.65, 0, 0.35, 1] }}
-                >
-                  <Image
-                    src={product.hoverImage}
-                    alt={product.title}
-                    fill
-                    className="object-cover pointer-events-none"
-                  />
-                  <div
-                    className="pointer-events-none absolute inset-0"
-                    style={{
-                      background:
-                        "linear-gradient(180deg, rgba(0, 0, 0, 0) 43.24%, rgba(0, 0, 0, 0.25) 100%)",
-                    }}
-                  />
-                </motion.div>
-                <motion.div
-                  className="absolute left-30 bottom-30"
-                  initial={{ opacity: 0, y: 30, x: -30, scale: 0.6 }}
-                  animate={{ opacity: 1, y: 0, x: 0, scale: 1 }}
-                  exit={{ opacity: 0, y: 30, x: -30, scale: 0.6 }}
-                  transition={{
-                    type: "spring",
-                    stiffness: 200,
-                    damping: 9,
-                    mass: 1,
-                    delay: 0.15,
-                  }}
-                >
-                  <Image
-                    src="/assets/icons/right-top-arrow-white.svg"
-                    className="invert brightness-0 pointer-events-none"
-                    alt=""
-                    width={40}
-                    height={40}
-                  />
-                </motion.div>
-              </motion.div>
-            )}
-          </AnimatePresence> */}
+          
           {product.hoverImage && (
             <motion.div
               className="absolute inset-0 rounded-t-2xl overflow-hidden"

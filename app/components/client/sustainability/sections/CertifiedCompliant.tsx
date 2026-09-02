@@ -20,11 +20,11 @@ export default function CertifiedCompliant() {
             className="relative w-[120px] h-[120px] sm:w-[160px] sm:h-[160px] md:w-[220px] md:h-[220px] 2xl:w-[265px] 2xl:h-[265px] shrink-0 order-2 sm:order-1"
           >
             <Image
-              src={certifiedCompliantData.image}
+              src={certifiedCompliantData.image || "/assets/images/placeholder.png"}
               alt={certifiedCompliantData.imageAlt}
               fill
-              className="object-contain"
-            />
+              className="object-contain pointer-events-none"
+            />  
           </motion.div>
 
           <div className="order-1">

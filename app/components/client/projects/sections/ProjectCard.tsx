@@ -16,10 +16,10 @@ export default function ProjectCard({
           className={`relative w-full overflow-hidden rounded-[10px] ${heightClass}`}
         >
           <Image
-            src={project.image}
+            src={project.image || "/assets/images/placeholder.png"}
             alt={project.title}
             fill
-            className="object-cover transition-transform duration-500 group-hover:scale-105"
+            className="object-cover transition-transform duration-500 group-hover:scale-105 pointer-events-none"
           />
         </div>
 
