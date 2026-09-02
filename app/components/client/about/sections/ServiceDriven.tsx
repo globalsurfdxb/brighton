@@ -34,10 +34,10 @@ export default function ServiceDriven() {
             className="w-full lg:w-1/2 relative aspect-[895/600] 3xl:w-[895px] 3xl:h-[600px] rounded-[10px] overflow-hidden"
           >
             <Image
-              src={serviceDrivenData.image}
+              src={serviceDrivenData.image || "/assets/images/placeholder.png"}
               alt={serviceDrivenData.imageAlt}
               fill
-              className="object-cover object-center"
+              className="object-cover object-center pointer-events-none"
             />
           </motion.div>
         </div>

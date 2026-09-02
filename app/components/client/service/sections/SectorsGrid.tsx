@@ -28,11 +28,11 @@ const SectorsGrid = ({ data }: SectorsGridProps) => {
                   className="text-subtitle text-description-color text-trim"
                 />
                 <Image
-                  src={item.icon}
+                  src={item.icon || "/assets/images/placeholder.png"}
                   alt={item.title}
                   width={100}
                   height={100}
-                  className="h-6 xl:h-8 w-auto 2xl:h-40 object-contain"
+                  className="h-6 xl:h-8 w-auto 2xl:h-40 object-contain pointer-events-none"
                 />
               </div>
             </div>

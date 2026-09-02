@@ -29,11 +29,11 @@ const Main = ({ data }: { data: BlogDetails }) => {
               viewport={{ once: true }}
             >
               <Image
-                src={data.heroImage}
+                src={data.heroImage || "/assets/images/placeholder.png"}
                 alt={data.title}
                 width={1820}
                 height={700}
-                className="rounded-[10px] w-full object-cover aspect-[1820/900] min-h-[280px] h-auto xl:min-h-[600px] 3xl:min-h-[800px]"
+                className="rounded-[10px] w-full object-cover aspect-[1820/900] min-h-[280px] h-auto xl:min-h-[600px] 3xl:min-h-[800px] pointer-events-none"
               />
             </motion.div>
             <div className="flex md:justify-between">

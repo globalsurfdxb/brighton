@@ -41,10 +41,10 @@ export default function LightBeyond() {
             className="w-full lg:w-1/2 relative max-[767px]:max-h-[280px] max-[1023px]:max-h-[450px] aspect-[895/700] min-[1800px]:w-[895px] min-[1800px]:h-[700px] rounded-[10px] overflow-hidden"
           >
             <Image
-              src={lightBeyondData.image}
+              src={lightBeyondData.image || "/assets/images/placeholder.png"}
               alt={lightBeyondData.imageAlt}
               fill
-              className="object-cover object-center"
+              className="object-cover object-center pointer-events-none"
             />
           </motion.div>
         </div>

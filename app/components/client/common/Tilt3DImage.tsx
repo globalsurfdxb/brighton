@@ -123,11 +123,11 @@ export default function Tilt3DImage({
         className="absolute inset-0"
       >
         <Image
-          src={src}
+          src={src || "/assets/images/placeholder.png"}
           alt={alt}
           fill
           priority={priority}
-          className={imgClassName}
+          className={`${imgClassName} pointer-events-none`}
         />
       </div>
     </div>

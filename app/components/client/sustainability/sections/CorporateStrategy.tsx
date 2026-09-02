@@ -36,10 +36,10 @@ export default function CorporateStrategy() {
             className="relative w-full min-h-[280px] md:min-h-[320px] rounded-[10px] overflow-hidden"
           >
             <Image
-              src={image}
+              src={image || "/assets/images/placeholder.png"}
               alt={imageAlt}
               fill
-              className="object-cover object-top"
+              className="object-cover object-top pointer-events-none"
             />
           </motion.div>
         </div>

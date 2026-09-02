@@ -71,11 +71,11 @@ export default function SubCategoryTabs({
               >
                 <span className="flex 3xl:w-17.5 3xl:h-17.5 2xl:w-15 2xl:h-15 w-12 h-12 shrink-0 items-center justify-center rounded-full bg-[#D9D9D9]">
                   <Image
-                    src={sub.icon}
+                    src={sub.icon || "/assets/images/placeholder.png"}
                     alt=""
                     width={30}
                     height={30}
-                    className="h-6 lg:h-[30px] w-auto"
+                    className="h-6 lg:h-[30px] w-auto pointer-events-none"
                   />
                 </span>
 

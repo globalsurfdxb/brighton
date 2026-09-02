@@ -57,7 +57,7 @@ export default function ContactSection() {
         </div>
 
         {/* Row 3 - map + form */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 3xl:grid-cols-[1fr_895px] items-end gap-100 lg:gap-0">
+        <div className="grid grid-cols-1 lg:grid-cols-2 3xl:grid-cols-[1fr_895px] items-end gap-100">
           <motion.div
             initial="hidden"
             whileInView="show"

@@ -40,7 +40,7 @@ export default function EnergyEfficiency() {
           <div className="relative flex flex-row w-full">
             <div className="hidden lg:block relative lg:w-[50%] 2xl:w-auto shrink-0 2xl:aspect-[587/667] 2xl:h-[480px] 3xl:w-[587px] 3xl:h-[667px] rounded-[10px] overflow-hidden mr-40 3xl:mr-70 min-[1900px]:mr-[73px]">
               <Image
-                src={baseImage}
+                src={baseImage || "/assets/images/placeholder.png"}
                 alt=""
                 fill
                 className="object-cover object-center pointer-events-none"
@@ -56,7 +56,7 @@ export default function EnergyEfficiency() {
                 className="absolute inset-0"
               >
                 <Image
-                  src={energyEfficiencyData.items[activeIndex].image}
+                  src={energyEfficiencyData.items[activeIndex].image || "/assets/images/placeholder.png"}
                   alt={energyEfficiencyData.items[activeIndex].imageAlt}
                   fill
                   className="object-cover object-center pointer-events-none"
@@ -115,10 +115,10 @@ export default function EnergyEfficiency() {
                             </p>
                             <div className="lg:hidden relative w-full aspect-[895/700] max-h-[280px] md:max-h-[380px] mt-30 rounded-[10px] overflow-hidden">
                               <Image
-                                src={item.image}
+                                src={item.image || "/assets/images/placeholder.png"}
                                 alt={item.imageAlt}
                                 fill
-                                className="object-cover object-center"
+                                className="object-cover object-center pointer-events-none"
                               />
                             </div>
                           </motion.div>

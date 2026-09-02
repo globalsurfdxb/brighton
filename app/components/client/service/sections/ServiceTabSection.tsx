@@ -58,7 +58,7 @@ const ServiceTabSection = ({ data }: ServiceTabSectionProps) => {
           >
             <div className="relative w-full rounded-[10px] overflow-hidden bg-cream-background lg:min-h-full 3xl:min-h-[720px]">
               <Image
-                src={baseImage}
+                src={baseImage || "/assets/images/placeholder.png"}
                 alt=""
                 fill
                 className="object-cover object-center pointer-events-none"
@@ -74,7 +74,7 @@ const ServiceTabSection = ({ data }: ServiceTabSectionProps) => {
                   className="absolute inset-0"
                 >
                   <Image
-                    src={activeItem.image}
+                    src={activeItem.image || "/assets/images/placeholder.png"}
                     alt={activeItem.title}
                     fill
                     className="object-cover object-center pointer-events-none"
@@ -133,7 +133,7 @@ const ServiceTabSection = ({ data }: ServiceTabSectionProps) => {
                                     src="/assets/icons/right-top-arrow-secondary.svg"
                                     width={13.33}
                                     height={13.33}
-                                    className="object-contain w-auto h-3.25 shrink-0"
+                                    className="object-contain w-auto h-3.25 shrink-0 pointer-events-none"
                                     alt="icon-arrow"
                                   />
                                 </motion.div>

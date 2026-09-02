@@ -29,10 +29,10 @@ export default function ImageDescription({ data }: ImageDescriptionProps) {
             className="w-full md:w-1/2 relative max-[639px]:max-h-[380px] max-[767px]:max-h-[400px] aspect-[895/640] 3xl:w-[895px] 3xl:h-[640px] rounded-[10px] overflow-hidden"
           >
             <Image
-              src={data.image}
+              src={data.image || "/assets/images/placeholder.png"}
               alt={data.imageAlt}
               fill
-              className="object-cover object-center"
+              className="object-cover object-center pointer-events-none"
             />
           </motion.div>
 

@@ -58,11 +58,11 @@ const Main = ({ data }: { data: NewsDetails }) => {
               className="rounded-[10px] overflow-hidden"
             >
               <Image
-                src={data.heroImage}
+                src={data.heroImage || "/assets/images/placeholder.png"}
                 alt={data.title}
                 width={1820}
                 height={700}
-                className="w-full object-cover aspect-[1820/900] min-h-[280px] max-h-[700px]"
+                className="w-full object-cover aspect-[1820/900] min-h-[280px] max-h-[700px] pointer-events-none"
               />
             </motion.div>
           </div>
