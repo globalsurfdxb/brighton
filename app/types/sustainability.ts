@@ -10,55 +10,45 @@ export interface BannerSection {
   title: string;
 }
 
-export interface FirstSectionItem {
-  value: string;
-  label: string;
-}
-
 export interface FirstSection {
   isHidden: boolean;
-  title: string;
   description: string;
-  items: FirstSectionItem[];
 }
 
 export interface SecondSectionItem {
   title: string;
   description: string;
+  image: string;
+  imageAlt: string;
 }
 
 export interface SecondSection {
   isHidden: boolean;
-  Image: string;
-  ImageAlt: string;
+  title: string;
+  description: string;
   items: SecondSectionItem[];
 }
 
 export interface ThirdSection {
   isHidden: boolean;
   title: string;
-  subTitle: string;
   description: string;
   image: string;
   imageAlt: string;
-}
-
-export interface FourthSectionItem {
-  image: string;
-  imageAlt: string;
-  title: string;
 }
 
 export interface FourthSection {
   isHidden: boolean;
   title: string;
-  items: FourthSectionItem[];
+  description: string;
+  image: string;
+  imageAlt: string;
 }
 
 export interface FifthSection {
   isHidden: boolean;
   title: string;
-  description: string;
+  subTitle: string;
   image: string;
   imageAlt: string;
 }
@@ -79,7 +69,7 @@ export interface CtaSection {
   buttonLink: string;
 }
 
-export interface AboutDoc {
+export interface SustainabilityDoc {
   _id: string;
   seo?: Seo;
   bannerSection: BannerSection;
@@ -92,6 +82,6 @@ export interface AboutDoc {
   ctaSection: CtaSection;
 }
 
-export interface GetAboutResult {
-  about: AboutDoc;
+export interface GetSustainabilityResult {
+  sustainability: SustainabilityDoc;
 }
