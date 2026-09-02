@@ -42,16 +42,16 @@ export default function Main() {
             initial="hidden"
             whileInView="show"
             viewport={{ once: true }}
-            className="relative w-full md:w-[38%] lg:w-[35%] max-[639px]:max-h-[400px] max-[767px]:max-h-[450px] aspect-[587/747] 3xl:w-[587px] 3xl:h-[747px] shrink-0 rounded-[10px] overflow-hidden"
+            className="relative w-full md:w-[38%] lg:w-[35%] max-[639px]:max-h-[400px] max-[767px]:max-h-[450px] aspect-[587/747] 3xl:w-[587px] 3xl:h-[747px] shrink-0 rounded-[10px] overflow-hidden select-none"
           >
             <Image
               src="/assets/images/resources/catalogue.png"
               alt="Brighton Catalogue 2026"
               fill
-              className="object-cover object-center"
+              className="object-cover object-center pointer-events-none"
             />
 
-            <div className="absolute inset-0 bg-black/20" />
+            {/* <div className="absolute inset-0 bg-black/20" /> */}
 
             <div className="absolute z-10 left-5 lg:left-40 3xl:left-[48px] top-60 lg:top-100 3xl:top-[117px]">
               <Image
@@ -59,7 +59,7 @@ export default function Main() {
                 alt="Brighton"
                 width={372}
                 height={50}
-                className="invert brightness-0 h-6 xl:h-10 3xl:h-12.5 w-auto max-w-[372px]"
+                className="invert brightness-0 h-6 xl:h-10 3xl:h-12.5 w-auto max-w-[372px] pointer-events-none"
               />
               <p
                 className="text-[26px] font-itc-medium tracking-[-0.01em] leading-[2.5] bg-clip-text text-transparent mt-2 xl:mt-4.5"

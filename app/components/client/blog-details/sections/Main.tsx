@@ -40,7 +40,7 @@ const Main = ({ data }: { data: BlogDetails }) => {
               <div className="pt-40 xl:pt-80">
                 <AnimatedTitle
                   text={data.title}
-                  className="hero-title mb-40 xl:mb-80"
+                  className="hero-title mb-40 xl:mb-80 md:leading-[1.16666667]"
                 />
                 <div className="flex justify-between items-center">
                   <motion.p
