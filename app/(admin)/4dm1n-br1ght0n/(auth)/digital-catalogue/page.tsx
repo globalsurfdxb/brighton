@@ -1,4 +1,4 @@
-import DigitalCataloguePage from "@/app/components/admin/AdminDigitalCatalogue/DigitalCatalogue";
+import DigitalCataloguePage from "@/app/components/admin/AdminDigitalCatalogue/DigitalCataloguePage";
 
 const page = () => {
   return <DigitalCataloguePage />;

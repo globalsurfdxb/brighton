@@ -31,18 +31,40 @@ interface DigitalCatalogueForm {
   };
 }
 
+const defaultValues: DigitalCatalogueForm = {
+  seo: { metaTitle: "", metaDescription: "", script: "" },
+  firstSection: {
+    isHidden: false,
+    title: "",
+    subTitle: "",
+    catalogueText: "",
+    catalogueLink: "",
+    image: "",
+    imageAlt: "",
+  },
+  ctaSection: {
+    isHidden: false,
+    title: "",
+    description: "",
+    buttonText: "",
+    buttonLink: "",
+  },
+};
+
 export default function DigitalCataloguePage() {
-  const { register, handleSubmit, setValue, control, watch } =
-    useForm<DigitalCatalogueForm>();
+  const { register, handleSubmit, control, reset } =
+    useForm<DigitalCatalogueForm>({ defaultValues });
 
   const fetchData = async () => {
     try {
       const res = await fetch("/api/admin/digital-catalogue");
       if (res.ok) {
         const { data } = await res.json();
-        setValue("seo", data.seo);
-        setValue("firstSection", data.firstSection);
-        setValue("ctaSection", data.ctaSection);
+        reset({
+          seo: { ...defaultValues.seo, ...data.seo },
+          firstSection: { ...defaultValues.firstSection, ...data.firstSection },
+          ctaSection: { ...defaultValues.ctaSection, ...data.ctaSection },
+        });
       } else {
         const { message } = await res.json();
         toast.error(message);
@@ -80,15 +102,19 @@ export default function DigitalCataloguePage() {
       <form className="flex flex-col gap-5" onSubmit={handleSubmit(onSubmit)}>
         {/* First Section */}
         <AdminItemContainer>
-          <Label
-            main
-            isHidden={watch("firstSection.isHidden")}
-            onToggleHidden={() =>
-              setValue("firstSection.isHidden", !watch("firstSection.isHidden"))
-            }
-          >
-            First Section
-          </Label>
+          <Controller
+            name="firstSection.isHidden"
+            control={control}
+            render={({ field }) => (
+              <Label
+                main
+                isHidden={field.value}
+                onToggleHidden={() => field.onChange(!field.value)}
+              >
+                First Section
+              </Label>
+            )}
+          />
           <div className="p-5 flex flex-col gap-4">
             <div className="grid grid-cols-2 gap-4">
               <div className="flex flex-col gap-2">
@@ -143,15 +169,19 @@ export default function DigitalCataloguePage() {
 
         {/* CTA Section */}
         <AdminItemContainer>
-          <Label
-            main
-            isHidden={watch("ctaSection.isHidden")}
-            onToggleHidden={() =>
-              setValue("ctaSection.isHidden", !watch("ctaSection.isHidden"))
-            }
-          >
-            CTA Section
-          </Label>
+          <Controller
+            name="ctaSection.isHidden"
+            control={control}
+            render={({ field }) => (
+              <Label
+                main
+                isHidden={field.value}
+                onToggleHidden={() => field.onChange(!field.value)}
+              >
+                CTA Section
+              </Label>
+            )}
+          />
           <div className="p-5 flex flex-col gap-4">
             <Label className="font-bold">Title</Label>
             <Input {...register("ctaSection.title")} placeholder="Title" />
