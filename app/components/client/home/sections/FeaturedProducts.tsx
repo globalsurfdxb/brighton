@@ -111,7 +111,7 @@ export default function FeaturedProducts() {
           slideImages,
           {
             scale: 2,
-            duration: 0.3,
+            duration: 0.5,
             ease: "sine.inOut",
             stagger: {
               each: 0.12,
@@ -120,7 +120,10 @@ export default function FeaturedProducts() {
             },
           },
           "-=0.6",
-        );
+        )
+        .set(slideImages, {
+          clearProps: "transform,filter",
+        });
     }, sectionRef);
 
     return () => ctx.revert();
