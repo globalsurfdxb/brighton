@@ -1,6 +1,6 @@
 "use client";
 
-import { useLayoutEffect, useRef, useState } from "react";
+import { useLayoutEffect, useRef } from "react";
 import Image from "next/image";
 import { Swiper, SwiperSlide } from "swiper/react";
 import type { Swiper as SwiperType } from "swiper/types";
@@ -12,15 +12,9 @@ import "swiper/css";
 import AnimatedDividerTwo from "../../animations/AnimatedDividerTwo";
 import AnimatedTitle from "../../animations/AnimatedTitle";
 import Link from "next/link";
+import { Autoplay } from "swiper/modules";
 
 gsap.registerPlugin(ScrollTrigger);
-
-const swiperBreakpoints = {
-  640: { slidesPerView: 1.5, spaceBetween: 20 },
-  1024: { slidesPerView: 1.8, spaceBetween: 20 },
-  1400: { slidesPerView: 2.1841, spaceBetween: 24 },
-  1700: { slidesPerView: 2.1841, spaceBetween: 30 },
-};
 
 export default function FeaturedProjects({
   data,
@@ -37,9 +31,6 @@ export default function FeaturedProjects({
   const sliderRef = useRef<HTMLDivElement>(null);
   const swiperRef = useRef<SwiperType | null>(null);
 
-  // Tracks whether pin/scrub mode is currently active (only >=1280px)
-  const [pinEnabled, setPinEnabled] = useState(false);
-
   useLayoutEffect(() => {
     if (!animate) return;
     if (!sectionRef.current || !sliderRef.current) return;
@@ -48,15 +39,14 @@ export default function FeaturedProjects({
     const slider = sliderRef.current;
 
     const ctx = gsap.context(() => {
-      // --- Entry + pop animation (runs once, independent of breakpoint) ---
       const cards = slider.querySelectorAll(".featured-project-card");
 
       gsap.set(cards, {
         opacity: 0,
-        y: 120,
-        rotateX: 20,
-        filter: "blur(8px)",
-        transformOrigin: "50% 100%",
+        x: 40,
+        scale: 0.8,
+        filter: "blur(10px)",
+        clipPath: "inset(0% 0% 0% 100% round 10px)",
       });
 
       const entryTl = gsap.timeline({
@@ -68,89 +58,61 @@ export default function FeaturedProjects({
         },
       });
 
-      entryTl
-        .to(cards, {
-          opacity: 1,
-          y: 0,
-          rotateX: 0,
-          filter: "blur(0px)",
-          duration: 1.1,
-          ease: "power4.out",
-          stagger: 0.08,
-        })
-        .to(
+      entryTl.to(cards, {
+        opacity: 1,
+        x: 0,
+        scale: 1,
+        filter: "blur(0px)",
+        clipPath: "inset(0% 0% 0% 0% round 10px)",
+        duration: 1,
+        ease: "power3.inOut",
+        stagger: {
+          each: 0.16,
+          from: "start",
+        },
+      })
+      .to(
           cards,
           {
-            scale: 1.016,
-            duration: 0.6,
+            scale: 1.02,
+            duration: 0.5,
+            delay: 0.2,
             ease: "sine.inOut",
             stagger: {
-              each: 0.1,
+              each: 0.12,
               yoyo: true,
               repeat: 1,
             },
           },
           "-=0.6",
         );
-
-      // --- Pin/scrub logic (only >=1280px) ---
-      const mm = gsap.matchMedia();
-
-      mm.add("(min-width: 1280px)", () => {
-        setPinEnabled(true);
-
-        let st: ScrollTrigger;
-
-        const build = () => {
-          const swiper = swiperRef.current;
-          if (!swiper) return;
-
-          swiper.update();
-
-          const distance = Math.abs(
-            swiper.maxTranslate() - swiper.minTranslate(),
-          );
-
-          st?.kill();
-          st = ScrollTrigger.create({
-            trigger: section,
-            start: "top 5%",
-            end: () => `+=${distance * 1.5}`,
-            pin: true,
-            pinSpacing: true,
-            anticipatePin: 0,
-            scrub: 1,
-            invalidateOnRefresh: true,
-            onUpdate: (self) => {
-              const swiper = swiperRef.current;
-              if (!swiper) return;
-              const min = swiper.minTranslate();
-              const max = swiper.maxTranslate();
-              const x = gsap.utils.interpolate(min, max, self.progress);
-              swiper.setTranslate(x);
-            },
-          });
-        };
-
-        build();
-
-        // Cleanup when leaving this matchMedia range (crossing below 1280px)
-        return () => {
-          st?.kill();
-          setPinEnabled(false);
-          // reset swiper translate so it's not stuck mid-scrub when it becomes free-scroll
-          swiperRef.current?.setTranslate(0);
-          swiperRef.current?.update();
-        };
-      });
-
-      return () => mm.revert();
     }, section);
 
     return () => ctx.revert();
   }, [animate]);
 
-  const isPinMode = animate && pinEnabled;
+  useLayoutEffect(() => {
+    if (!sectionRef.current) return;
+
+    const section = sectionRef.current;
+    let started = false;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting && !started) {
+            started = true;
+            swiperRef.current?.autoplay?.start();
+          }
+        });
+      },
+      { threshold: 0.3 },
+    );
+
+    observer.observe(section);
+
+    return () => observer.disconnect();
+  }, []);
 
   return (
     <section ref={sectionRef} className={`overflow-hidden ${className}`}>
@@ -160,17 +122,25 @@ export default function FeaturedProjects({
           text={sectionTitle}
           className="section-title mb-5 sm:mb-40 md:pb-1.5"
         />
-        <div ref={sliderRef} className={isPinMode ? "" : "cursor-grab"}>
+        <div ref={sliderRef} className="cursor-grab">
           <Swiper
+            modules={[Autoplay]}
+            autoplay={{
+              delay: 5000,
+              disableOnInteraction: false,
+              enabled: false,
+            }}
             onSwiper={(s) => (swiperRef.current = s)}
             spaceBetween={15}
             slidesPerView={1.2687}
             speed={800}
             loop={false}
-            breakpoints={swiperBreakpoints}
-            allowTouchMove={!isPinMode}
-            simulateTouch={!isPinMode}
-            mousewheel={false}
+            breakpoints={{
+              640: { slidesPerView: 1.5, spaceBetween: 20 },
+              1024: { slidesPerView: 1.8, spaceBetween: 20 },
+              1400: { slidesPerView: 2.1841, spaceBetween: 24 },
+              1700: { slidesPerView: 2.1841, spaceBetween: 30 },
+            }}
             className="!overflow-visible"
           >
             {projects.map((project: any, index: number) => (

@@ -397,8 +397,7 @@ body {
 }
 
 
-/* fill effect: 1024px+ only */
-@media (min-width: 1024px) and (hover: hover) and (pointer: fine) {
+@media (hover: hover) and (pointer: fine) {
   .btn-fill-center::before {
     transition:
       opacity 0.3s ease,
@@ -417,10 +416,6 @@ body {
 
 /* below 1024px: no fill, just scale down */
 @media (max-width: 1023px) {
-  .btn-fill-center::before {
-    display: none;
-  }
-
   .btn-fill-center {
     transition: transform 0.5s ease;
   }
