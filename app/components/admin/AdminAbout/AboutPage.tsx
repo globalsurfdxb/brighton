@@ -12,6 +12,7 @@ import { useEffect } from "react";
 import { RiDeleteBinLine } from "react-icons/ri";
 import TinyEditor from "../common/TinyMceEditor";
 import CustomButton from "../../client/common/CustomButton";
+import Link from "next/link";
 
 interface AboutForm {
   seo: { metaTitle: string; metaDescription: string; script: string };
@@ -587,7 +588,10 @@ export default function AboutPage() {
           </div>
         </AdminItemContainer>
 
-        <div className="fixed top-2 right-8 z-50">
+        <div className="fixed top-2 right-8 z-50 flex gap-5">
+          <Link href="/about" target="_blank">
+            <CustomButton variant="2" type="button" text="Visit Page" />
+          </Link>
           <CustomButton
             variant="3"
             type="submit"

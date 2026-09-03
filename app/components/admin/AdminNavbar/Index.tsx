@@ -51,7 +51,7 @@ const AdminNavbar = () => {
       hasChild: true,
       children: [
         { name: "Main Page", href: "/4dm1n-br1ght0n/contact" },
-        { name: "Enquiries", href: "/4dm1n-br1ght0n/contact/enquiry" },
+        { name: "Enquiries", href: "/4dm1n-br1ght0n/contact/enquiries" },
       ],
     },
     { name: "Settings", href: "/4dm1n-br1ght0n/settings", icon: Settings },

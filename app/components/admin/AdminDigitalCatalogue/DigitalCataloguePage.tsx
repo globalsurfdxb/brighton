@@ -10,6 +10,7 @@ import AdminItemContainer from "@/app/components/admin/common/AdminItemContainer
 import { toast } from "sonner";
 import { useEffect } from "react";
 import CustomButton from "../../client/common/CustomButton";
+import Link from "next/link";
 
 interface DigitalCatalogueForm {
   seo: { metaTitle: string; metaDescription: string; script: string };
@@ -225,7 +226,10 @@ export default function DigitalCataloguePage() {
           </div>
         </AdminItemContainer>
 
-        <div className="fixed top-2 right-8 z-50">
+        <div className="fixed top-2 right-8 z-50 flex gap-5">
+          <Link href={`/resources/digital-catalogue`} target="_blank">
+            <CustomButton variant="2" type="button" text="Visit page" />
+          </Link>
           <CustomButton
             variant="3"
             type="submit"

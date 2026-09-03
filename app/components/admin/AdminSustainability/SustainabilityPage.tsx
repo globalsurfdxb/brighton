@@ -12,6 +12,7 @@ import { useEffect } from "react";
 import { RiDeleteBinLine } from "react-icons/ri";
 import TinyEditor from "../common/TinyMceEditor";
 import CustomButton from "../../client/common/CustomButton";
+import Link from "next/link";
 
 interface SustainabilityForm {
   seo: { metaTitle: string; metaDescription: string; script: string };
@@ -28,7 +29,12 @@ interface SustainabilityForm {
     isHidden: boolean;
     title: string;
     description: string;
-    items: { title: string; description: string; image: string; imageAlt: string }[];
+    items: {
+      title: string;
+      description: string;
+      image: string;
+      imageAlt: string;
+    }[];
   };
   thirdSection: {
     isHidden: boolean;
@@ -220,7 +226,12 @@ export default function SustainabilityPage() {
                 type="button"
                 addItem
                 onClick={() =>
-                  appendSecond({ title: "", description: "", image: "", imageAlt: "" })
+                  appendSecond({
+                    title: "",
+                    description: "",
+                    image: "",
+                    imageAlt: "",
+                  })
                 }
               >
                 + Add Item
@@ -515,7 +526,10 @@ export default function SustainabilityPage() {
           </div>
         </AdminItemContainer>
 
-        <div className="fixed top-2 right-8 z-50">
+        <div className="fixed top-2 right-8 z-50 flex gap-5">
+          <Link href="/about/sustainability" target="_blank">
+            <CustomButton variant="2" type="button" text="Visit Page" />
+          </Link>
           <CustomButton
             variant="3"
             type="submit"
