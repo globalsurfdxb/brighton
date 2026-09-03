@@ -162,13 +162,13 @@ export default function ServicesListPage() {
     opacity-0 invisible group-hover:opacity-100 group-hover:visible
     transition-opacity duration-400"
                   >
-                    View on website
+                    Visit page
                   </span>
                 </div>
                 <button
                   onClick={(e) => toggleHidden(e, service)}
                   type="button"
-                  className="cursor-pointer"
+                  className="cursor-pointer hover:scale-110 transition-all"
                   title={service.isHidden ? "Show service" : "Hide service"}
                 >
                   {service.isHidden ? (
