@@ -4,6 +4,7 @@ import LenisProvider from "../components/client/layout/LenisProvider";
 import Footer from "../components/client/layout/Footer";
 import Header from "../components/client/layout/Header";
 import IntroAnimation from "../components/client/animations/IntroAnimation";
+import { Suspense } from "react";
 
 export const metadata: Metadata = {
   title: "Brighton",
@@ -20,7 +21,9 @@ export default function RootLayout({
       <body className="min-h-full flex flex-col">
         <LenisProvider>
           <IntroAnimation />
-          <Header />
+          <Suspense fallback={null}>
+            <Header />
+          </Suspense>
           {children}
           <Footer />
         </LenisProvider>
