@@ -23,6 +23,7 @@ export default function ContactForm() {
 
   const onSubmit = (data: ContactFormValues) => {
     console.log(data);
+    window.location.replace("/thank-you");
   };
 
   return (
