@@ -12,6 +12,13 @@ import AdminItemContainer from "../common/AdminItemContainer";
 import CustomButton from "../../client/common/CustomButton";
 import TinyEditor from "../common/TinyMceEditor";
 import { ImageUploader } from "@/components/ui/image-uploader";
+import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem,
+} from "@/components/ui/select";
 
 type NewsForm = {
   title: string;
@@ -175,17 +182,29 @@ export default function ProjectDetail() {
             <div className="grid grid-cols-2 gap-4">
               <div className="flex flex-col gap-2">
                 <Label className="font-bold">Topic</Label>
-                <select
-                  {...register("topic", { required: "Topic is required" })}
-                  className="border border-secondary rounded-md px-3 py-2 text-md"
-                >
-                  <option value="">Select topic</option>
-                  {topics.map((topic) => (
-                    <option key={topic._id} value={topic._id}>
-                      {topic.title}
-                    </option>
-                  ))}
-                </select>
+                <Controller
+                  name="topic"
+                  control={control}
+                  rules={{ required: "Topic is required" }}
+                  render={({ field }) => (
+                    <Select value={field.value} onValueChange={field.onChange}>
+                      <SelectTrigger className="cursor-pointer">
+                        <SelectValue placeholder="Select topic" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {topics.map((topic) => (
+                          <SelectItem
+                            className="cursor-pointer"
+                            key={topic._id}
+                            value={topic._id}
+                          >
+                            {topic.title}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  )}
+                />
                 {errors.topic && (
                   <p className="text-red-500 text-sm">{errors.topic.message}</p>
                 )}

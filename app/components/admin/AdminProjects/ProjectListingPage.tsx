@@ -384,7 +384,7 @@ export default function ProjectListingPage() {
 
       {/* Regions & Sectors */}
       <div className="grid grid-cols-2 gap-5">
-        <div className="bg-white border border-secondary rounded-[10px] p-5 flex flex-col gap-4">
+        <div className="bg-white border border-secondary rounded-[10px] p-5 flex flex-col gap-4 h-fit">
           <div className="flex items-center justify-between border-b border-secondary pb-3">
             <Label className="!text-xl !font-semibold">
               Regions {`(${regions?.length})`}
@@ -491,7 +491,7 @@ export default function ProjectListingPage() {
           </div>
         </div>
 
-        <div className="bg-white border border-secondary rounded-[10px] p-5 flex flex-col gap-4">
+        <div className="bg-white border border-secondary rounded-[10px] p-5 flex flex-col gap-4 h-fit">
           <div className="flex items-center justify-between border-b border-secondary pb-3">
             <Label className="!text-xl !font-semibold">
               Sectors {`(${sectors?.length})`}

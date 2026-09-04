@@ -255,12 +255,16 @@ export default function ProductDetailPage() {
                   control={control}
                   render={({ field }) => (
                     <Select value={field.value} onValueChange={field.onChange}>
-                      <SelectTrigger>
+                      <SelectTrigger className="cursor-pointer">
                         <SelectValue placeholder="Select subcategory" />
                       </SelectTrigger>
                       <SelectContent>
                         {subCategories.map((sub) => (
-                          <SelectItem key={sub._id} value={sub._id}>
+                          <SelectItem
+                            className="cursor-pointer"
+                            key={sub._id}
+                            value={sub._id}
+                          >
                             {sub.title}
                           </SelectItem>
                         ))}
