@@ -1,3 +1,5 @@
+"use client"
+
 import Image from "next/image";
 import { overviewData } from "../data";
 import AnimatedDivider from "../../animations/AnimatedDivider";
@@ -5,11 +7,33 @@ import CustomButton from "../../common/CustomButton";
 import AnimatedTitle from "../../animations/AnimatedTitle";
 import Reveal from "../../animations/RevealItemsOneByOneAnimation";
 import { moveUpV2 } from "../../animations/motionVariants";
-import Link from "next/link";
+import { motion, useInView } from "framer-motion";
+import { useRef } from "react";
+import { useMediaQuery } from "@/app/hooks/useMediaQuery";
 
 export default function Overview() {
+  const isDesktop = useMediaQuery(1280);
+  const sectionRef = useRef<HTMLElement>(null);
+  const isInView = useInView(sectionRef, {
+    once: true,
+    amount: 0.3,
+  });
+
   return (
-    <section className="container pt-60 pb-100 overflow-hidden">
+    <motion.section
+      ref={sectionRef}
+      initial={isDesktop ? { width: "92%" } : false}
+      animate={
+        isDesktop
+          ? { width: isInView ? "100%" : "92%" }
+          : { width: "100%" }
+      }
+      transition={{
+        duration: 1.5,
+        ease: "easeOut",
+      }}
+      className="mx-auto pt-60 pb-100 overflow-hidden container"
+    >
       <div className="grid grid-cols-1 md:grid-cols-3 gap-20 md:gap-0 lg:gap-80">
         {overviewData.stats.map((stat, index) => (
           <Reveal key={index} variants={moveUpV2} delayRange={index * 0.14}>
@@ -121,6 +145,6 @@ export default function Overview() {
           </Reveal>
         ))}
       </div>
-    </section>
+    </motion.section>
   );
 }

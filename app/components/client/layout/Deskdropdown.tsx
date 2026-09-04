@@ -2,6 +2,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { motion } from "framer-motion";
+import { usePathname, useSearchParams } from "next/navigation";
 import type { NavDropdownItem } from "./data";
 
 const shutterVariants = {
@@ -48,6 +49,10 @@ export default function NavDropdown({
   items: NavDropdownItem[];
   isLight: boolean;
 }) {
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const currentUrl = `${pathname}${searchParams.toString() ? `?${searchParams.toString()}` : ""}`;
+
   return (
     <motion.div
       variants={shutterVariants}
@@ -64,31 +69,41 @@ export default function NavDropdown({
         animate="visible"
         className="divide-y divide-[#0A0A0A1A] px-30"
       >
-        {items.map((item) => (
-          <motion.li
-            key={item.label}
-            variants={itemVariants}
-            className="group relative"
-          >
-            <Link
-              href={item.href}
-              className="flex items-center justify-between py-[12px] text-15 font-itc-medium"
+        {items.map((item) => {
+          const isActive = item.href.includes("?")
+            ? currentUrl === item.href
+            : pathname === item.href;
+
+          return (
+            <motion.li
+              key={item.label}
+              variants={itemVariants}
+              className="group relative"
             >
-              <span className="group-hover:text-primary text-[#6B6B70] transition-all duration-500">
-                {item.label}
-              </span>
-              <span className="shrink-0 flex h-[26px] w-[26px] items-center justify-center rounded-full border border-secondary opacity-0 scale-75 transition-all duration-500 group-hover:opacity-100 group-hover:scale-100">
-                <Image
-                  src="/assets/icons/right-arrow-nav.svg"
-                  alt=""
-                  width={9}
-                  height={9}
-                  className="shrink-0 h-[8px] w-auto"
-                />
-              </span>
-            </Link>
-          </motion.li>
-        ))}
+              <Link
+                href={item.href}
+                className="flex items-center justify-between py-[12px] text-15 font-itc-medium"
+              >
+                <span
+                  className={`group-hover:text-primary transition-all duration-500 ${
+                    isActive ? "text-primary" : "text-[#6B6B70]"
+                  }`}
+                >
+                  {item.label}
+                </span>
+                <span className="shrink-0 flex h-[26px] w-[26px] items-center justify-center rounded-full border border-secondary opacity-0 scale-75 transition-all duration-500 group-hover:opacity-100 group-hover:scale-100">
+                  <Image
+                    src="/assets/icons/right-arrow-nav.svg"
+                    alt=""
+                    width={9}
+                    height={9}
+                    className="shrink-0 h-[8px] w-auto"
+                  />
+                </span>
+              </Link>
+            </motion.li>
+          );
+        })}
       </motion.ul>
     </motion.div>
   );
