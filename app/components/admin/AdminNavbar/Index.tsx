@@ -18,12 +18,35 @@ import {
   Phone,
 } from "lucide-react";
 
+type Category = { _id: string; title: string; slug: string };
+
 const AdminNavbar = () => {
   const pathname = usePathname();
+  const [categories, setCategories] = useState<Category[]>([]);
+
+  useEffect(() => {
+    fetch("/api/admin/products/category")
+      .then((res) => res.json())
+      .then((data) => setCategories(data))
+      .catch(() => {});
+  }, []);
 
   const navItems = [
     { name: "Home", href: "/4dm1n-br1ght0n/home", icon: Home },
     { name: "About", href: "/4dm1n-br1ght0n/about", icon: Info },
+    {
+      name: "Products",
+      href: "/4dm1n-br1ght0n/products/main",
+      icon: Info,
+      hasChild: true,
+      children: [
+        { name: "Main Page", href: "/4dm1n-br1ght0n/products/main" },
+        ...categories.map((cat) => ({
+          name: cat.title,
+          href: `/4dm1n-br1ght0n/products/${cat.slug}`,
+        })),
+      ],
+    },
     {
       name: "Sustainability",
       href: "/4dm1n-br1ght0n/sustainability",
@@ -67,19 +90,15 @@ const AdminNavbar = () => {
     return ownMatch || childMatch;
   };
 
-  const [openLink, setOpenLink] = useState<string | null>(() => {
-    const activeParent = navItems.find(
-      (item) => item.hasChild && isItemActive(item),
-    );
-    return activeParent?.href ?? null;
-  });
+  const [openLink, setOpenLink] = useState<string | null>(null);
 
   useEffect(() => {
     const activeParent = navItems.find(
       (item) => item.hasChild && isItemActive(item),
     );
     setOpenLink(activeParent?.href ?? null);
-  }, [pathname]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pathname, categories]);
 
   return navItems.map((item, index) => {
     const Icon = item.icon;

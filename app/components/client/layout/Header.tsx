@@ -14,7 +14,7 @@ import {
   registerHeaderSurface,
 } from "@/app/hooks/useIntroComplete";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import NavDropdown from "./Deskdropdown";
 import MobileMenuIcon from "./MobileMenuIcon";
 import MobileNav, { SearchResult } from "./MobileNav";
@@ -94,6 +94,8 @@ export default function Header() {
   const SCROLL_THRESHOLD = 80;
 
   const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const currentUrl = `${pathname}${searchParams.toString() ? `?${searchParams.toString()}` : ""}`;
 
   const isLight = isLightHeaderRoute(pathname);
 
@@ -271,27 +273,42 @@ export default function Header() {
                   className="hidden xl:flex items-center gap-6 2xl:gap-[37px]"
                   variants={navContainerVariants}
                 >
-                  {navItems.map((item, idx) => (
-                    <motion.div
-                      key={item.label}
-                      variants={itemVariants}
-                      ref={(el) => {
-                        itemRefs.current[item.label] = el;
-                      }}
-                      onMouseEnter={() => item.hasDropdown && openDropdown(idx)}
-                      onMouseLeave={scheduleClose}
-                    >
-                      <Link
-                        href={item.href}
-                        className="flex items-center text-15 font-itc-medium uppercase gap-[7px] text-trim group text-description-color hover:text-primary transition-all duration-500"
+                {navItems.map((item, idx) => {
+                    const matchesHref = (href: string) =>
+                      href.includes("?")
+                        ? currentUrl === href
+                        : pathname === href || pathname.startsWith(`${href}/`);
+
+                    const matchesSubHref = (href: string) =>
+                      href.includes("?") ? currentUrl === href : pathname === href;
+
+                    const isActive =
+                      matchesHref(item.href) ||
+                      item.dropdownItems?.some((sub) => matchesSubHref(sub.href));
+                    return (
+                      <motion.div
+                        key={item.label}
+                        variants={itemVariants}
+                        ref={(el) => {
+                          itemRefs.current[item.label] = el;
+                        }}
+                        onMouseEnter={() => item.hasDropdown && openDropdown(idx)}
+                        onMouseLeave={scheduleClose}
                       >
-                        {item.label}
-                        {item.hasDropdown && (
-                          <PlusMinusIcon isHovered={activeIndex === idx} />
-                        )}
-                      </Link>
-                    </motion.div>
-                  ))}
+                        <Link
+                          href={item.href}
+                          className={`flex items-center text-15 font-itc-medium uppercase gap-[7px] text-trim group transition-all duration-500 hover:text-primary ${
+                            isActive ? "text-primary" : "text-description-color"
+                          }`}
+                        >
+                          {item.label}
+                          {item.hasDropdown && (
+                            <PlusMinusIcon isHovered={activeIndex === idx} />
+                          )}
+                        </Link>
+                      </motion.div>
+                    );
+                  })}
                 </motion.nav>
               </div>
 

@@ -84,16 +84,15 @@ function ClientSideLink({
             const isChildActive = pathname === item.href;
             return (
               <div key={index} className="flex items-center gap-2">
-                <div className="w-2 h-1 rounded-full bg-primary" />
+                <div className={cn("w-2 h-1 rounded-full", isChildActive ? "bg-primary" : "bg-description-color/70")} />
                 <Link
                   href={item.href}
                   className={cn(
-                    "w-full rounded-[5px] flex items-center justify-center cursor-pointer btn-fill-center hover:text-white text-[15px] px-2 py-3 transition-colors",
+                    "w-full rounded-[5px] font-itc-medium flex items-center justify-center cursor-pointer text-[15px] px-2 py-3 transition-colors",
                     isChildActive
-                      ? "bg-primary text-white"
-                      : "text-description-color bg-white",
+                      ? "text-primary"
+                      : "text-description-color/70",
                   )}
-                  style={{ "--fill-color": "#0A0A0A" } as React.CSSProperties}
                 >
                   <span className="text-trim">{item.name}</span>
                 </Link>
