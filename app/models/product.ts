@@ -84,6 +84,7 @@ const productSchema = new mongoose.Schema({
   hoverImage: { type: String },
   hoverImageAlt: { type: String },
   productCode: { type: String },
+  featured: { type: Boolean, default: false },
 
   // First section
   description: { type: String },
@@ -111,6 +112,10 @@ const productSchema = new mongoose.Schema({
             type: [mongoose.Schema.Types.ObjectId],
             ref: "configoption",
             default: [],
+          },
+          defaultOption: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "configoption",
           },
         },
       ],

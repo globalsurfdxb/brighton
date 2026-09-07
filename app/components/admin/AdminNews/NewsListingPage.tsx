@@ -322,7 +322,7 @@ export default function NewsListingPage() {
 
       {/* Regions & Sectors */}
       <div className="grid grid-cols-[33%_1fr] gap-5">
-        <div className="flex">
+        <div className="flex h-fit">
           <div className="bg-white border border-secondary rounded-[10px] p-5 flex flex-col gap-4 w-full">
             <div className="flex items-center justify-between border-b border-secondary pb-3">
               <Label className="!text-xl !font-semibold">
@@ -428,8 +428,8 @@ export default function NewsListingPage() {
             </div>
           </div>
         </div>
-        {/* Projects list */}
-        <div className="bg-white border border-secondary rounded-[10px] p-5 flex flex-col gap-4">
+        {/* News list */}
+        <div className="bg-white border border-secondary rounded-[10px] p-5 flex flex-col gap-4 h-fit">
           <div className="flex items-center justify-between border-b border-secondary pb-3">
             <Label className="!text-xl !font-semibold">
               News {`(${news?.length})`}

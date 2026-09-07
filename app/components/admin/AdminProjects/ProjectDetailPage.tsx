@@ -14,6 +14,13 @@ import { Button } from "@/components/ui/button";
 import CustomButton from "../../client/common/CustomButton";
 import { ImageUploader } from "@/components/ui/image-uploader";
 import TinyEditor from "../common/TinyMceEditor";
+import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem,
+} from "@/components/ui/select";
 
 type ProjectImage = { url: string; alt: string };
 
@@ -200,7 +207,7 @@ export default function ProjectDetail() {
             <div className="grid grid-cols-2 gap-4">
               <div className="flex flex-col gap-2">
                 <Label className="font-bold">Region</Label>
-                <select
+                {/* <select
                   {...register("region", { required: "Region is required" })}
                   className="border border-secondary rounded-md px-3 py-2 text-md"
                 >
@@ -210,7 +217,33 @@ export default function ProjectDetail() {
                       {region.title}
                     </option>
                   ))}
-                </select>
+                </select> */}
+
+                                <Controller
+                  name="region"
+                  control={control}
+                  rules={{ required: "Region is required" }}
+                  render={({ field }) => (
+                    <Select value={field.value} onValueChange={field.onChange}>
+                      <SelectTrigger className="cursor-pointer">
+                        <SelectValue placeholder="Select region" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {regions.map((region) => (
+                          <SelectItem
+                            className="cursor-pointer"
+                            key={region._id}
+                            value={region._id}
+                          >
+                            {region.title}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  )}
+                />
+
+
                 {errors.region && (
                   <p className="text-red-500 text-sm">
                     {errors.region.message}

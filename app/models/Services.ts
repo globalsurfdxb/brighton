@@ -11,6 +11,7 @@ const serviceSchema = new mongoose.Schema(
       script: { type: String },
     },
     homePageSection: {
+      title: { type: String },
       description: { type: String },
       image: { type: String },
       imageAlt: { type: String },

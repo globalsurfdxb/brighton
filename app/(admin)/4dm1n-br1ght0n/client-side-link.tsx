@@ -81,10 +81,16 @@ function ClientSideLink({
       {isOpen && children && (
         <div className="flex pl-14 flex-col items-start gap-2">
           {children.map((item, index) => {
-            const isChildActive = pathname === item.href;
+            const isChildActive =
+              pathname === item.href || pathname?.startsWith(`${item.href}/`);
             return (
               <div key={index} className="flex items-center gap-2">
-                <div className={cn("w-2 h-1 rounded-full", isChildActive ? "bg-primary" : "bg-description-color/70")} />
+                <div
+                  className={cn(
+                    "w-2 h-1 rounded-full",
+                    isChildActive ? "bg-primary" : "bg-description-color/70",
+                  )}
+                />
                 <Link
                   href={item.href}
                   className={cn(

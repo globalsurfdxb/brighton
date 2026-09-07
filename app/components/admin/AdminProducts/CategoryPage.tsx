@@ -24,6 +24,7 @@ import { Label } from "@/components/ui/label";
 import { ImageUploader } from "@/components/ui/image-uploader";
 import CustomButton from "../../client/common/CustomButton";
 import Image from "next/image";
+import Link from "next/link";
 
 type Category = { _id: string; title: string; slug: string };
 type SubCategory = {
@@ -270,7 +271,7 @@ export default function CategoryProductsPage() {
                     className="cursor-pointer hover:scale-110 transition-all"
                     onClick={(e) => {
                       e.stopPropagation();
-                      window.open(`/products/${product._id}`, "_blank");
+                      window.open(`/lighting/${product._id}`, "_blank");
                     }}
                   >
                     <RiExternalLinkLine
@@ -320,6 +321,12 @@ export default function CategoryProductsPage() {
               </div>
             </div>
           ))}
+        </div>
+
+        <div className="fixed top-2 right-8 z-50 flex gap-5">
+          <Link href={`/lighting?category=${params.category}`} target="_blank">
+            <CustomButton variant="2" type="button" text="Visit Page" />
+          </Link>
         </div>
       </div>
 
