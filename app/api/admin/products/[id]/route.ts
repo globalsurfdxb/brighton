@@ -2,6 +2,41 @@ import { NextRequest, NextResponse } from "next/server";
 import connectDB from "@/lib/mongodb";
 import { Product } from "@/app/models/product";
 
+
+function sanitizeRefFields(value: any): any {
+  if (Array.isArray(value)) {
+    return value
+      .map(sanitizeRefFields)
+      .filter((v) => v !== "");
+  }
+  if (value && typeof value === "object") {
+    const result: Record<string, any> = {};
+    for (const [key, val] of Object.entries(value)) {
+      result[key] = sanitizeRefFields(val);
+    }
+    return result;
+  }
+  return value;
+}
+
+function stripEmptyRefs(body: Record<string, any>) {
+  const clean = sanitizeRefFields(body);
+  // top-level ref fields: unset instead of casting ""
+  ["category", "subCategory"].forEach((key) => {
+    if (clean[key] === "") delete clean[key];
+  });
+  if (clean.secondSection?.configurations) {
+    clean.secondSection.configurations = clean.secondSection.configurations.map(
+      (c: any) => ({
+        ...c,
+        category: c.category === "" ? undefined : c.category,
+        defaultOption: c.defaultOption === "" ? undefined : c.defaultOption,
+      }),
+    );
+  }
+  return clean;
+}
+
 export async function GET(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> },
@@ -26,13 +61,23 @@ export async function PATCH(
   await connectDB();
   const { id } = await params;
   const body = await req.json();
-  const product = await Product.findByIdAndUpdate(id, body, {
-    returnDocument: "after",
-    runValidators: true,
-  });
-  if (!product)
-    return NextResponse.json({ error: "Not found" }, { status: 404 });
-  return NextResponse.json(product);
+  const cleanBody = stripEmptyRefs(body);
+
+  try {
+    const product = await Product.findByIdAndUpdate(id, cleanBody, {
+      new: true,
+      runValidators: true,
+    });
+    if (!product)
+      return NextResponse.json({ error: "Not found" }, { status: 404 });
+    return NextResponse.json(product);
+  } catch (e: any) {
+    console.error(e);
+    return NextResponse.json(
+      { error: e.message || "Failed to update product" },
+      { status: 400 },
+    );
+  }
 }
 
 export async function DELETE(

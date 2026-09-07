@@ -12,12 +12,19 @@ import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { RiDeleteBinLine } from "react-icons/ri";
 import CustomButton from "../../client/common/CustomButton";
+import { Home } from "lucide-react";
 
 interface ServiceForm {
   name: string;
   slug: string;
   isHidden: boolean;
   seo: { metaTitle: string; metaDescription: string; script: string };
+  homePageSection: {
+    title: string;
+    image: string;
+    imageAlt: string;
+    description: string;
+  };
   bannerSection: {
     isHidden: boolean;
     image: string;
@@ -64,6 +71,12 @@ const defaultValues: ServiceForm = {
   slug: "",
   isHidden: false,
   seo: { metaTitle: "", metaDescription: "", script: "" },
+  homePageSection: {
+    title: "",
+    image: "",
+    imageAlt: "",
+    description: "",
+  },
   bannerSection: { isHidden: false, image: "", imageAlt: "", title: "" },
   firstSection: { isHidden: false, title: "", btnText: "", btnLink: "" },
   secondSection: { isHidden: false, title: "", items: [] },
@@ -86,6 +99,8 @@ export default function ServiceDetail() {
   const { register, handleSubmit, control, reset, watch, setValue } =
     useForm<ServiceForm>({ defaultValues });
   const [isSaving, setIsSaving] = useState(false);
+  const [isHomeTitleTouched, setIsHomeTitleTouched] = useState(false);
+  const nameValue = watch("name");
 
   const {
     fields: secondItems,
@@ -121,6 +136,10 @@ export default function ServiceDetail() {
         ...defaultValues,
         ...data,
         seo: { ...defaultValues.seo, ...data.seo },
+        homePageSection: {
+          ...defaultValues.homePageSection,
+          ...data.homePageSection,
+        },
         bannerSection: {
           ...defaultValues.bannerSection,
           ...data.bannerSection,
@@ -174,6 +193,12 @@ export default function ServiceDetail() {
   };
 
   useEffect(() => {
+    if (!isHomeTitleTouched) {
+      setValue("homePageSection.title", nameValue);
+    }
+  }, [nameValue, isHomeTitleTouched, setValue]);
+
+  useEffect(() => {
     if (!isNew) fetchService();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -181,46 +206,89 @@ export default function ServiceDetail() {
   return (
     <div className="flex flex-col gap-5">
       <form className="flex flex-col gap-5" onSubmit={handleSubmit(onSubmit)}>
-        <AdminItemContainer>
-          <Controller
-            name="isHidden"
-            control={control}
-            render={({ field }) => (
-              <Label
-                main
-                isHidden={field.value}
-                onToggleHidden={() => field.onChange(!field.value)}
-              >
-                Service Details
-              </Label>
-            )}
-          />
+        <AdminItemContainer expansion={false} >
+              <div className="border-b border-secondary">
+                <Label
+                  main
+                >
+                  Service Details
+                </Label>
+              </div>
           <div className="p-5 flex flex-col gap-2">
-            <Label className="font-bold">Name</Label>
-            <Input
-              {...register("name")}
-              placeholder="e.g. Real Estate Service"
-            />
-          </div>
-          <div className="p-5 flex flex-col gap-2">
-            <Label className="font-bold">Slug</Label>
-            <div className="flex gap-2">
+            <div className="flex flex-col gap-2">
+              <Label className="font-bold">Name</Label>
               <Input
-                {...register("slug")}
-                placeholder="e.g. real-estate-service"
+                {...register("name")}
+                placeholder="e.g. Real Estate Service"
               />
-              <Button
-                addItem
-                type="button"
-                onClick={() =>
-                  setValue(
-                    "slug",
-                    watch("name").toLowerCase().replace(/\s+/g, "-"),
-                  )
-                }
-              >
-                Generate
-              </Button>
+            </div>
+            <div className="flex flex-col gap-2">
+              <Label className="font-bold">Slug</Label>
+              <div className="flex gap-2">
+                <Input
+                  {...register("slug")}
+                  placeholder="e.g. real-estate-service"
+                />
+                  <CustomButton
+                    btnClass="-mt-[2px]"
+                    variant="3"
+                    text="Generate"
+                    type="button"
+                    onClick={() =>
+                      setValue(
+                        "slug",
+                        watch("name").toLowerCase().replace(/\s+/g, "-"),
+                      )
+                    }
+                  />
+              </div>
+            </div>
+          </div>
+        </AdminItemContainer>
+
+        <AdminItemContainer>
+          <Label main>
+            <div className="flex items-center gap-2">
+              Home Page Section
+              <Home className="h-5 w-5 text-secondary -mt-1" />
+            </div>
+          </Label>
+          <div className="p-5 flex flex-col gap-4">
+            <div className="flex flex-col gap-2">
+              <Label className="font-bold">Title</Label>
+              <Input
+                {...register("homePageSection.title", {
+                  onChange: () => setIsHomeTitleTouched(true),
+                })}
+                placeholder="e.g. Real Estate Service"
+              />
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="flex flex-col gap-2">
+                <Label className="font-bold">Image</Label>
+                <Controller
+                  name="homePageSection.image"
+                  control={control}
+                  render={({ field }) => (
+                    <ImageUploader
+                      value={field.value}
+                      onChange={field.onChange}
+                    />
+                  )}
+                />
+                <Label className="font-bold">Image Alt</Label>
+                <Input
+                  {...register("homePageSection.imageAlt")}
+                  placeholder="Image Alt"
+                />
+              </div>
+              <div className="flex flex-col gap-2">
+                <Label className="font-bold">Description</Label>
+                <Input
+                  {...register("homePageSection.description")}
+                  placeholder="Description"
+                />
+              </div>
             </div>
           </div>
         </AdminItemContainer>

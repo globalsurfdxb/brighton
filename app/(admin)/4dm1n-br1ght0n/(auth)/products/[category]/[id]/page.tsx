@@ -37,6 +37,7 @@ type ProductForm = {
   hoverImage: string;
   hoverImageAlt: string;
   productCode: string;
+  featured: boolean;
   description: string;
   stats: { value: string }[];
   images: { value: string }[];
@@ -67,6 +68,7 @@ const defaultValues: ProductForm = {
   hoverImage: "",
   hoverImageAlt: "",
   productCode: "",
+  featured: false,
   description: "",
   stats: [],
   images: [],
@@ -233,12 +235,16 @@ export default function ProductDetailPage() {
     }
   };
 
+  const watchedConfigurations = watch("secondSection.configurations");
+
   return (
     <div className="flex flex-col gap-6">
       <form className="flex flex-col gap-6" onSubmit={handleSubmit(onSubmit)}>
         {/* Key Details */}
         <AdminItemContainer expansion={false}>
-          <Label main>Key Details</Label>
+          <div className="border-b border-secondary">
+            <Label main>Key Details</Label>
+          </div>
           <div className="p-6 flex flex-col gap-5">
             <div className="grid grid-cols-2 gap-5">
               <div className="flex flex-col gap-2">
@@ -254,7 +260,11 @@ export default function ProductDetailPage() {
                   name="subCategory"
                   control={control}
                   render={({ field }) => (
-                    <Select value={field.value} onValueChange={field.onChange}>
+                    <Select
+                      key={subCategories.length > 0 ? "loaded" : "empty"}
+                      value={field.value}
+                      onValueChange={field.onChange}
+                    >
                       <SelectTrigger className="cursor-pointer">
                         <SelectValue placeholder="Select subcategory" />
                       </SelectTrigger>
@@ -318,6 +328,22 @@ export default function ProductDetailPage() {
               <Label className="font-bold">Product Code</Label>
               <Input {...register("productCode")} placeholder="Product Code" />
             </div>
+
+              <div className="flex items-center gap-2">
+                <Controller
+                  name="featured"
+                  control={control}
+                  render={({ field }) => (
+                    <input
+                      type="checkbox"
+                      className="size-4"
+                      checked={field.value}
+                      onChange={(e) => field.onChange(e.target.checked)}
+                    />
+                  )}
+                />
+                <Label className="font-bold text-trim">Featured</Label>
+              </div>
           </div>
         </AdminItemContainer>
 
@@ -350,7 +376,10 @@ export default function ProductDetailPage() {
               {statsArray.fields.length > 0 && (
                 <div className="grid grid-cols-2 gap-4">
                   {statsArray.fields.map((field, i) => (
-                    <div key={field.id} className="flex items-center gap-2 border border-secondary rounded-lg p-2">
+                    <div
+                      key={field.id}
+                      className="flex items-center gap-2 border border-secondary rounded-lg p-2"
+                    >
                       <Input
                         {...register(`stats.${i}.value`)}
                         placeholder="Stat"
@@ -466,6 +495,20 @@ export default function ProductDetailPage() {
                     )
                   : availableOptions;
 
+                // categories already picked in OTHER rows — hide them from
+                // this row's dropdown so the same category can't be added twice
+                const usedElsewhere = new Set(
+                  (watchedConfigurations ?? [])
+                    .filter((_, idx) => idx !== i)
+                    .map((c) => c?.category)
+                    .filter(Boolean),
+                );
+                const selectableConfigCategories = configCategories.filter(
+                  (cc) =>
+                    cc._id === selectedConfigCategory ||
+                    !usedElsewhere.has(cc._id),
+                );
+
                 return (
                   <div
                     key={field.id}
@@ -492,15 +535,25 @@ export default function ProductDetailPage() {
                                 );
                               }}
                             >
-                              <SelectTrigger>
+                              <SelectTrigger className="cursor-pointer">
                                 <SelectValue placeholder="Select config category" />
                               </SelectTrigger>
                               <SelectContent>
-                                {configCategories.map((cc) => (
-                                  <SelectItem key={cc._id} value={cc._id}>
-                                    {cc.title}
-                                  </SelectItem>
-                                ))}
+                                {selectableConfigCategories.length > 0 ? (
+                                  selectableConfigCategories.map((cc) => (
+                                    <SelectItem
+                                      className="cursor-pointer"
+                                      key={cc._id}
+                                      value={cc._id}
+                                    >
+                                      {cc.title}
+                                    </SelectItem>
+                                  ))
+                                ) : (
+                                  <div className="px-2 py-1.5 text-sm text-description-color">
+                                    All categories already added
+                                  </div>
+                                )}
                               </SelectContent>
                             </Select>
                           )}
@@ -559,6 +612,9 @@ export default function ProductDetailPage() {
                                     key={opt._id}
                                     type="button"
                                     onClick={() => {
+                                      const currentDefault = watch(
+                                        `secondSection.configurations.${i}.defaultOption`,
+                                      );
                                       const next = isChecked
                                         ? selectedOptions.filter(
                                             (o) => o !== opt._id,
@@ -568,6 +624,25 @@ export default function ProductDetailPage() {
                                         `secondSection.configurations.${i}.options`,
                                         next,
                                       );
+
+                                      // keep defaultOption in sync: auto-fill
+                                      // when nothing is chosen yet, and re-pick
+                                      // if the current default just got removed
+                                      // — still freely editable via the select below
+                                      if (!isChecked && !currentDefault) {
+                                        setValue(
+                                          `secondSection.configurations.${i}.defaultOption`,
+                                          opt._id,
+                                        );
+                                      } else if (
+                                        isChecked &&
+                                        currentDefault === opt._id
+                                      ) {
+                                        setValue(
+                                          `secondSection.configurations.${i}.defaultOption`,
+                                          next[0] ?? "",
+                                        );
+                                      }
                                     }}
                                     className={`text-sm rounded-md px-3 py-1.5 border transition-all cursor-pointer ${
                                       isChecked
@@ -598,7 +673,7 @@ export default function ProductDetailPage() {
                                   value={field.value}
                                   onValueChange={field.onChange}
                                 >
-                                  <SelectTrigger>
+                                  <SelectTrigger className="cursor-pointer">
                                     <SelectValue placeholder="Select default" />
                                   </SelectTrigger>
                                   <SelectContent>
@@ -607,7 +682,11 @@ export default function ProductDetailPage() {
                                         selectedOptions.includes(o._id),
                                       )
                                       .map((o) => (
-                                        <SelectItem key={o._id} value={o._id}>
+                                        <SelectItem
+                                          className="cursor-pointer"
+                                          key={o._id}
+                                          value={o._id}
+                                        >
                                           {o.label}
                                         </SelectItem>
                                       ))}

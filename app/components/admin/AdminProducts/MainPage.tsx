@@ -27,6 +27,7 @@ import { ImageUploader } from "@/components/ui/image-uploader";
 import { Textarea } from "@/components/ui/textarea";
 import AdminItemContainer from "../common/AdminItemContainer";
 import TooltipPreview from "../../client/product-details/sections/ProductConfiguration/ToolTip";
+import { Home } from "lucide-react";
 
 type Category = {
   _id: string;
@@ -644,7 +645,10 @@ function CategoryFormDialog({
           <AdminItemContainer>
             <div className="flex flex-col gap-2">
               <Label main className="font-bold">
-                Home Page Section
+                <div className="flex items-center gap-2">
+                  Home Page Section
+                  <Home className="h-5 w-5 text-secondary -mt-1" />
+                </div>
               </Label>
             </div>
             <div className="p-5">

@@ -5,6 +5,7 @@ export interface Seo {
 }
 
 export interface HomePageSection {
+  title: string;
   description: string;
   image: string;
   imageAlt: string;
