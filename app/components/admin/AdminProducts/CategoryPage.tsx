@@ -23,6 +23,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ImageUploader } from "@/components/ui/image-uploader";
 import CustomButton from "../../client/common/CustomButton";
+import AdminPageActions from "../common/AdminPageActions";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -153,6 +154,12 @@ export default function CategoryProductsPage() {
 
   return (
     <div className="flex flex-col gap-5">
+      <AdminPageActions>
+        <Link href={`/lighting?category=${params.category}`} target="_blank">
+          <CustomButton variant="2" type="button" text="Visit Page" />
+        </Link>
+      </AdminPageActions>
+
       {/* Subcategories */}
       <div className="bg-white border border-secondary rounded-[10px] p-5 flex flex-col gap-4">
         <div className="flex items-center justify-between border-b border-secondary pb-3">
@@ -321,12 +328,6 @@ export default function CategoryProductsPage() {
               </div>
             </div>
           ))}
-        </div>
-
-        <div className="fixed top-2 right-8 z-50 flex gap-5">
-          <Link href={`/lighting?category=${params.category}`} target="_blank">
-            <CustomButton variant="2" type="button" text="Visit Page" />
-          </Link>
         </div>
       </div>
 

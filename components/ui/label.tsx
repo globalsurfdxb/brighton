@@ -28,11 +28,11 @@ const Label = React.forwardRef<
       ref={ref}
       className={cn(
         labelVariants(),
-        className,
         main
-          ? "pl-5 py-5 text-lg font-semibold flex items-center justify-between pr-3"
-          : "text-[16px] font-light",
-        oneInput ? "font-semibold text-md" : "",
+          ? "pl-5 pr-4 py-4 text-[16px] font-semibold text-primary flex items-center justify-between gap-3"
+          : "text-[13px] font-medium text-description-color tracking-wide",
+        oneInput ? "font-semibold text-[15px] text-primary" : "",
+        className,
       )}
       {...props}
     >
@@ -43,12 +43,12 @@ const Label = React.forwardRef<
             e.preventDefault();
             onToggleHidden();
           }}
-          className="cursor-pointer hover:scale-120 transition-all duration-500 ease-in-out"
+          className="cursor-pointer p-1 rounded-full hover:bg-cream-background hover:scale-110 transition-all duration-300 ease-in-out"
         >
           {isHidden ? (
-            <RiEyeOffLine className="text-gray-500" size={22} />
+            <RiEyeOffLine className="text-gray-500" size={20} />
           ) : (
-            <RiEyeLine className="text-green-600" size={22} />
+            <RiEyeLine className="text-green-600" size={20} />
           )}
         </span>
       )}

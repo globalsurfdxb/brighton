@@ -9,6 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import AdminItemContainer from "../common/AdminItemContainer";
+import AdminPageActions from "../common/AdminPageActions";
 import CustomButton from "../../client/common/CustomButton";
 import TinyEditor from "../common/TinyMceEditor";
 import { ImageUploader } from "@/components/ui/image-uploader";
@@ -147,6 +148,23 @@ export default function ProjectDetail() {
   return (
     <div className="flex flex-col gap-5">
       <form className="flex flex-col gap-5" onSubmit={handleSubmit(onSubmit)}>
+        <AdminPageActions>
+          <CustomButton
+            iconDirection="down"
+            imageClass="!-rotate-135"
+            variant="2"
+            type="button"
+            text="Back to News"
+            onClick={() => router.back()}
+          />
+          <CustomButton
+            variant="3"
+            type="submit"
+            text="Page Submit"
+            showIcon={false}
+          />
+        </AdminPageActions>
+
         <AdminItemContainer expansion={false}>
           <div className="p-5 flex flex-col gap-4">
             <div className="grid grid-cols-2 gap-4">
@@ -181,30 +199,32 @@ export default function ProjectDetail() {
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="flex flex-col gap-2">
-                <Label className="font-bold">Topic</Label>
-                <Controller
-                  name="topic"
-                  control={control}
-                  rules={{ required: "Topic is required" }}
-                  render={({ field }) => (
-                    <Select value={field.value} onValueChange={field.onChange}>
-                      <SelectTrigger className="cursor-pointer">
-                        <SelectValue placeholder="Select topic" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {topics.map((topic) => (
-                          <SelectItem
-                            className="cursor-pointer"
-                            key={topic._id}
-                            value={topic._id}
-                          >
-                            {topic.title}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  )}
-                />
+                <div className="flex flex-col gap-2">
+                  <Label className="font-bold">Topic</Label>
+                  <Controller
+                    name="topic"
+                    control={control}
+                    rules={{ required: "Topic is required" }}
+                    render={({ field }) => (
+                      <Select value={field.value} onValueChange={field.onChange}>
+                        <SelectTrigger className="cursor-pointer">
+                          <SelectValue placeholder="Select topic" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {topics.map((topic) => (
+                            <SelectItem
+                              className="cursor-pointer"
+                              key={topic._id}
+                              value={topic._id}
+                            >
+                              {topic.title}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    )}
+                  />
+                </div>
                 {errors.topic && (
                   <p className="text-red-500 text-sm">{errors.topic.message}</p>
                 )}
@@ -218,37 +238,45 @@ export default function ProjectDetail() {
           <div className="p-5 flex flex-col gap-4">
             <div className="grid grid-cols-2 gap-4">
               <div className="flex flex-col gap-2">
-                <Label className="font-bold">Thumbnail</Label>
-                <Controller
-                  name="thumbImage"
-                  control={control}
-                  render={({ field }) => (
-                    <ImageUploader
-                      value={field.value}
-                      onChange={field.onChange}
-                    />
-                  )}
-                />
-                <Label className="font-bold">Image Alt</Label>
-                <Input {...register("thumbImageAlt")} placeholder="Image Alt" />
+                <div className="flex flex-col gap-2">
+                  <Label className="font-bold">Thumbnail</Label>
+                  <Controller
+                    name="thumbImage"
+                    control={control}
+                    render={({ field }) => (
+                      <ImageUploader
+                        value={field.value}
+                        onChange={field.onChange}
+                      />
+                    )}
+                  />
+                </div>
+                <div className="flex flex-col gap-2">
+                  <Label className="font-bold">Image Alt</Label>
+                  <Input {...register("thumbImageAlt")} placeholder="Image Alt" />
+                </div>
               </div>
               <div className="flex flex-col gap-2">
-                <Label className="font-bold">Banner</Label>
-                <Controller
-                  name="bannerImage"
-                  control={control}
-                  render={({ field }) => (
-                    <ImageUploader
-                      value={field.value}
-                      onChange={field.onChange}
-                    />
-                  )}
-                />
-                <Label className="font-bold">Banner Alt</Label>
-                <Input
-                  {...register("bannerImageAlt")}
-                  placeholder="Image Alt"
-                />
+                <div className="flex flex-col gap-2">
+                  <Label className="font-bold">Banner</Label>
+                  <Controller
+                    name="bannerImage"
+                    control={control}
+                    render={({ field }) => (
+                      <ImageUploader
+                        value={field.value}
+                        onChange={field.onChange}
+                      />
+                    )}
+                  />
+                </div>
+                <div className="flex flex-col gap-2">
+                  <Label className="font-bold">Banner Alt</Label>
+                  <Input
+                    {...register("bannerImageAlt")}
+                    placeholder="Image Alt"
+                  />
+                </div>
               </div>
             </div>
           </div>
@@ -286,13 +314,17 @@ export default function ProjectDetail() {
             )}
           />
           <div className="p-5 flex flex-col gap-4">
-            <Label className="font-bold">Title</Label>
-            <Input {...register("ctaSection.title")} placeholder="Title" />
-            <Label className="font-bold">Description</Label>
-            <Textarea
-              {...register("ctaSection.description")}
-              placeholder="Description"
-            />
+            <div className="flex flex-col gap-2">
+              <Label className="font-bold">Title</Label>
+              <Input {...register("ctaSection.title")} placeholder="Title" />
+            </div>
+            <div className="flex flex-col gap-2">
+              <Label className="font-bold">Description</Label>
+              <Textarea
+                {...register("ctaSection.description")}
+                placeholder="Description"
+              />
+            </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="flex flex-col gap-2">
                 <Label className="font-bold">Button Text</Label>
@@ -312,22 +344,6 @@ export default function ProjectDetail() {
           </div>
         </AdminItemContainer>
 
-        <div className="fixed top-2 right-8 z-50 flex gap-5">
-          <CustomButton
-            iconDirection="down"
-            imageClass="!-rotate-135"
-            variant="2"
-            type="button"
-            text="Back to News"
-            onClick={() => router.back()}
-          />
-          <CustomButton
-            variant="3"
-            type="submit"
-            text="Page Submit"
-            showIcon={false}
-          />
-        </div>
       </form>
     </div>
   );

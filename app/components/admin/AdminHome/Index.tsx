@@ -3,7 +3,7 @@ import SectionDescription from "../../client/animations/SectionDescription";
 
 const Welcome = () => {
   return (
-    <div className="h-screen w-full flex justify-center items-center flex-col gap-20">
+    <div className="h-full min-h-[60vh] w-full flex justify-center items-center flex-col gap-6">
       <AnimatedTitle
         text="Welcome to the ABM Dashboard"
         className="text-subtitle"

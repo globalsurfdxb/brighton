@@ -22,6 +22,9 @@ function buildDefaultSelections() {
 export default function ProductConfigurator() {
   const [selections, setSelections] = useState(buildDefaultSelections);
   const [copied, setCopied] = useState(false);
+  const [downloadState, setDownloadState] = useState<
+    "idle" | "working" | "error"
+  >("idle");
 
   const selectedOptions = useMemo(
     () =>
@@ -64,8 +67,26 @@ export default function ProductConfigurator() {
     } catch {}
   };
 
-  const handleDownload = () => {
-    console.log("Download configured datasheet for:", productCode);
+  const handleDownload = async () => {
+    if (downloadState === "working") return;
+    setDownloadState("working");
+    try {
+      const [{ buildDatasheetData }, { downloadDatasheet }] = await Promise.all([
+        import("../../datasheet/buildDatasheetData"),
+        import("../../datasheet/generateDatasheet"),
+      ]);
+      const data = buildDatasheetData({
+        product: { name: product.name, category: product.category },
+        selectedOptions,
+        productCode,
+        summary,
+      });
+      await downloadDatasheet(data);
+      setDownloadState("idle");
+    } catch (error) {
+      console.error("Failed to generate configured datasheet", error);
+      setDownloadState("error");
+    }
   };
 
   return (
@@ -108,7 +129,7 @@ export default function ProductConfigurator() {
                         {attr.label}
                       </span>
                       <div className="flex flex-wrap gap-[6px]">
-                        {attr.options.map((option: any) => (
+                        {attr.options.map((option) => (
                           <OptionButton
                             key={option.id}
                             option={option}
@@ -146,12 +167,23 @@ export default function ProductConfigurator() {
 
             <div className="flex flex-col gap-2">
               <CustomButton
-                text="Download Configured Datasheet"
-                link="/assets/files/spin-10w.pdf"
+                text={
+                  downloadState === "working"
+                    ? "Generating…"
+                    : downloadState === "error"
+                      ? "Retry Download"
+                      : "Download Configured Datasheet"
+                }
+                onClick={handleDownload}
                 variant="3"
                 iconDirection="down"
                 btnClass="xl:!px-40"
               />
+              {downloadState === "error" && (
+                <span className="text-13 text-red-600">
+                  Could not generate the datasheet. Please try again.
+                </span>
+              )}
               <CustomButton
                 text={copied ? "Copied!" : "Copy Code"}
                 onClick={handleCopy}

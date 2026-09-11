@@ -7,6 +7,7 @@ import { ImageUploader } from "@/components/ui/image-uploader";
 import { FileUploader } from "@/components/ui/file-uploader";
 import { Textarea } from "@/components/ui/textarea";
 import AdminItemContainer from "@/app/components/admin/common/AdminItemContainer";
+import AdminPageActions from "@/app/components/admin/common/AdminPageActions";
 import { toast } from "sonner";
 import { useEffect } from "react";
 import CustomButton from "../../client/common/CustomButton";
@@ -101,6 +102,18 @@ export default function DigitalCataloguePage() {
   return (
     <div className="flex flex-col gap-5">
       <form className="flex flex-col gap-5" onSubmit={handleSubmit(onSubmit)}>
+        <AdminPageActions>
+          <Link href={`/resources/digital-catalogue`} target="_blank">
+            <CustomButton variant="2" type="button" text="Visit page" />
+          </Link>
+          <CustomButton
+            variant="3"
+            type="submit"
+            text="Page Submit"
+            showIcon={false}
+          />
+        </AdminPageActions>
+
         {/* First Section */}
         <AdminItemContainer>
           <Controller
@@ -119,50 +132,62 @@ export default function DigitalCataloguePage() {
           <div className="p-5 flex flex-col gap-4">
             <div className="grid grid-cols-2 gap-4">
               <div className="flex flex-col gap-2">
-                <Label className="font-bold">Image</Label>
-                <Controller
-                  name="firstSection.image"
-                  control={control}
-                  render={({ field }) => (
-                    <ImageUploader
-                      value={field.value}
-                      onChange={field.onChange}
-                    />
-                  )}
-                />
-                <Label className="font-bold">Image Alt</Label>
-                <Input
-                  {...register("firstSection.imageAlt")}
-                  placeholder="Image Alt"
-                />
+                <div className="flex flex-col gap-2">
+                  <Label className="font-bold">Image</Label>
+                  <Controller
+                    name="firstSection.image"
+                    control={control}
+                    render={({ field }) => (
+                      <ImageUploader
+                        value={field.value}
+                        onChange={field.onChange}
+                      />
+                    )}
+                  />
+                </div>
+                <div className="flex flex-col gap-2">
+                  <Label className="font-bold">Image Alt</Label>
+                  <Input
+                    {...register("firstSection.imageAlt")}
+                    placeholder="Image Alt"
+                  />
+                </div>
               </div>
               <div className="flex flex-col gap-2">
-                <Label className="font-bold">Title</Label>
-                <Input
-                  {...register("firstSection.title")}
-                  placeholder="Title"
-                />
-                <Label className="font-bold">Sub Title</Label>
-                <Input
-                  {...register("firstSection.subTitle")}
-                  placeholder="Sub Title"
-                />
-                <Label className="font-bold">Catalogue Text</Label>
-                <Input
-                  {...register("firstSection.catalogueText")}
-                  placeholder="Catalogue Text"
-                />
-                <Label className="font-bold">Catalogue File</Label>
-                <Controller
-                  name="firstSection.catalogueLink"
-                  control={control}
-                  render={({ field }) => (
-                    <FileUploader
-                      value={field.value}
-                      onChange={field.onChange}
-                    />
-                  )}
-                />
+                <div className="flex flex-col gap-2">
+                  <Label className="font-bold">Title</Label>
+                  <Input
+                    {...register("firstSection.title")}
+                    placeholder="Title"
+                  />
+                </div>
+                <div className="flex flex-col gap-2">
+                  <Label className="font-bold">Sub Title</Label>
+                  <Input
+                    {...register("firstSection.subTitle")}
+                    placeholder="Sub Title"
+                  />
+                </div>
+                <div className="flex flex-col gap-2">
+                  <Label className="font-bold">Catalogue Text</Label>
+                  <Input
+                    {...register("firstSection.catalogueText")}
+                    placeholder="Catalogue Text"
+                  />
+                </div>
+                <div className="flex flex-col gap-2">
+                  <Label className="font-bold">Catalogue File</Label>
+                  <Controller
+                    name="firstSection.catalogueLink"
+                    control={control}
+                    render={({ field }) => (
+                      <FileUploader
+                        value={field.value}
+                        onChange={field.onChange}
+                      />
+                    )}
+                  />
+                </div>
               </div>
             </div>
           </div>
@@ -184,13 +209,17 @@ export default function DigitalCataloguePage() {
             )}
           />
           <div className="p-5 flex flex-col gap-4">
-            <Label className="font-bold">Title</Label>
-            <Input {...register("ctaSection.title")} placeholder="Title" />
-            <Label className="font-bold">Description</Label>
-            <Textarea
-              {...register("ctaSection.description")}
-              placeholder="Description"
-            />
+            <div className="flex flex-col gap-2">
+              <Label className="font-bold">Title</Label>
+              <Input {...register("ctaSection.title")} placeholder="Title" />
+            </div>
+            <div className="flex flex-col gap-2">
+              <Label className="font-bold">Description</Label>
+              <Textarea
+                {...register("ctaSection.description")}
+                placeholder="Description"
+              />
+            </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="flex flex-col gap-2">
                 <Label className="font-bold">Button Text</Label>
@@ -214,29 +243,24 @@ export default function DigitalCataloguePage() {
         <AdminItemContainer>
           <Label main>SEO</Label>
           <div className="p-5 flex flex-col gap-4">
-            <Label className="font-bold">Meta Title</Label>
-            <Input {...register("seo.metaTitle")} placeholder="Meta Title" />
-            <Label className="font-bold">Meta Description</Label>
-            <Input
-              {...register("seo.metaDescription")}
-              placeholder="Meta Description"
-            />
-            <Label className="font-bold">Script</Label>
-            <Textarea {...register("seo.script")} placeholder="Script" />
+            <div className="flex flex-col gap-2">
+              <Label className="font-bold">Meta Title</Label>
+              <Input {...register("seo.metaTitle")} placeholder="Meta Title" />
+            </div>
+            <div className="flex flex-col gap-2">
+              <Label className="font-bold">Meta Description</Label>
+              <Input
+                {...register("seo.metaDescription")}
+                placeholder="Meta Description"
+              />
+            </div>
+            <div className="flex flex-col gap-2">
+              <Label className="font-bold">Script</Label>
+              <Textarea {...register("seo.script")} placeholder="Script" />
+            </div>
           </div>
         </AdminItemContainer>
 
-        <div className="fixed top-2 right-8 z-50 flex gap-5">
-          <Link href={`/resources/digital-catalogue`} target="_blank">
-            <CustomButton variant="2" type="button" text="Visit page" />
-          </Link>
-          <CustomButton
-            variant="3"
-            type="submit"
-            text="Page Submit"
-            showIcon={false}
-          />
-        </div>
       </form>
     </div>
   );

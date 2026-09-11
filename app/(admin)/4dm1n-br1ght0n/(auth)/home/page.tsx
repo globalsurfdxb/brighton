@@ -1,7 +1,7 @@
-const page = () => {
-  return (
-    <div className="flex text-description-4">Coming Soon...</div>
-  )
-}
+import AdminHome from "@/app/components/admin/AdminHome/Index";
 
-export default page
+const page = () => {
+  return <AdminHome />;
+};
+
+export default page;

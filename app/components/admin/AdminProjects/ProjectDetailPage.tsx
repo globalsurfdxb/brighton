@@ -10,6 +10,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import AdminItemContainer from "../common/AdminItemContainer";
+import AdminPageActions from "../common/AdminPageActions";
 import { Button } from "@/components/ui/button";
 import CustomButton from "../../client/common/CustomButton";
 import { ImageUploader } from "@/components/ui/image-uploader";
@@ -172,6 +173,23 @@ export default function ProjectDetail() {
   return (
     <div className="flex flex-col gap-5">
       <form className="flex flex-col gap-5" onSubmit={handleSubmit(onSubmit)}>
+        <AdminPageActions>
+          <CustomButton
+            iconDirection="down"
+            imageClass="!-rotate-135"
+            variant="2"
+            type="button"
+            text="Back to Projects"
+            onClick={() => router.back()}
+          />
+          <CustomButton
+            variant="3"
+            type="submit"
+            text="Page Submit"
+            showIcon={false}
+          />
+        </AdminPageActions>
+
         <AdminItemContainer expansion={false}>
           <div className="p-5 flex flex-col gap-4">
             <div className="grid grid-cols-2 gap-4">
@@ -309,37 +327,45 @@ export default function ProjectDetail() {
           <div className="p-5 flex flex-col gap-4">
             <div className="grid grid-cols-2 gap-4">
               <div className="flex flex-col gap-2">
-                <Label className="font-bold">Thumbnail</Label>
-                <Controller
-                  name="thumbImage"
-                  control={control}
-                  render={({ field }) => (
-                    <ImageUploader
-                      value={field.value}
-                      onChange={field.onChange}
-                    />
-                  )}
-                />
-                <Label className="font-bold">Image Alt</Label>
-                <Input {...register("thumbImageAlt")} placeholder="Image Alt" />
+                <div className="flex flex-col gap-2">
+                  <Label className="font-bold">Thumbnail</Label>
+                  <Controller
+                    name="thumbImage"
+                    control={control}
+                    render={({ field }) => (
+                      <ImageUploader
+                        value={field.value}
+                        onChange={field.onChange}
+                      />
+                    )}
+                  />
+                </div>
+                <div className="flex flex-col gap-2">
+                  <Label className="font-bold">Image Alt</Label>
+                  <Input {...register("thumbImageAlt")} placeholder="Image Alt" />
+                </div>
               </div>
               <div className="flex flex-col gap-2">
-                <Label className="font-bold">Banner</Label>
-                <Controller
-                  name="bannerImage"
-                  control={control}
-                  render={({ field }) => (
-                    <ImageUploader
-                      value={field.value}
-                      onChange={field.onChange}
-                    />
-                  )}
-                />
-                <Label className="font-bold">Banner Alt</Label>
-                <Input
-                  {...register("bannerImageAlt")}
-                  placeholder="Image Alt"
-                />
+                <div className="flex flex-col gap-2">
+                  <Label className="font-bold">Banner</Label>
+                  <Controller
+                    name="bannerImage"
+                    control={control}
+                    render={({ field }) => (
+                      <ImageUploader
+                        value={field.value}
+                        onChange={field.onChange}
+                      />
+                    )}
+                  />
+                </div>
+                <div className="flex flex-col gap-2">
+                  <Label className="font-bold">Banner Alt</Label>
+                  <Input
+                    {...register("bannerImageAlt")}
+                    placeholder="Image Alt"
+                  />
+                </div>
               </div>
             </div>
           </div>
@@ -366,7 +392,7 @@ export default function ProjectDetail() {
               {imageFields.map((field, index) => (
                 <div
                   key={field.id}
-                  className="border border-black/10 rounded-lg p-4 flex flex-col gap-3"
+                  className="border border-secondary/60 rounded-lg p-4 flex flex-col gap-3 bg-cream-background/40"
                 >
                   <div className="flex items-center justify-between">
                     <Label className="font-bold">Image {index + 1}</Label>
@@ -402,8 +428,10 @@ export default function ProjectDetail() {
         <AdminItemContainer>
           <Label main>Content</Label>
           <div className="p-5 flex flex-col gap-4">
-            <Label className="font-bold">Content Title</Label>
-            <Input {...register("contentTitle")} placeholder="Content Title" />
+            <div className="flex flex-col gap-2">
+              <Label className="font-bold">Content Title</Label>
+              <Input {...register("contentTitle")} placeholder="Content Title" />
+            </div>
             <Label className="font-bold">Content</Label>
             {/* <Textarea {...register("content")} placeholder="Content" rows={8} /> */}
             <Controller
@@ -434,13 +462,17 @@ export default function ProjectDetail() {
             )}
           />
           <div className="p-5 flex flex-col gap-4">
-            <Label className="font-bold">Title</Label>
-            <Input {...register("ctaSection.title")} placeholder="Title" />
-            <Label className="font-bold">Description</Label>
-            <Textarea
-              {...register("ctaSection.description")}
-              placeholder="Description"
-            />
+            <div className="flex flex-col gap-2">
+              <Label className="font-bold">Title</Label>
+              <Input {...register("ctaSection.title")} placeholder="Title" />
+            </div>
+            <div className="flex flex-col gap-2">
+              <Label className="font-bold">Description</Label>
+              <Textarea
+                {...register("ctaSection.description")}
+                placeholder="Description"
+              />
+            </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="flex flex-col gap-2">
                 <Label className="font-bold">Button Text</Label>
@@ -460,22 +492,6 @@ export default function ProjectDetail() {
           </div>
         </AdminItemContainer>
 
-        <div className="fixed top-2 right-8 z-50 flex gap-5">
-          <CustomButton
-            iconDirection="down"
-            imageClass="!-rotate-135"
-            variant="2"
-            type="button"
-            text="Back to Projects"
-            onClick={() => router.back()}
-          />
-          <CustomButton
-            variant="3"
-            type="submit"
-            text="Page Submit"
-            showIcon={false}
-          />
-        </div>
       </form>
     </div>
   );

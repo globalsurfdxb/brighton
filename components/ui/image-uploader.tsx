@@ -1,10 +1,10 @@
 "use client";
 
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback } from "react";
 import { useDropzone } from "react-dropzone";
 import { Upload, X, Loader2 } from "lucide-react";
 import Image from "next/image";
-import { cn } from "@/lib/utils/cn"
+import { cn } from "@/lib/utils/cn";
 import { Button } from "./button";
 
 interface ImageUploaderProps {
@@ -17,15 +17,18 @@ interface ImageUploaderProps {
   recommendedDimension?: string;
 }
 
-export function ImageUploader({ value, onChange, className, deleteAfterUpload = false, isLogo = false, multiple = false, recommendedDimension}: ImageUploaderProps) {
+export function ImageUploader({
+  value,
+  onChange,
+  className,
+  deleteAfterUpload = false,
+  isLogo = false,
+  multiple = false,
+  recommendedDimension,
+}: ImageUploaderProps) {
   const [isUploading, setIsUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [localImageUrl, setLocalImageUrl] = useState<string | null>(null);
-  const [isUploadComplete, setIsUploadComplete] = useState(false);
-
-  useEffect(() => {
-    setIsUploadComplete(!!value);
-  }, [value]);
 
   const onDrop = useCallback(
     async (acceptedFiles: File[]) => {
@@ -35,57 +38,25 @@ export function ImageUploader({ value, onChange, className, deleteAfterUpload = 
       try {
         setIsUploading(true);
         setError(null);
-        setIsUploadComplete(false);
 
-        // if (multiple) {
-        //   const formData = new FormData();
-        //   acceptedFiles.forEach((file) => {
-        //     formData.append("files", file); // same key for all files
-        //   });
-        //   formData.append("fileType", "image");
-        //   const response = await fetch("/api/admin/upload-multiple", {
-        //     method: "POST",
-        //     body: formData,
-        //   });
+        const formData = new FormData();
+        formData.append("file", file);
 
-        //   if (response.status !== 200) {
-        //     alert("Upload failed");
-        //     return;
-        //   }
+        const response = await fetch("/api/admin/upload", {
+          method: "POST",
+          body: formData,
+        });
 
-        //   const data = await response.json();
-        //   // You get back an array of URLs
-        //   if (Array.isArray(data.urls)) {
-        //     data.urls.forEach((url: string, index: number) => {
-        //       onChange(url, acceptedFiles[index]); // optional second arg
-        //     });
-        //   }
-
-        // } else {
-        //   const formData = new FormData();
-        //   formData.append("file", file);
-        //   formData.append("fileType", "image");
-        //   const response = await fetch("/api/admin/upload", {
-        //     method: "POST",
-        //     body: formData,
-        //   });
-
-        //   if (response.status !== 200) {
-        //     setLocalImageUrl(null);
-        //     alert("Upload failed");
-        //     return;
-        //   }
-
-        //   const data = await response.json();
-        //   setLocalImageUrl(data.url);
-        //   onChange(data.url, file);
-        //   setIsUploadComplete(true);
-        // }
-
-
-        if (deleteAfterUpload) {
+        if (response.status !== 200) {
           setLocalImageUrl(null);
-          setIsUploadComplete(false);
+          setError("Upload failed");
+          return;
+        }
+
+        const data = await response.json();
+        onChange(data.url, file);
+        if (!deleteAfterUpload) {
+          setLocalImageUrl(data.url);
         }
       } catch (err) {
         setLocalImageUrl(null);
@@ -94,7 +65,7 @@ export function ImageUploader({ value, onChange, className, deleteAfterUpload = 
         setIsUploading(false);
       }
     },
-    [onChange]
+    [onChange, deleteAfterUpload],
   );
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
@@ -106,36 +77,32 @@ export function ImageUploader({ value, onChange, className, deleteAfterUpload = 
     multiple: multiple,
   });
 
-  const removeImage = async () => {
-    if (!displayUrl) return;
-
-    // const response = await fetch("/api/admin/delete-image", {
-    //   method: "POST",
-    //   headers: {
-    //     "Content-Type": "application/json",
-    //   },
-    //   body: JSON.stringify({ url: displayUrl }),
-    // });
-
-    // if (response.ok) {
-    //   setLocalImageUrl(null);
-    //   setIsUploadComplete(false);
-    //   onChange("", undefined);
-    //   alert("Image deleted successfully")
-    // }else{
-    //   setLocalImageUrl(null);
-    //   setIsUploadComplete(false);
-    //   onChange("", undefined);
-    // }
-  };
-
   const displayUrl = localImageUrl || value;
+  const showPreview = !isUploading && !deleteAfterUpload && !!displayUrl;
+
+  const removeImage = () => {
+    // Purely clears the field. No blob is deleted here — the image only really
+    // goes away when the form is submitted without it and the blob
+    // garbage-collector later reclaims the now-unreferenced file. This is what
+    // keeps the DB reference and storage from ever drifting apart, even if the
+    // page is refreshed before submit.
+    setLocalImageUrl(null);
+    onChange("", undefined);
+    // toast.success("Image removed");
+  };
 
   return (
     <div className={cn("space-y-4 w-full", className)}>
-      {displayUrl && isUploadComplete ? (
-        <div className={`relative w-full max-w-[300px] aspect-[4/3] overflow-hidden rounded-lg border border-black/20 ${isLogo ? "max-w-[100px] h-[100px] bg-black" : "max-w-[300px]"}`}>
-          <Image src={value ? value : displayUrl} alt="Uploaded image" className={isLogo ? "object-contain p-2 bg-black" : "object-cover"} fill />
+      {showPreview ? (
+        <div
+          className={`relative w-full max-w-[300px] aspect-[4/3] overflow-hidden rounded-lg border border-black/20 ${isLogo ? "max-w-[100px] h-[100px] bg-black" : "max-w-[300px]"}`}
+        >
+          <Image
+            src={displayUrl as string}
+            alt="Uploaded image"
+            className={isLogo ? "object-contain p-2 bg-black" : "object-cover"}
+            fill
+          />
           <Button
             type="button"
             variant="destructive"
@@ -153,7 +120,7 @@ export function ImageUploader({ value, onChange, className, deleteAfterUpload = 
             "border-2 border-dashed rounded-lg p-8 transition-colors hover:border-gray-400",
             "flex flex-col items-center justify-center gap-2 cursor-pointer",
             isDragActive && "border-blue-500 bg-blue-50",
-            isUploading && "pointer-events-none opacity-60"
+            isUploading && "pointer-events-none opacity-60",
           )}
         >
           <input {...getInputProps()} />
@@ -166,7 +133,9 @@ export function ImageUploader({ value, onChange, className, deleteAfterUpload = 
             <>
               <Upload className="h-10 w-10 text-gray-400" />
               <p className="text-gray-600">
-                {isDragActive ? "Drop the image here" : "Drag & drop an image here, or click to select"}
+                {isDragActive
+                  ? "Drop the image here"
+                  : "Drag & drop an image here, or click to select"}
               </p>
               {recommendedDimension && (
                 <p className="text-center text-xs text-gray-500">

@@ -11,6 +11,7 @@ import {
 } from "react";
 import { Editor } from "@tinymce/tinymce-react";
 import { Editor as TinyMCEEditor } from "tinymce";
+import "./tinymce-admin-theme.css";
 
 const DEFAULT_CONTENT_CSS =
   "https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css";
@@ -19,6 +20,12 @@ const DEFAULT_CONTENT_STYLE = `
   @import url('https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css');
   body { padding: 10px; }
 `;
+
+const FILE_PICKER_ACCEPT: Record<string, string> = {
+  image: "image/*",
+  media: "video/*",
+  file: ".pdf,.doc,.docx,.xls,.xlsx",
+};
 
 const NEWS_CONTENT_STYLE = `
   body { padding: 10px; }
@@ -108,11 +115,10 @@ export default function TinyEditor({
     }
   }, [newsContent]);
 
-  const uploadImageToDropbox = useCallback(
+  const uploadToBlobStorage = useCallback(
     async (file: File | Blob, filename = "image.png") => {
       const formData = new FormData();
       formData.append("file", file, filename);
-      formData.append("fileType", "image");
 
       const response = await fetch("/api/admin/upload", {
         method: "POST",
@@ -122,7 +128,7 @@ export default function TinyEditor({
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data?.error || "Image upload failed");
+        throw new Error(data?.message || "Upload failed");
       }
 
       return data.url as string;
@@ -130,51 +136,60 @@ export default function TinyEditor({
     [],
   );
 
-  const withUploadFeedback = useCallback(async <T,>(fn: () => Promise<T>) => {
-    let notification: { close: () => void } | null = null;
-    try {
-      setIsUploadingImage(true);
-      if (editorRef.current) {
-        notification = editorRef.current.notificationManager.open({
-          text: "Uploading image...",
-          type: "info",
-          timeout: 0,
+  const withUploadFeedback = useCallback(
+    async <T,>(fn: () => Promise<T>, label = "image") => {
+      let notification: { close: () => void } | null = null;
+      try {
+        setIsUploadingImage(true);
+        if (editorRef.current) {
+          notification = editorRef.current.notificationManager.open({
+            text: `Uploading ${label}...`,
+            type: "info",
+            timeout: 0,
+          });
+        }
+        const result = await fn();
+        editorRef.current?.notificationManager.open({
+          text: `${label[0].toUpperCase()}${label.slice(1)} uploaded successfully`,
+          type: "success",
+          timeout: 2000,
         });
+        return result;
+      } catch (error) {
+        console.error(`TinyMCE ${label} upload error:`, error);
+        editorRef.current?.notificationManager.open({
+          text: `${label[0].toUpperCase()}${label.slice(1)} upload failed`,
+          type: "error",
+          timeout: 3000,
+        });
+        throw error;
+      } finally {
+        setIsUploadingImage(false);
+        notification?.close();
       }
-      const result = await fn();
-      editorRef.current?.notificationManager.open({
-        text: "Image uploaded successfully",
-        type: "success",
-        timeout: 2000,
-      });
-      return result;
-    } catch (error) {
-      console.error("TinyMCE image upload error:", error);
-      editorRef.current?.notificationManager.open({
-        text: "Image upload failed",
-        type: "error",
-        timeout: 3000,
-      });
-      throw error;
-    } finally {
-      setIsUploadingImage(false);
-      notification?.close();
-    }
-  }, []);
+    },
+    [],
+  );
 
   const filePickerCallback = useCallback(
-    (cb: (url: string, meta?: { title: string }) => void) => {
+    (
+      cb: (url: string, meta?: { title?: string; alt?: string }) => void,
+      _value: string,
+      meta: Record<string, unknown>,
+    ) => {
+      const filetype = (meta.filetype as string) ?? "image";
       const input = document.createElement("input");
       input.setAttribute("type", "file");
-      input.setAttribute("accept", "image/*");
+      input.setAttribute("accept", FILE_PICKER_ACCEPT[filetype] ?? "*/*");
 
       input.addEventListener("change", async () => {
         const file = input.files?.[0];
         if (!file) return;
 
         try {
-          const uploadedUrl = await withUploadFeedback(() =>
-            uploadImageToDropbox(file, file.name),
+          const uploadedUrl = await withUploadFeedback(
+            () => uploadToBlobStorage(file, file.name),
+            filetype === "media" ? "video" : filetype,
           );
           cb(uploadedUrl, { title: file.name });
         } catch {
@@ -184,16 +199,16 @@ export default function TinyEditor({
 
       input.click();
     },
-    [uploadImageToDropbox, withUploadFeedback],
+    [uploadToBlobStorage, withUploadFeedback],
   );
 
   const imagesUploadHandler = useCallback(
     async (blobInfo: { blob: () => Blob; filename: () => string }) => {
       return await withUploadFeedback(() =>
-        uploadImageToDropbox(blobInfo.blob(), blobInfo.filename()),
+        uploadToBlobStorage(blobInfo.blob(), blobInfo.filename()),
       );
     },
-    [uploadImageToDropbox, withUploadFeedback],
+    [uploadToBlobStorage, withUploadFeedback],
   );
 
   // Stable init object — only changes if useCustomStyles actually flips.
@@ -204,7 +219,7 @@ export default function TinyEditor({
       theme: "silver",
       image_title: true,
       automatic_uploads: false,
-      file_picker_types: "image",
+      file_picker_types: "image media file",
       paste_data_images: true,
 
       content_css: useCustomStyles ? false : DEFAULT_CONTENT_CSS,
@@ -237,7 +252,7 @@ export default function TinyEditor({
         "undo redo | blocks | " +
         "bold italic forecolor | alignleft aligncenter " +
         "alignright alignjustify | bullist numlist outdent indent | " +
-        "removeformat | help | code | image",
+        "removeformat | help | code | image media link",
 
       file_picker_callback: filePickerCallback,
       images_upload_handler: imagesUploadHandler,

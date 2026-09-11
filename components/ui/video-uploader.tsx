@@ -1,11 +1,10 @@
 "use client";
 
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback } from "react";
 import { useDropzone } from "react-dropzone";
 import { Upload, X, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
 import { Button } from "./button";
-// import { toast } from "sonner";
 
 interface VideoUploaderProps {
   value?: string;
@@ -23,104 +22,70 @@ export function VideoUploader({
   const [isUploading, setIsUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [localVideoUrl, setLocalVideoUrl] = useState<string | null>(null);
-  const [isUploadComplete, setIsUploadComplete] = useState(false);
-
-  useEffect(() => {
-    setIsUploadComplete(!!value);
-  }, [value]);
 
   const onDrop = useCallback(
     async (acceptedFiles: File[]) => {
       const file = acceptedFiles[0];
       if (!file) return;
 
-      // try {
-      //   setIsUploading(true);
-      //   setError(null);
-      //   setIsUploadComplete(false);
+      try {
+        setIsUploading(true);
+        setError(null);
 
-      //   // 1. Get temp upload URL from server
-      //   const { uploadUrl, filePath } = await fetch(
-      //     "/api/admin/dropbox-upload-url",
-      //     {
-      //       method: "POST",
-      //       headers: { "Content-Type": "application/json" },
-      //       body: JSON.stringify({ fileName: file.name, fileType: "video" }),
-      //     },
-      //   ).then((r) => r.json());
+        const formData = new FormData();
+        formData.append("file", file);
 
-      //   // 2. Upload directly from browser to Dropbox
-      //   await fetch(uploadUrl, {
-      //     method: "POST",
-      //     headers: { "Content-Type": "application/octet-stream" },
-      //     body: file,
-      //   });
+        const response = await fetch("/api/admin/upload", {
+          method: "POST",
+          body: formData,
+        });
 
-      //   // 3. Get shared URL
-      //   const { url } = await fetch("/api/admin/dropbox-share-url", {
-      //     method: "POST",
-      //     headers: { "Content-Type": "application/json" },
-      //     body: JSON.stringify({ filePath }),
-      //   }).then((r) => r.json());
+        if (response.status !== 200) {
+          setLocalVideoUrl(null);
+          setError("Upload failed");
+          return;
+        }
 
-      //   setLocalVideoUrl(url);
-      //   onChange(url, file);
-      //   setIsUploadComplete(true);
-      //   if (deleteAfterUpload) {
-      //     setLocalVideoUrl(null);
-      //     setIsUploadComplete(false);
-      //   }
-      // } catch (err) {
-      //   setLocalVideoUrl(null);
-      //   setError(err instanceof Error ? err.message : "Failed to upload video");
-      // } finally {
-      //   setIsUploading(false);
-      // }
+        const data = await response.json();
+        onChange(data.url, file);
+        if (!deleteAfterUpload) {
+          setLocalVideoUrl(data.url);
+        }
+      } catch (err) {
+        setLocalVideoUrl(null);
+        setError(err instanceof Error ? err.message : "Failed to upload video");
+      } finally {
+        setIsUploading(false);
+      }
     },
-    [onChange],
+    [onChange, deleteAfterUpload],
   );
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
     accept: {
-      "video/*": [".mp4", ".mov", ".avi", ".mkv"],
+      "video/*": [".mp4", ".mov", ".avi", ".mkv", ".webm"],
     },
     maxFiles: 1,
     multiple: false,
   });
 
-  const removeVideo = async () => {
-    if (!displayUrl) return;
-
-    // const response = await fetch("/api/admin/delete-video", {
-    //   method: "POST",
-    //   headers: {
-    //     "Content-Type": "application/json",
-    //   },
-    //   body: JSON.stringify({ url: displayUrl }),
-    // });
-
-    // if (response.ok) {
-    //   setLocalVideoUrl(null);
-    //   setIsUploadComplete(false);
-    //   onChange("", undefined);
-    //   toast.success("Video deleted successfully");
-    // }
-  };
-
   const displayUrl = localVideoUrl || value;
+  const showPreview = !isUploading && !deleteAfterUpload && !!displayUrl;
+
+  const removeVideo = () => {
+    // Purely clears the field, same as ImageUploader — the blob garbage
+    // collector reclaims the now-unreferenced file later.
+    setLocalVideoUrl(null);
+    onChange("", undefined);
+  };
 
   return (
     <div className={cn("space-y-4 w-full", className)}>
-      {displayUrl && isUploadComplete ? (
+      {showPreview ? (
         <div className="relative w-full max-w-[400px] aspect-video overflow-hidden rounded-lg border border-black/20">
           <video
-            src={value ? value : `{${displayUrl}?t=${Date.now()}`}
-            onError={() => {
-              setLocalVideoUrl(null);
-              setIsUploadComplete(false);
-              onChange("", undefined);
-            }}
+            src={displayUrl as string}
             controls
             className="object-cover w-full h-full"
           />

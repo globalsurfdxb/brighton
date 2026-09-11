@@ -1,0 +1,96 @@
+/* Restyles TinyMCE's own modals (Insert Image / Media / Link) so the "Browse"
+   uploads feel like the rest of the admin console instead of Tiny's stock
+   oxide skin. Tiny injects its skin stylesheet at runtime, so several rules
+   need !important to reliably win regardless of injection order. */
+
+.tox .tox-dialog-wrap__backdrop {
+  background-color: rgba(10, 10, 10, 0.6) !important;
+}
+
+.tox .tox-dialog {
+  border-radius: 12px !important;
+  border: 1px solid rgba(191, 191, 191, 0.6) !important;
+  box-shadow:
+    0 20px 25px -5px rgba(0, 0, 0, 0.1),
+    0 8px 10px -6px rgba(0, 0, 0, 0.1) !important;
+  overflow: hidden;
+  font-family: "ITC Avant Book", sans-serif !important;
+}
+
+.tox .tox-dialog__header {
+  background: #ffffff !important;
+  border-bottom: 1px solid rgba(191, 191, 191, 0.6) !important;
+  padding: 16px 20px !important;
+}
+
+.tox .tox-dialog__title {
+  font-family: "ITC Avant Medium", sans-serif !important;
+  font-weight: 600 !important;
+  color: #0a0a0a !important;
+}
+
+.tox .tox-dialog__body-content {
+  padding: 20px !important;
+}
+
+.tox .tox-dialog__footer {
+  background: #ffffff !important;
+  border-top: 1px solid rgba(191, 191, 191, 0.6) !important;
+  padding: 14px 20px !important;
+}
+
+.tox .tox-button {
+  border-radius: 8px !important;
+  font-family: "ITC Avant Book", sans-serif !important;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.tox .tox-button:not(.tox-button--secondary):not(.tox-button--icon) {
+  background-color: #0a0a0a !important;
+  border-color: #0a0a0a !important;
+}
+
+.tox .tox-button:not(.tox-button--secondary):not(.tox-button--icon):hover {
+  background-color: #262626 !important;
+  border-color: #262626 !important;
+}
+
+.tox .tox-button--secondary {
+  background-color: #ffffff !important;
+  border-color: rgba(191, 191, 191, 0.7) !important;
+  color: #0a0a0a !important;
+}
+
+.tox .tox-button--secondary:hover {
+  background-color: #f5f5f5 !important;
+}
+
+.tox .tox-textfield,
+.tox .tox-textarea,
+.tox .tox-listbox {
+  border-radius: 8px !important;
+  border-color: rgba(191, 191, 191, 0.7) !important;
+}
+
+.tox .tox-textfield:focus,
+.tox .tox-textarea:focus {
+  border-color: #0a0a0a !important;
+  box-shadow: 0 0 0 2px rgba(10, 10, 10, 0.08) !important;
+}
+
+.tox .tox-label,
+.tox .tox-form__group .tox-label {
+  font-family: "ITC Avant Medium", sans-serif !important;
+  color: #6b6b70 !important;
+}
+
+.tox .tox-dialog__body-nav-item--active {
+  border-bottom-color: #0a0a0a !important;
+  color: #0a0a0a !important;
+}
+
+.tox .tox-dropzone {
+  border-radius: 8px !important;
+  border-color: rgba(191, 191, 191, 0.7) !important;
+  background: #f5f5f5 !important;
+}

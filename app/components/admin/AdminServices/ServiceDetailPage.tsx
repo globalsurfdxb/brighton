@@ -7,6 +7,7 @@ import { Controller, useFieldArray, useForm } from "react-hook-form";
 import { ImageUploader } from "@/components/ui/image-uploader";
 import { Textarea } from "@/components/ui/textarea";
 import AdminItemContainer from "@/app/components/admin/common/AdminItemContainer";
+import AdminPageActions from "@/app/components/admin/common/AdminPageActions";
 import { toast } from "sonner";
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
@@ -206,6 +207,23 @@ export default function ServiceDetail() {
   return (
     <div className="flex flex-col gap-5">
       <form className="flex flex-col gap-5" onSubmit={handleSubmit(onSubmit)}>
+        <AdminPageActions>
+          <CustomButton
+            iconDirection="down"
+            imageClass="!-rotate-135"
+            variant="2"
+            type="button"
+            text="Back to Services"
+            onClick={() => router.back()}
+          />
+          <CustomButton
+            variant="3"
+            type="submit"
+            text="Page Submit"
+            showIcon={false}
+          />
+        </AdminPageActions>
+
         <AdminItemContainer expansion={false} >
               <div className="border-b border-secondary">
                 <Label
@@ -265,22 +283,26 @@ export default function ServiceDetail() {
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="flex flex-col gap-2">
-                <Label className="font-bold">Image</Label>
-                <Controller
-                  name="homePageSection.image"
-                  control={control}
-                  render={({ field }) => (
-                    <ImageUploader
-                      value={field.value}
-                      onChange={field.onChange}
-                    />
-                  )}
-                />
-                <Label className="font-bold">Image Alt</Label>
-                <Input
-                  {...register("homePageSection.imageAlt")}
-                  placeholder="Image Alt"
-                />
+                <div className="flex flex-col gap-2">
+                  <Label className="font-bold">Image</Label>
+                  <Controller
+                    name="homePageSection.image"
+                    control={control}
+                    render={({ field }) => (
+                      <ImageUploader
+                        value={field.value}
+                        onChange={field.onChange}
+                      />
+                    )}
+                  />
+                </div>
+                <div className="flex flex-col gap-2">
+                  <Label className="font-bold">Image Alt</Label>
+                  <Input
+                    {...register("homePageSection.imageAlt")}
+                    placeholder="Image Alt"
+                  />
+                </div>
               </div>
               <div className="flex flex-col gap-2">
                 <Label className="font-bold">Description</Label>
@@ -310,22 +332,26 @@ export default function ServiceDetail() {
           <div className="p-5 flex flex-col gap-4">
             <div className="grid grid-cols-2 gap-4">
               <div className="flex flex-col gap-2">
-                <Label className="font-bold">Image</Label>
-                <Controller
-                  name="bannerSection.image"
-                  control={control}
-                  render={({ field }) => (
-                    <ImageUploader
-                      value={field.value}
-                      onChange={field.onChange}
-                    />
-                  )}
-                />
-                <Label className="font-bold">Image Alt</Label>
-                <Input
-                  {...register("bannerSection.imageAlt")}
-                  placeholder="Image Alt"
-                />
+                <div className="flex flex-col gap-2">
+                  <Label className="font-bold">Image</Label>
+                  <Controller
+                    name="bannerSection.image"
+                    control={control}
+                    render={({ field }) => (
+                      <ImageUploader
+                        value={field.value}
+                        onChange={field.onChange}
+                      />
+                    )}
+                  />
+                </div>
+                <div className="flex flex-col gap-2">
+                  <Label className="font-bold">Image Alt</Label>
+                  <Input
+                    {...register("bannerSection.imageAlt")}
+                    placeholder="Image Alt"
+                  />
+                </div>
               </div>
               <div className="flex flex-col gap-2">
                 <Label className="font-bold">Title</Label>
@@ -353,8 +379,10 @@ export default function ServiceDetail() {
             )}
           />
           <div className="p-5 flex flex-col gap-4">
-            <Label className="font-bold">Title</Label>
-            <Input {...register("firstSection.title")} placeholder="Title" />
+            <div className="flex flex-col gap-2">
+              <Label className="font-bold">Title</Label>
+              <Input {...register("firstSection.title")} placeholder="Title" />
+            </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="flex flex-col gap-2">
                 <Label className="font-bold">Button Text</Label>
@@ -389,8 +417,10 @@ export default function ServiceDetail() {
             )}
           />
           <div className="p-5 flex flex-col gap-4">
-            <Label className="font-bold">Title</Label>
-            <Input {...register("secondSection.title")} placeholder="Title" />
+            <div className="flex flex-col gap-2">
+              <Label className="font-bold">Title</Label>
+              <Input {...register("secondSection.title")} placeholder="Title" />
+            </div>
             <div className="flex items-center justify-between mt-2">
               <Label className="font-bold">Items</Label>
               <Button
@@ -412,7 +442,7 @@ export default function ServiceDetail() {
               {secondItems.map((field, index) => (
                 <div
                   key={field.id}
-                  className="border border-black/10 rounded-lg p-4 flex flex-col gap-3"
+                  className="border border-secondary/60 rounded-lg p-4 flex flex-col gap-3 bg-cream-background/40"
                 >
                   <div className="flex items-center justify-between">
                     <Label className="font-bold">Item {index + 1}</Label>
@@ -420,32 +450,40 @@ export default function ServiceDetail() {
                       <RiDeleteBinLine size={16} />
                     </Button>
                   </div>
-                  <Label className="font-bold">Image</Label>
-                  <Controller
-                    name={`secondSection.items.${index}.image`}
-                    control={control}
-                    render={({ field }) => (
-                      <ImageUploader
-                        value={field.value}
-                        onChange={field.onChange}
-                      />
-                    )}
-                  />
-                  <Label className="font-bold">Image Alt</Label>
-                  <Input
-                    {...register(`secondSection.items.${index}.imageAlt`)}
-                    placeholder="Image Alt"
-                  />
-                  <Label className="font-bold">Title</Label>
-                  <Input
-                    {...register(`secondSection.items.${index}.title`)}
-                    placeholder="Title"
-                  />
-                  <Label className="font-bold">Description</Label>
-                  <Textarea
-                    {...register(`secondSection.items.${index}.description`)}
-                    placeholder="Description"
-                  />
+                  <div className="flex flex-col gap-2">
+                    <Label className="font-bold">Image</Label>
+                    <Controller
+                      name={`secondSection.items.${index}.image`}
+                      control={control}
+                      render={({ field }) => (
+                        <ImageUploader
+                          value={field.value}
+                          onChange={field.onChange}
+                        />
+                      )}
+                    />
+                  </div>
+                  <div className="flex flex-col gap-2">
+                    <Label className="font-bold">Image Alt</Label>
+                    <Input
+                      {...register(`secondSection.items.${index}.imageAlt`)}
+                      placeholder="Image Alt"
+                    />
+                  </div>
+                  <div className="flex flex-col gap-2">
+                    <Label className="font-bold">Title</Label>
+                    <Input
+                      {...register(`secondSection.items.${index}.title`)}
+                      placeholder="Title"
+                    />
+                  </div>
+                  <div className="flex flex-col gap-2">
+                    <Label className="font-bold">Description</Label>
+                    <Textarea
+                      {...register(`secondSection.items.${index}.description`)}
+                      placeholder="Description"
+                    />
+                  </div>
                 </div>
               ))}
             </div>
@@ -467,8 +505,10 @@ export default function ServiceDetail() {
             )}
           />
           <div className="p-5 flex flex-col gap-4">
-            <Label className="font-bold">Title</Label>
-            <Input {...register("thirdSection.title")} placeholder="Title" />
+            <div className="flex flex-col gap-2">
+              <Label className="font-bold">Title</Label>
+              <Input {...register("thirdSection.title")} placeholder="Title" />
+            </div>
             <div className="flex items-center justify-between mt-2">
               <Label className="font-bold">Items</Label>
               <Button
@@ -485,7 +525,7 @@ export default function ServiceDetail() {
               {thirdItems.map((field, index) => (
                 <div
                   key={field.id}
-                  className="border border-black/10 rounded-lg p-4 flex flex-col gap-3"
+                  className="border border-secondary/60 rounded-lg p-4 flex flex-col gap-3 bg-cream-background/40"
                 >
                   <div className="flex items-center justify-between">
                     <Label className="font-bold">Item {index + 1}</Label>
@@ -493,27 +533,33 @@ export default function ServiceDetail() {
                       <RiDeleteBinLine size={16} />
                     </Button>
                   </div>
-                  <Label className="font-bold">Icon</Label>
-                  <Controller
-                    name={`thirdSection.items.${index}.icon`}
-                    control={control}
-                    render={({ field }) => (
-                      <ImageUploader
-                        value={field.value}
-                        onChange={field.onChange}
-                      />
-                    )}
-                  />
-                  <Label className="font-bold">Icon Alt</Label>
-                  <Input
-                    {...register(`thirdSection.items.${index}.iconAlt`)}
-                    placeholder="Icon Alt"
-                  />
-                  <Label className="font-bold">Title</Label>
-                  <Input
-                    {...register(`thirdSection.items.${index}.title`)}
-                    placeholder="Title"
-                  />
+                  <div className="flex flex-col gap-2">
+                    <Label className="font-bold">Icon</Label>
+                    <Controller
+                      name={`thirdSection.items.${index}.icon`}
+                      control={control}
+                      render={({ field }) => (
+                        <ImageUploader
+                          value={field.value}
+                          onChange={field.onChange}
+                        />
+                      )}
+                    />
+                  </div>
+                  <div className="flex flex-col gap-2">
+                    <Label className="font-bold">Icon Alt</Label>
+                    <Input
+                      {...register(`thirdSection.items.${index}.iconAlt`)}
+                      placeholder="Icon Alt"
+                    />
+                  </div>
+                  <div className="flex flex-col gap-2">
+                    <Label className="font-bold">Title</Label>
+                    <Input
+                      {...register(`thirdSection.items.${index}.title`)}
+                      placeholder="Title"
+                    />
+                  </div>
                 </div>
               ))}
             </div>
@@ -535,8 +581,10 @@ export default function ServiceDetail() {
             )}
           />
           <div className="p-5 flex flex-col gap-4">
-            <Label className="font-bold">Title</Label>
-            <Input {...register("fourthSection.title")} placeholder="Title" />
+            <div className="flex flex-col gap-2">
+              <Label className="font-bold">Title</Label>
+              <Input {...register("fourthSection.title")} placeholder="Title" />
+            </div>
             <div className="flex items-center justify-between mt-2">
               <Label className="font-bold">Items</Label>
               <Button
@@ -551,7 +599,7 @@ export default function ServiceDetail() {
               {fourthItems.map((field, index) => (
                 <div
                   key={field.id}
-                  className="border border-black/10 rounded-lg p-4 flex flex-col gap-3"
+                  className="border border-secondary/60 rounded-lg p-4 flex flex-col gap-3 bg-cream-background/40"
                 >
                   <div className="flex items-center justify-between">
                     <Label className="font-bold">Item {index + 1}</Label>
@@ -559,16 +607,20 @@ export default function ServiceDetail() {
                       <RiDeleteBinLine size={16} />
                     </Button>
                   </div>
-                  <Label className="font-bold">Title</Label>
-                  <Input
-                    {...register(`fourthSection.items.${index}.title`)}
-                    placeholder="Title"
-                  />
-                  <Label className="font-bold">Description</Label>
-                  <Textarea
-                    {...register(`fourthSection.items.${index}.description`)}
-                    placeholder="Description"
-                  />
+                  <div className="flex flex-col gap-2">
+                    <Label className="font-bold">Title</Label>
+                    <Input
+                      {...register(`fourthSection.items.${index}.title`)}
+                      placeholder="Title"
+                    />
+                  </div>
+                  <div className="flex flex-col gap-2">
+                    <Label className="font-bold">Description</Label>
+                    <Textarea
+                      {...register(`fourthSection.items.${index}.description`)}
+                      placeholder="Description"
+                    />
+                  </div>
                 </div>
               ))}
             </div>
@@ -590,13 +642,17 @@ export default function ServiceDetail() {
             )}
           />
           <div className="p-5 flex flex-col gap-4">
-            <Label className="font-bold">Title</Label>
-            <Input {...register("ctaSection.title")} placeholder="Title" />
-            <Label className="font-bold">Description</Label>
-            <Textarea
-              {...register("ctaSection.description")}
-              placeholder="Description"
-            />
+            <div className="flex flex-col gap-2">
+              <Label className="font-bold">Title</Label>
+              <Input {...register("ctaSection.title")} placeholder="Title" />
+            </div>
+            <div className="flex flex-col gap-2">
+              <Label className="font-bold">Description</Label>
+              <Textarea
+                {...register("ctaSection.description")}
+                placeholder="Description"
+              />
+            </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="flex flex-col gap-2">
                 <Label className="font-bold">Button Text</Label>
@@ -619,34 +675,24 @@ export default function ServiceDetail() {
         <AdminItemContainer>
           <Label main>SEO</Label>
           <div className="p-5 flex flex-col gap-4">
-            <Label className="font-bold">Meta Title</Label>
-            <Input {...register("seo.metaTitle")} placeholder="Meta Title" />
-            <Label className="font-bold">Meta Description</Label>
-            <Input
-              {...register("seo.metaDescription")}
-              placeholder="Meta Description"
-            />
-            <Label className="font-bold">Script</Label>
-            <Textarea {...register("seo.script")} placeholder="Script" />
+            <div className="flex flex-col gap-2">
+              <Label className="font-bold">Meta Title</Label>
+              <Input {...register("seo.metaTitle")} placeholder="Meta Title" />
+            </div>
+            <div className="flex flex-col gap-2">
+              <Label className="font-bold">Meta Description</Label>
+              <Input
+                {...register("seo.metaDescription")}
+                placeholder="Meta Description"
+              />
+            </div>
+            <div className="flex flex-col gap-2">
+              <Label className="font-bold">Script</Label>
+              <Textarea {...register("seo.script")} placeholder="Script" />
+            </div>
           </div>
         </AdminItemContainer>
 
-        <div className="fixed top-2 right-8 z-50 flex gap-5">
-          <CustomButton
-            iconDirection="down"
-            imageClass="!-rotate-135"
-            variant="2"
-            type="button"
-            text="Back to Services"
-            onClick={() => router.back()}
-          />
-          <CustomButton
-            variant="3"
-            type="submit"
-            text="Page Submit"
-            showIcon={false}
-          />
-        </div>
       </form>
     </div>
   );

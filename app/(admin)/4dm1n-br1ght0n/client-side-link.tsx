@@ -58,10 +58,10 @@ function ClientSideLink({
           }
         }}
         className={cn(
-          "flex items-center px-4 py-3 transition-colors font-itc-medium justify-between",
-          " hover:text-white btn-fill-center",
+          "flex items-center px-4 py-2.5 rounded-[8px] transition-colors font-itc-medium justify-between text-[14px]",
+          "hover:text-white btn-fill-center",
           isActive
-            ? "bg-primary text-white"
+            ? "bg-primary text-white shadow-sm"
             : "text-description-color bg-white",
           className,
         )}
@@ -71,40 +71,52 @@ function ClientSideLink({
           <span className="mr-3">{icon}</span>
           {name}
         </div>
-        {hasChild &&
-          (!isOpen ? (
-            <MdExpandCircleDown className="ml-1 mt-1" />
-          ) : (
-            <MdExpandCircleDown className="ml-1 mt-1 rotate-180" />
-          ))}
+        {hasChild && (
+          <MdExpandCircleDown
+            className={cn(
+              "ml-1 mt-1 transition-transform duration-300 ease-in-out",
+              isOpen && "rotate-180",
+            )}
+          />
+        )}
       </Link>
-      {isOpen && children && (
-        <div className="flex pl-14 flex-col items-start gap-2">
-          {children.map((item, index) => {
-            const isChildActive =
-              pathname === item.href || pathname?.startsWith(`${item.href}/`);
-            return (
-              <div key={index} className="flex items-center gap-2">
-                <div
-                  className={cn(
-                    "w-2 h-1 rounded-full",
-                    isChildActive ? "bg-primary" : "bg-description-color/70",
-                  )}
-                />
-                <Link
-                  href={item.href}
-                  className={cn(
-                    "w-full rounded-[5px] font-itc-medium flex items-center justify-center cursor-pointer text-[15px] px-2 py-3 transition-colors",
-                    isChildActive
-                      ? "text-primary"
-                      : "text-description-color/70",
-                  )}
-                >
-                  <span className="text-trim">{item.name}</span>
-                </Link>
-              </div>
-            );
-          })}
+      {children && (
+        <div
+          className="grid transition-[grid-template-rows] duration-400 ease-in-out"
+          style={{ gridTemplateRows: isOpen ? "1fr" : "0fr" }}
+        >
+          <div className="overflow-hidden">
+            <div className="flex pl-8 pr-1 py-1 my-1 flex-col items-start gap-0.5 border-l border-secondary/60 ml-6">
+              {children.map((item, index) => {
+                const isChildActive =
+                  pathname === item.href ||
+                  pathname?.startsWith(`${item.href}/`);
+                return (
+                  <div key={index} className="flex items-center gap-2 w-full">
+                    <div
+                      className={cn(
+                        "w-1.5 h-1.5 rounded-full shrink-0",
+                        isChildActive
+                          ? "bg-primary"
+                          : "bg-description-color/40",
+                      )}
+                    />
+                    <Link
+                      href={item.href}
+                      className={cn(
+                        "w-full rounded-[6px] font-itc-medium flex items-center cursor-pointer text-[13.5px] px-2 py-2 transition-colors hover:text-primary",
+                        isChildActive
+                          ? "text-primary font-semibold"
+                          : "text-description-color/80",
+                      )}
+                    >
+                      <span className="text-trim">{item.name}</span>
+                    </Link>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
         </div>
       )}
     </>
