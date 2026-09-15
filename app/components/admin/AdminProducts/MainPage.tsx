@@ -874,7 +874,7 @@ export default function ProductsMainPage() {
                 key={icon._id}
                 className="flex items-center justify-between border border-secondary/60 rounded-md px-3 py-2 gap-2"
               >
-                <div className="w-12 h-12 shrink-0 rounded-[4px] bg-[#161618] border border-[#2A2A2A] flex items-center justify-center overflow-hidden">
+                <div className="w-12 h-12 shrink-0 rounded-[4px] border border-[#2A2A2A] flex items-center justify-center overflow-hidden">
                   {icon.image && (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img
