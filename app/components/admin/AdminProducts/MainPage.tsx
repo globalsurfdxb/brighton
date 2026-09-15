@@ -48,10 +48,15 @@ const TABS = [
   { key: "category", label: "Category" },
   { key: "configuration", label: "Configuration" },
   { key: "commonData", label: "Common Data" },
-  { key: "datasheet", label: "Datasheet" },
   { key: "qrGenerated", label: "QR Generated" },
 ] as const;
 type TabKey = (typeof TABS)[number]["key"];
+
+const COMMON_DATA_SUB_TABS = [
+  { key: "product", label: "Product" },
+  { key: "datasheet", label: "Datasheet" },
+] as const;
+type CommonDataSubTabKey = (typeof COMMON_DATA_SUB_TABS)[number]["key"];
 
 type Category = {
   _id: string;
@@ -267,7 +272,7 @@ function SortableConfigCategoryCard({
           {configCategory.title}
           {configCategory.isCommon && (
             <span
-              className={`text-[10px] font-itc-medium uppercase tracking-wide rounded-full px-2 py-0.5 border ${
+              className={`text-[10px] font-itc-medium uppercase text-trim rounded-full px-2 py-1.5 border ml-5 ${
                 isActive
                   ? "border-white text-white"
                   : "border-primary text-primary"
@@ -439,6 +444,8 @@ export default function ProductsMainPage() {
 
   const [deleteTarget, setDeleteTarget] = useState<DeleteTarget | null>(null);
   const [activeTab, setActiveTab] = useState<TabKey>("category");
+  const [activeCommonDataSubTab, setActiveCommonDataSubTab] =
+    useState<CommonDataSubTabKey>("product");
   const [configCategoryHasOptions, setConfigCategoryHasOptions] =
     useState(false);
 
@@ -793,129 +800,153 @@ export default function ProductsMainPage() {
 
       {/* Common Data */}
       {activeTab === "commonData" && (
-        <div className="bg-white border border-secondary rounded-[10px] p-5 flex flex-col gap-4">
-          <div className="flex items-center justify-between border-b border-secondary pb-3">
-            <Label className="!text-xl !font-semibold">
-              Specs {`(${specs.length})`}
-            </Label>
-            <CustomButton
-              variant="3"
-              type="button"
-              text="Add Spec"
-              showIcon={false}
-              onClick={() => setSpecDialog("new")}
-            />
-          </div>
-          <div className="grid grid-cols-2 xl:grid-cols-4 gap-2">
-            {specs.length === 0 && (
-              <p className="text-sm text-black/40">No specs added yet.</p>
-            )}
-            {specs.map((spec) => (
-              <div
-                key={spec._id}
-                className="flex items-center justify-between border border-secondary/60 rounded-md px-4 py-2"
+        <>
+          <div className="flex items-center gap-2 bg-white border border-secondary rounded-[10px] p-2 w-fit">
+            {COMMON_DATA_SUB_TABS.map((tab) => (
+              <button
+                key={tab.key}
+                type="button"
+                onClick={() => setActiveCommonDataSubTab(tab.key)}
+                className={`px-4 py-2 rounded-md text-sm font-itc-medium transition-all ${
+                  activeCommonDataSubTab === tab.key
+                    ? "bg-primary text-white"
+                    : "text-description-color hover:bg-secondary/10"
+                }`}
               >
-                <span className="text-md font-itc-medium">{spec.label}</span>
-                <div className="flex items-center gap-3">
-                  <button
-                    type="button"
-                    className="cursor-pointer hover:scale-110 transition-all"
-                    onClick={() => setSpecDialog(spec)}
-                  >
-                    <RiPencilLine
-                      className="text-gray-500 hover:text-primary"
-                      size={20}
-                    />
-                  </button>
-                  <button
-                    type="button"
-                    className="cursor-pointer hover:scale-110 transition-all"
-                    onClick={() =>
-                      setDeleteTarget({
-                        type: "spec",
-                        id: spec._id,
-                        label: spec.label,
-                      })
-                    }
-                  >
-                    <RiDeleteBinLine
-                      className="text-red-400 hover:text-red-600"
-                      size={20}
-                    />
-                  </button>
-                </div>
-              </div>
+                {tab.label}
+              </button>
             ))}
           </div>
-        </div>
-      )}
 
-      {/* Datasheet */}
-      {activeTab === "datasheet" && (
-        <div className="bg-white border border-secondary rounded-[10px] p-5 flex flex-col gap-4">
-          <div className="flex items-center justify-between border-b border-secondary pb-3">
-            <Label className="!text-xl !font-semibold">
-              Icons {`(${icons.length})`}
-            </Label>
-            <CustomButton
-              variant="3"
-              type="button"
-              text="Add Icon"
-              showIcon={false}
-              onClick={() => setIconDialog("new")}
-            />
-          </div>
-          <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-5 gap-3">
-            {icons.length === 0 && (
-              <p className="text-sm text-black/40">No icons added yet.</p>
-            )}
-            {icons.map((icon) => (
-              <div
-                key={icon._id}
-                className="flex items-center justify-between border border-secondary/60 rounded-md px-3 py-2 gap-2"
-              >
-                <div className="w-12 h-12 shrink-0 rounded-[4px] border border-[#2A2A2A] flex items-center justify-center overflow-hidden">
-                  {icon.image && (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img
-                      src={icon.image}
-                      alt=""
-                      className="w-8 h-8 object-contain"
-                    />
-                  )}
-                </div>
-                <div className="flex items-center gap-2 ml-auto">
-                  <button
-                    type="button"
-                    className="cursor-pointer hover:scale-110 transition-all"
-                    onClick={() => setIconDialog(icon)}
-                  >
-                    <RiPencilLine
-                      className="text-gray-500 hover:text-primary"
-                      size={18}
-                    />
-                  </button>
-                  <button
-                    type="button"
-                    className="cursor-pointer hover:scale-110 transition-all"
-                    onClick={() =>
-                      setDeleteTarget({
-                        type: "icon",
-                        id: icon._id,
-                        label: "this icon",
-                      })
-                    }
-                  >
-                    <RiDeleteBinLine
-                      className="text-red-400 hover:text-red-600"
-                      size={18}
-                    />
-                  </button>
-                </div>
+          {/* Product — Specs */}
+          {activeCommonDataSubTab === "product" && (
+            <div className="bg-white border border-secondary rounded-[10px] p-5 flex flex-col gap-4">
+              <div className="flex items-center justify-between border-b border-secondary pb-3">
+                <Label className="!text-xl !font-semibold">
+                  Specs {`(${specs.length})`}
+                </Label>
+                <CustomButton
+                  variant="3"
+                  type="button"
+                  text="Add Spec"
+                  showIcon={false}
+                  onClick={() => setSpecDialog("new")}
+                />
               </div>
-            ))}
-          </div>
-        </div>
+              <div className="grid grid-cols-2 xl:grid-cols-4 gap-2">
+                {specs.length === 0 && (
+                  <p className="text-sm text-black/40">No specs added yet.</p>
+                )}
+                {specs.map((spec) => (
+                  <div
+                    key={spec._id}
+                    className="flex items-center justify-between border border-secondary/60 rounded-md px-4 py-2"
+                  >
+                    <span className="text-md font-itc-medium">
+                      {spec.label}
+                    </span>
+                    <div className="flex items-center gap-3">
+                      <button
+                        type="button"
+                        className="cursor-pointer hover:scale-110 transition-all"
+                        onClick={() => setSpecDialog(spec)}
+                      >
+                        <RiPencilLine
+                          className="text-gray-500 hover:text-primary"
+                          size={20}
+                        />
+                      </button>
+                      <button
+                        type="button"
+                        className="cursor-pointer hover:scale-110 transition-all"
+                        onClick={() =>
+                          setDeleteTarget({
+                            type: "spec",
+                            id: spec._id,
+                            label: spec.label,
+                          })
+                        }
+                      >
+                        <RiDeleteBinLine
+                          className="text-red-400 hover:text-red-600"
+                          size={20}
+                        />
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Datasheet — Icons */}
+          {activeCommonDataSubTab === "datasheet" && (
+            <div className="bg-white border border-secondary rounded-[10px] p-5 flex flex-col gap-4">
+              <div className="flex items-center justify-between border-b border-secondary pb-3">
+                <Label className="!text-xl !font-semibold">
+                  Icons {`(${icons.length})`}
+                </Label>
+                <CustomButton
+                  variant="3"
+                  type="button"
+                  text="Add Icon"
+                  showIcon={false}
+                  onClick={() => setIconDialog("new")}
+                />
+              </div>
+              <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-5 gap-3">
+                {icons.length === 0 && (
+                  <p className="text-sm text-black/40">No icons added yet.</p>
+                )}
+                {icons.map((icon) => (
+                  <div
+                    key={icon._id}
+                    className="flex items-center justify-between border border-secondary/60 rounded-md px-3 py-2 gap-2"
+                  >
+                    <div className="w-12 h-12 shrink-0 rounded-[4px] border border-[#2A2A2A] flex items-center justify-center overflow-hidden">
+                      {icon.image && (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img
+                          src={icon.image}
+                          alt=""
+                          className="w-8 h-8 object-contain"
+                        />
+                      )}
+                    </div>
+                    <div className="flex items-center gap-2 ml-auto">
+                      <button
+                        type="button"
+                        className="cursor-pointer hover:scale-110 transition-all"
+                        onClick={() => setIconDialog(icon)}
+                      >
+                        <RiPencilLine
+                          className="text-gray-500 hover:text-primary"
+                          size={18}
+                        />
+                      </button>
+                      <button
+                        type="button"
+                        className="cursor-pointer hover:scale-110 transition-all"
+                        onClick={() =>
+                          setDeleteTarget({
+                            type: "icon",
+                            id: icon._id,
+                            label: "this icon",
+                          })
+                        }
+                      >
+                        <RiDeleteBinLine
+                          className="text-red-400 hover:text-red-600"
+                          size={18}
+                        />
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </>
       )}
 
       {/* QR Generated */}
@@ -926,7 +957,7 @@ export default function ProductsMainPage() {
               Generated QR Codes {`(${qrs.length})`}
             </Label>
           </div>
-          <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-3">
+          <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-6 gap-3">
             {qrs.length === 0 && (
               <p className="text-sm text-black/40">
                 No QR codes generated yet.
