@@ -3,7 +3,22 @@
 import { useEffect, useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { toast } from "sonner";
-import { RiDeleteBinLine, RiPencilLine } from "react-icons/ri";
+import { RiDeleteBinLine, RiPencilLine, RiDraggable } from "react-icons/ri";
+import {
+  DndContext,
+  closestCenter,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  type DragEndEvent,
+} from "@dnd-kit/core";
+import {
+  SortableContext,
+  arrayMove,
+  rectSortingStrategy,
+  useSortable,
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 
 import {
   Dialog,
@@ -29,6 +44,15 @@ import AdminItemContainer from "../common/AdminItemContainer";
 import TooltipPreview from "../../client/product-details/sections/ProductConfiguration/ToolTip";
 import { Home } from "lucide-react";
 
+const TABS = [
+  { key: "category", label: "Category" },
+  { key: "configuration", label: "Configuration" },
+  { key: "commonData", label: "Common Data" },
+  { key: "datasheet", label: "Datasheet" },
+  { key: "qrGenerated", label: "QR Generated" },
+] as const;
+type TabKey = (typeof TABS)[number]["key"];
+
 type Category = {
   _id: string;
   title: string;
@@ -46,11 +70,13 @@ type Category = {
 type ConfigCategory = {
   _id: string;
   title: string;
+  order: number;
   previewType: "none" | "shape" | "swatch" | "size" | "beam" | "gradient";
 };
 type ConfigOption = {
   _id: string;
   category: string | ConfigCategory;
+  order: number;
   label: string;
   code: string;
   swatchColor?: string;
@@ -68,8 +94,28 @@ type ConfigOption = {
   };
 };
 
+type Spec = {
+  _id: string;
+  label: string;
+};
+
+type Icon = {
+  _id: string;
+  image: string;
+};
+
+type GeneratedQr = {
+  _id: string;
+  product?: string;
+  productTitle?: string;
+  productCode?: string;
+  url: string;
+  image: string;
+  createdAt: string;
+};
+
 type DeleteTarget = {
-  type: "category" | "configCategory" | "configOption";
+  type: "category" | "configCategory" | "configOption" | "spec" | "icon" | "qr";
   id: string;
   label: string;
 };
@@ -78,6 +124,9 @@ const deleteLabels: Record<DeleteTarget["type"], string> = {
   category: "Category",
   configCategory: "Config Category",
   configOption: "Config Option",
+  spec: "Spec",
+  icon: "Icon",
+  qr: "Generated QR",
 };
 
 const shapeOptions = [
@@ -98,6 +147,13 @@ const previewTypeOptions = [
   "beam",
   "gradient",
 ];
+
+// Narrow: 0°-24°, Medium: above 24° to 40°, Wide: above 40°
+function beamClassification(angle: number) {
+  if (angle <= 24) return "NARROW";
+  if (angle <= 40) return "MEDIUM";
+  return "WIDE";
+}
 
 function PreviewTypeIcon({ type }: { type: string }) {
   const base =
@@ -162,6 +218,181 @@ function PreviewTypeIcon({ type }: { type: string }) {
 }
 
 /* -------------------------------------------------------------------------- */
+/* SORTABLE CONFIG CATEGORY CARD                                             */
+/* -------------------------------------------------------------------------- */
+
+function SortableConfigCategoryCard({
+  configCategory,
+  isActive,
+  onSelect,
+  onEdit,
+  onDelete,
+}: {
+  configCategory: ConfigCategory;
+  isActive: boolean;
+  onSelect: () => void;
+  onEdit: () => void;
+  onDelete: () => void;
+}) {
+  const { attributes, listeners, setNodeRef, transform, transition } =
+    useSortable({ id: configCategory._id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+  };
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={style}
+      onClick={onSelect}
+      className={`cursor-pointer flex items-center gap-10 border rounded-md px-4 py-2 transition-all ${
+        isActive ? "border-primary bg-primary text-white" : "border-secondary/60"
+      }`}
+    >
+      <button
+        type="button"
+        {...attributes}
+        {...listeners}
+        onClick={(e) => e.stopPropagation()}
+        className="cursor-grab active:cursor-grabbing touch-none"
+        aria-label="Drag to reorder"
+      >
+        <RiDraggable size={18} />
+      </button>
+      <div className="flex flex-col gap-1">
+        <span className="text-md font-itc-medium">{configCategory.title}</span>
+        <span className="text-xs">
+          Preview Type: {configCategory.previewType.toUpperCase()}
+        </span>
+      </div>
+      <div className="flex items-center gap-4">
+        <button
+          type="button"
+          className="cursor-pointer hover:scale-110 transition-all"
+          onClick={(e) => {
+            e.stopPropagation();
+            onEdit();
+          }}
+        >
+          <RiPencilLine size={16} />
+        </button>
+        <button
+          type="button"
+          className="cursor-pointer hover:scale-110 transition-all"
+          onClick={(e) => {
+            e.stopPropagation();
+            onDelete();
+          }}
+        >
+          <RiDeleteBinLine className="text-red-400 hover:text-red-600" size={16} />
+        </button>
+      </div>
+    </div>
+  );
+}
+
+/* -------------------------------------------------------------------------- */
+/* SORTABLE CONFIG OPTION CARD                                               */
+/* -------------------------------------------------------------------------- */
+
+function SortableConfigOptionCard({
+  option,
+  isHovered,
+  onHoverStart,
+  onHoverEnd,
+  onEdit,
+  onDelete,
+}: {
+  option: ConfigOption;
+  isHovered: boolean;
+  onHoverStart: () => void;
+  onHoverEnd: () => void;
+  onEdit: () => void;
+  onDelete: () => void;
+}) {
+  const { attributes, listeners, setNodeRef, transform, transition } =
+    useSortable({ id: option._id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+  };
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={style}
+      className="relative flex items-center justify-between border border-secondary/60 rounded-md px-4 py-2"
+      onMouseEnter={onHoverStart}
+      onMouseLeave={onHoverEnd}
+    >
+      <div className="flex items-center gap-4">
+        <button
+          type="button"
+          {...attributes}
+          {...listeners}
+          className="cursor-grab active:cursor-grabbing touch-none shrink-0"
+          aria-label="Drag to reorder"
+        >
+          <RiDraggable size={18} />
+        </button>
+        <div className="w-[80px] h-[56px] p-4 shrink-0 flex items-center justify-center rounded-[6px] bg-[#161618] border border-[#2A2A2A] overflow-hidden">
+          <TooltipPreview preview={option.tooltip.preview} />
+        </div>
+
+        {/* hover preview — same tooltip shown to shoppers on the storefront */}
+        {isHovered && (
+          <div className="pointer-events-none absolute bottom-[calc(100%+10px)] left-4 z-20 flex min-w-[120px] flex-col items-center gap-2 whitespace-nowrap rounded-[8px] border border-primary bg-primary px-[14px] py-3 text-[10px] tracking-[0.05em] text-white shadow-[0_12px_28px_rgba(0,0,0,0.18)]">
+            <TooltipPreview preview={option.tooltip.preview} />
+            <span className="text-[12px] font-itc-medium uppercase tracking-[0.01em] mt-2">
+              {option.tooltip.label}
+            </span>
+            {option.tooltip.meta && (
+              <span className="text-center text-[11px] font-itc-medium tracking-[0.01em] text-white/60">
+                {option.tooltip.meta}
+              </span>
+            )}
+            <span className="absolute top-full left-6 border-[6px] border-transparent border-t-black" />
+          </div>
+        )}
+        <span className="text-md font-itc-medium flex items-center gap-3">
+          {option.swatchColor && (
+            <span
+              className="h-5 w-5 rounded-full border border-secondary/40 shrink-0"
+              style={{ background: option.swatchColor }}
+            />
+          )}
+          <span className="flex flex-col">
+            {option.label}
+            <span className="text-sm text-description-color font-itc-book">
+              {option.code}
+            </span>
+          </span>
+        </span>
+      </div>
+      <div className="flex items-center gap-3">
+        <button
+          type="button"
+          className="cursor-pointer hover:scale-110 transition-all"
+          onClick={onEdit}
+        >
+          <RiPencilLine className="text-gray-500 hover:text-primary" size={20} />
+        </button>
+        <button
+          type="button"
+          className="cursor-pointer hover:scale-110 transition-all"
+          onClick={onDelete}
+        >
+          <RiDeleteBinLine className="text-red-400 hover:text-red-600" size={20} />
+        </button>
+      </div>
+    </div>
+  );
+}
+
+/* -------------------------------------------------------------------------- */
 /* MAIN PAGE                                                                  */
 /* -------------------------------------------------------------------------- */
 
@@ -171,10 +402,14 @@ export default function ProductsMainPage() {
     [],
   );
   const [configOptions, setConfigOptions] = useState<ConfigOption[]>([]);
+  const [specs, setSpecs] = useState<Spec[]>([]);
+  const [icons, setIcons] = useState<Icon[]>([]);
+  const [qrs, setQrs] = useState<GeneratedQr[]>([]);
 
   const [activeConfigCategoryId, setActiveConfigCategoryId] = useState<
     string | null
   >(null);
+  const [hoveredOptionId, setHoveredOptionId] = useState<string | null>(null);
 
   const [categoryDialog, setCategoryDialog] = useState<Category | null | "new">(
     null,
@@ -185,8 +420,15 @@ export default function ProductsMainPage() {
   const [configOptionDialog, setConfigOptionDialog] = useState<
     ConfigOption | null | "new"
   >(null);
+  const [specDialog, setSpecDialog] = useState<Spec | null | "new">(null);
+  const [iconDialog, setIconDialog] = useState<Icon | null | "new">(null);
 
   const [deleteTarget, setDeleteTarget] = useState<DeleteTarget | null>(null);
+  const [activeTab, setActiveTab] = useState<TabKey>("category");
+  const [configCategoryHasOptions, setConfigCategoryHasOptions] =
+    useState(false);
+
+  const dndSensors = useSensors(useSensor(PointerSensor));
 
   const fetchCategories = async () => {
     const res = await fetch("/api/admin/products/category");
@@ -209,9 +451,89 @@ export default function ProductsMainPage() {
     setConfigOptions(await res.json());
   };
 
+  const openConfigCategoryDialog = async (cc: ConfigCategory | "new") => {
+    if (cc === "new") {
+      setConfigCategoryHasOptions(false);
+      setConfigCategoryDialog("new");
+      return;
+    }
+    const res = await fetch(
+      `/api/admin/products/config-option?category=${cc._id}`,
+    );
+    const options = await res.json();
+    setConfigCategoryHasOptions(options.length > 0);
+    setConfigCategoryDialog(cc);
+  };
+
+  const handleConfigCategoryDragEnd = async (event: DragEndEvent) => {
+    const { active, over } = event;
+    if (!over || active.id === over.id) return;
+
+    const oldIndex = configCategories.findIndex((c) => c._id === active.id);
+    const newIndex = configCategories.findIndex((c) => c._id === over.id);
+    if (oldIndex === -1 || newIndex === -1) return;
+
+    const reordered = arrayMove(configCategories, oldIndex, newIndex);
+    setConfigCategories(reordered);
+
+    const res = await fetch("/api/admin/products/config-category/reorder", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ ids: reordered.map((c) => c._id) }),
+    });
+    if (res.ok) {
+      toast.success("Config category order updated");
+    } else {
+      toast.error("Failed to save order");
+      fetchConfigCategories();
+    }
+  };
+
+  const handleConfigOptionDragEnd = async (event: DragEndEvent) => {
+    const { active, over } = event;
+    if (!over || active.id === over.id) return;
+
+    const oldIndex = configOptions.findIndex((o) => o._id === active.id);
+    const newIndex = configOptions.findIndex((o) => o._id === over.id);
+    if (oldIndex === -1 || newIndex === -1) return;
+
+    const reordered = arrayMove(configOptions, oldIndex, newIndex);
+    setConfigOptions(reordered);
+
+    const res = await fetch("/api/admin/products/config-option/reorder", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ ids: reordered.map((o) => o._id) }),
+    });
+    if (res.ok) {
+      toast.success("Option order updated");
+    } else {
+      toast.error("Failed to save order");
+      if (activeConfigCategoryId) fetchConfigOptions(activeConfigCategoryId);
+    }
+  };
+
+  const fetchSpecs = async () => {
+    const res = await fetch("/api/admin/products/spec");
+    setSpecs(await res.json());
+  };
+
+  const fetchIcons = async () => {
+    const res = await fetch("/api/admin/products/icon");
+    setIcons(await res.json());
+  };
+
+  const fetchQrs = async () => {
+    const res = await fetch("/api/admin/products/qr");
+    setQrs(await res.json());
+  };
+
   useEffect(() => {
     fetchCategories();
     fetchConfigCategories();
+    fetchSpecs();
+    fetchIcons();
+    fetchQrs();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -227,6 +549,9 @@ export default function ProductsMainPage() {
       category: `/api/admin/products/category/${id}`,
       configCategory: `/api/admin/products/config-category/${id}`,
       configOption: `/api/admin/products/config-option/${id}`,
+      spec: `/api/admin/products/spec/${id}`,
+      icon: `/api/admin/products/icon/${id}`,
+      qr: `/api/admin/products/qr/${id}`,
     };
 
     try {
@@ -242,6 +567,9 @@ export default function ProductsMainPage() {
       if (type === "configCategory") fetchConfigCategories();
       if (type === "configOption" && activeConfigCategoryId)
         fetchConfigOptions(activeConfigCategoryId);
+      if (type === "spec") fetchSpecs();
+      if (type === "icon") fetchIcons();
+      if (type === "qr") fetchQrs();
     } catch (e) {
       console.error(e);
       toast.error("Something went wrong");
@@ -252,7 +580,26 @@ export default function ProductsMainPage() {
 
   return (
     <div className="flex flex-col gap-5">
-      {/* Categories */}
+      {/* Tabs */}
+      <div className="flex items-center gap-2 bg-white border border-secondary rounded-[10px] p-2 w-fit">
+        {TABS.map((tab) => (
+          <button
+            key={tab.key}
+            type="button"
+            onClick={() => setActiveTab(tab.key)}
+            className={`px-4 py-2 rounded-md text-sm font-itc-medium transition-all ${
+              activeTab === tab.key
+                ? "bg-primary text-white"
+                : "text-description-color hover:bg-secondary/10"
+            }`}
+          >
+            {tab.label}
+          </button>
+        ))}
+      </div>
+
+      {/* Category */}
+      {activeTab === "category" && (
       <div className="bg-white border border-secondary rounded-[10px] p-5 flex flex-col gap-4">
         <div className="flex items-center justify-between border-b border-secondary pb-3">
           <Label className="!text-xl !font-semibold">
@@ -308,8 +655,11 @@ export default function ProductsMainPage() {
           ))}
         </div>
       </div>
+      )}
 
-      {/* Config Categories */}
+      {/* Configuration */}
+      {activeTab === "configuration" && (
+      <>
       <div className="bg-white border border-secondary rounded-[10px] p-5 flex flex-col gap-4">
         <div className="flex items-center justify-between border-b border-secondary pb-3">
           <Label className="!text-xl !font-semibold">
@@ -320,63 +670,44 @@ export default function ProductsMainPage() {
             type="button"
             text="Add Config Category"
             showIcon={false}
-            onClick={() => setConfigCategoryDialog("new")}
+            onClick={() => openConfigCategoryDialog("new")}
           />
         </div>
-        <div className="flex flex-wrap gap-2">
-          {configCategories.length === 0 && (
-            <p className="text-sm text-black/40">
-              No config categories added yet.
-            </p>
-          )}
-          {configCategories.map((cc) => (
-            <div
-              key={cc._id}
-              onClick={() => setActiveConfigCategoryId(cc._id)}
-              className={`cursor-pointer flex items-center gap-10 border rounded-md px-4 py-2 transition-all ${
-                activeConfigCategoryId === cc._id
-                  ? "border-primary bg-primary text-white"
-                  : "border-secondary/60"
-              }`}
+        {configCategories.length === 0 ? (
+          <p className="text-sm text-black/40">
+            No config categories added yet.
+          </p>
+        ) : (
+          <DndContext
+            sensors={dndSensors}
+            collisionDetection={closestCenter}
+            onDragEnd={handleConfigCategoryDragEnd}
+          >
+            <SortableContext
+              items={configCategories.map((c) => c._id)}
+              strategy={rectSortingStrategy}
             >
-              <div className="flex flex-col gap-1">
-                <span className="text-md font-itc-medium">{cc.title}</span>
-                <span className="text-xs">
-                  Preview Type: {cc.previewType.toUpperCase()}
-                </span>
-              </div>
-              <div className="flex items-center gap-4">
-                <button
-                  type="button"
-                  className="cursor-pointer hover:scale-110 transition-all"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setConfigCategoryDialog(cc);
-                  }}
-                >
-                  <RiPencilLine size={16} />
-                </button>
-                <button
-                  type="button"
-                  className="cursor-pointer hover:scale-110 transition-all"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setDeleteTarget({
-                      type: "configCategory",
-                      id: cc._id,
-                      label: cc.title,
-                    });
-                  }}
-                >
-                  <RiDeleteBinLine
-                    className="text-red-400 hover:text-red-600"
-                    size={16}
+              <div className="flex flex-wrap gap-2">
+                {configCategories.map((cc) => (
+                  <SortableConfigCategoryCard
+                    key={cc._id}
+                    configCategory={cc}
+                    isActive={activeConfigCategoryId === cc._id}
+                    onSelect={() => setActiveConfigCategoryId(cc._id)}
+                    onEdit={() => openConfigCategoryDialog(cc)}
+                    onDelete={() =>
+                      setDeleteTarget({
+                        type: "configCategory",
+                        id: cc._id,
+                        label: cc.title,
+                      })
+                    }
                   />
-                </button>
+                ))}
               </div>
-            </div>
-          ))}
-        </div>
+            </SortableContext>
+          </DndContext>
+        )}
       </div>
 
       {/* Config Options — scoped to selected config category */}
@@ -407,39 +738,75 @@ export default function ProductsMainPage() {
               onClick={() => setConfigOptionDialog("new")}
             />
           </div>
-          <div className="grid grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-2">
-            {configOptions.length === 0 && (
-              <p className="text-sm text-black/40">No options added yet.</p>
+          {configOptions.length === 0 ? (
+            <p className="text-sm text-black/40">No options added yet.</p>
+          ) : (
+            <DndContext
+              sensors={dndSensors}
+              collisionDetection={closestCenter}
+              onDragEnd={handleConfigOptionDragEnd}
+            >
+              <SortableContext
+                items={configOptions.map((o) => o._id)}
+                strategy={rectSortingStrategy}
+              >
+                <div className="grid grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-2">
+                  {configOptions.map((opt) => (
+                    <SortableConfigOptionCard
+                      key={opt._id}
+                      option={opt}
+                      isHovered={hoveredOptionId === opt._id}
+                      onHoverStart={() => setHoveredOptionId(opt._id)}
+                      onHoverEnd={() => setHoveredOptionId(null)}
+                      onEdit={() => setConfigOptionDialog(opt)}
+                      onDelete={() =>
+                        setDeleteTarget({
+                          type: "configOption",
+                          id: opt._id,
+                          label: opt.label,
+                        })
+                      }
+                    />
+                  ))}
+                </div>
+              </SortableContext>
+            </DndContext>
+          )}
+        </div>
+      )}
+      </>
+      )}
+
+      {/* Common Data */}
+      {activeTab === "commonData" && (
+        <div className="bg-white border border-secondary rounded-[10px] p-5 flex flex-col gap-4">
+          <div className="flex items-center justify-between border-b border-secondary pb-3">
+            <Label className="!text-xl !font-semibold">
+              Specs {`(${specs.length})`}
+            </Label>
+            <CustomButton
+              variant="3"
+              type="button"
+              text="Add Spec"
+              showIcon={false}
+              onClick={() => setSpecDialog("new")}
+            />
+          </div>
+          <div className="grid grid-cols-2 xl:grid-cols-4 gap-2">
+            {specs.length === 0 && (
+              <p className="text-sm text-black/40">No specs added yet.</p>
             )}
-            {configOptions.map((opt) => (
+            {specs.map((spec) => (
               <div
-                key={opt._id}
+                key={spec._id}
                 className="flex items-center justify-between border border-secondary/60 rounded-md px-4 py-2"
               >
-                <div className="flex items-center gap-4">
-                  <div className="w-[80px] h-[56px] p-4 shrink-0 flex items-center justify-center rounded-[6px] bg-[#161618] border border-[#2A2A2A] overflow-hidden">
-                    <TooltipPreview preview={opt.tooltip.preview} />
-                  </div>
-                  <span className="text-md font-itc-medium flex items-center gap-3">
-                    {opt.swatchColor && (
-                      <span
-                        className="h-5 w-5 rounded-full border border-secondary/40 shrink-0"
-                        style={{ background: opt.swatchColor }}
-                      />
-                    )}
-                    <span className="flex flex-col">
-                      {opt.label}
-                      <span className="text-sm text-description-color font-itc-book">
-                        {opt.code}
-                      </span>
-                    </span>
-                  </span>
-                </div>
+                <span className="text-md font-itc-medium">{spec.label}</span>
                 <div className="flex items-center gap-3">
                   <button
                     type="button"
                     className="cursor-pointer hover:scale-110 transition-all"
-                    onClick={() => setConfigOptionDialog(opt)}
+                    onClick={() => setSpecDialog(spec)}
                   >
                     <RiPencilLine
                       className="text-gray-500 hover:text-primary"
@@ -451,15 +818,156 @@ export default function ProductsMainPage() {
                     className="cursor-pointer hover:scale-110 transition-all"
                     onClick={() =>
                       setDeleteTarget({
-                        type: "configOption",
-                        id: opt._id,
-                        label: opt.label,
+                        type: "spec",
+                        id: spec._id,
+                        label: spec.label,
                       })
                     }
                   >
                     <RiDeleteBinLine
                       className="text-red-400 hover:text-red-600"
                       size={20}
+                    />
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Datasheet */}
+      {activeTab === "datasheet" && (
+        <div className="bg-white border border-secondary rounded-[10px] p-5 flex flex-col gap-4">
+          <div className="flex items-center justify-between border-b border-secondary pb-3">
+            <Label className="!text-xl !font-semibold">
+              Icons {`(${icons.length})`}
+            </Label>
+            <CustomButton
+              variant="3"
+              type="button"
+              text="Add Icon"
+              showIcon={false}
+              onClick={() => setIconDialog("new")}
+            />
+          </div>
+          <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-5 gap-3">
+            {icons.length === 0 && (
+              <p className="text-sm text-black/40">No icons added yet.</p>
+            )}
+            {icons.map((icon) => (
+              <div
+                key={icon._id}
+                className="flex items-center justify-between border border-secondary/60 rounded-md px-3 py-2 gap-2"
+              >
+                <div className="w-12 h-12 shrink-0 rounded-[4px] bg-[#161618] border border-[#2A2A2A] flex items-center justify-center overflow-hidden">
+                  {icon.image && (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={icon.image}
+                      alt=""
+                      className="w-8 h-8 object-contain"
+                    />
+                  )}
+                </div>
+                <div className="flex items-center gap-2 ml-auto">
+                  <button
+                    type="button"
+                    className="cursor-pointer hover:scale-110 transition-all"
+                    onClick={() => setIconDialog(icon)}
+                  >
+                    <RiPencilLine
+                      className="text-gray-500 hover:text-primary"
+                      size={18}
+                    />
+                  </button>
+                  <button
+                    type="button"
+                    className="cursor-pointer hover:scale-110 transition-all"
+                    onClick={() =>
+                      setDeleteTarget({
+                        type: "icon",
+                        id: icon._id,
+                        label: "this icon",
+                      })
+                    }
+                  >
+                    <RiDeleteBinLine
+                      className="text-red-400 hover:text-red-600"
+                      size={18}
+                    />
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* QR Generated */}
+      {activeTab === "qrGenerated" && (
+        <div className="bg-white border border-secondary rounded-[10px] p-5 flex flex-col gap-4">
+          <div className="flex items-center justify-between border-b border-secondary pb-3">
+            <Label className="!text-xl !font-semibold">
+              Generated QR Codes {`(${qrs.length})`}
+            </Label>
+          </div>
+          <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-3">
+            {qrs.length === 0 && (
+              <p className="text-sm text-black/40">
+                No QR codes generated yet.
+              </p>
+            )}
+            {qrs.map((qr) => (
+              <div
+                key={qr._id}
+                className="flex flex-col gap-3 border border-secondary/60 rounded-md p-3"
+              >
+                <div className="w-full aspect-square rounded-[6px] border border-[#2A2A2A] flex items-center justify-center overflow-hidden p-3">
+                  {qr.image && (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={qr.image}
+                      alt={qr.productTitle ?? "Generated QR code"}
+                      className="w-full h-full object-contain"
+                    />
+                  )}
+                </div>
+                <div className="flex flex-col gap-1">
+                  <span className="text-md font-itc-medium truncate">
+                    {qr.productTitle || "Untitled product"}
+                  </span>
+                  {qr.productCode && (
+                    <span className="text-sm text-description-color truncate">
+                      {qr.productCode}
+                    </span>
+                  )}
+                  <span className="text-xs text-description-color">
+                    {new Date(qr.createdAt).toLocaleString()}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between gap-3">
+                  <a
+                    href={qr.image}
+                    download={`${qr.productCode || "product"}-qr.png`}
+                    className="text-sm font-itc-medium text-primary hover:underline"
+                  >
+                    Download
+                  </a>
+                  <button
+                    type="button"
+                    className="cursor-pointer hover:scale-110 transition-all"
+                    onClick={() =>
+                      setDeleteTarget({
+                        type: "qr",
+                        id: qr._id,
+                        label: qr.productTitle || "this QR code",
+                      })
+                    }
+                  >
+                    <RiDeleteBinLine
+                      className="text-red-400 hover:text-red-600"
+                      size={18}
                     />
                   </button>
                 </div>
@@ -481,9 +989,32 @@ export default function ProductsMainPage() {
         />
       )}
 
+      {specDialog !== null && (
+        <SpecFormDialog
+          initial={specDialog === "new" ? null : specDialog}
+          onClose={() => setSpecDialog(null)}
+          onSaved={() => {
+            setSpecDialog(null);
+            fetchSpecs();
+          }}
+        />
+      )}
+
+      {iconDialog !== null && (
+        <IconFormDialog
+          initial={iconDialog === "new" ? null : iconDialog}
+          onClose={() => setIconDialog(null)}
+          onSaved={() => {
+            setIconDialog(null);
+            fetchIcons();
+          }}
+        />
+      )}
+
       {configCategoryDialog !== null && (
         <ConfigCategoryFormDialog
           initial={configCategoryDialog === "new" ? null : configCategoryDialog}
+          hasOptions={configCategoryHasOptions}
           onClose={() => setConfigCategoryDialog(null)}
           onSaved={() => {
             setConfigCategoryDialog(null);
@@ -745,15 +1276,177 @@ function CategoryFormDialog({
 }
 
 /* -------------------------------------------------------------------------- */
+/* SPEC DIALOG                                                                */
+/* -------------------------------------------------------------------------- */
+
+function SpecFormDialog({
+  initial,
+  onClose,
+  onSaved,
+}: {
+  initial: Spec | null;
+  onClose: () => void;
+  onSaved: () => void;
+}) {
+  const { register, handleSubmit } = useForm<{ label: string }>({
+    defaultValues: { label: initial?.label ?? "" },
+  });
+  const [isSaving, setIsSaving] = useState(false);
+
+  const onSubmit = async (data: { label: string }) => {
+    setIsSaving(true);
+    try {
+      const res = initial
+        ? await fetch(`/api/admin/products/spec/${initial._id}`, {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(data),
+          })
+        : await fetch("/api/admin/products/spec", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(data),
+          });
+      if (!res.ok) return toast.error("Failed to save spec");
+      toast.success(initial ? "Spec updated" : "Spec added");
+      onSaved();
+    } catch (e) {
+      console.error(e);
+      toast.error("Something went wrong");
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  return (
+    <Dialog open onOpenChange={(open) => !open && onClose()}>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle className="!text-xl !font-itc-medium">
+            {initial ? "Edit Spec" : "Add Spec"}
+          </DialogTitle>
+        </DialogHeader>
+        <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
+          <div className="flex flex-col gap-2">
+            <Label className="font-bold">Label</Label>
+            <Input {...register("label")} placeholder="e.g. IP44 / IP55" />
+          </div>
+          <DialogFooter>
+            <CustomButton
+              variant="2"
+              type="button"
+              text="Cancel"
+              showIcon={false}
+              onClick={onClose}
+            />
+            <CustomButton
+              variant="3"
+              type="submit"
+              text={isSaving ? "Saving..." : "Save"}
+              showIcon={false}
+            />
+          </DialogFooter>
+        </form>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+/* -------------------------------------------------------------------------- */
+/* ICON DIALOG                                                                */
+/* -------------------------------------------------------------------------- */
+
+function IconFormDialog({
+  initial,
+  onClose,
+  onSaved,
+}: {
+  initial: Icon | null;
+  onClose: () => void;
+  onSaved: () => void;
+}) {
+  const { control, handleSubmit } = useForm<{ image: string }>({
+    defaultValues: { image: initial?.image ?? "" },
+  });
+  const [isSaving, setIsSaving] = useState(false);
+
+  const onSubmit = async (data: { image: string }) => {
+    setIsSaving(true);
+    try {
+      const res = initial
+        ? await fetch(`/api/admin/products/icon/${initial._id}`, {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(data),
+          })
+        : await fetch("/api/admin/products/icon", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(data),
+          });
+      if (!res.ok) return toast.error("Failed to save icon");
+      toast.success(initial ? "Icon updated" : "Icon added");
+      onSaved();
+    } catch (e) {
+      console.error(e);
+      toast.error("Something went wrong");
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  return (
+    <Dialog open onOpenChange={(open) => !open && onClose()}>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle className="!text-xl !font-itc-medium">
+            {initial ? "Edit Icon" : "Add Icon"}
+          </DialogTitle>
+        </DialogHeader>
+        <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
+          <div className="flex flex-col gap-2">
+            <Label className="font-bold">Image</Label>
+            <Controller
+              name="image"
+              control={control}
+              render={({ field }) => (
+                <ImageUploader value={field.value} onChange={field.onChange} />
+              )}
+            />
+          </div>
+          <DialogFooter>
+            <CustomButton
+              variant="2"
+              type="button"
+              text="Cancel"
+              showIcon={false}
+              onClick={onClose}
+            />
+            <CustomButton
+              variant="3"
+              type="submit"
+              text={isSaving ? "Saving..." : "Save"}
+              showIcon={false}
+            />
+          </DialogFooter>
+        </form>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+/* -------------------------------------------------------------------------- */
 /* CONFIG CATEGORY DIALOG                                                     */
 /* -------------------------------------------------------------------------- */
 
 function ConfigCategoryFormDialog({
   initial,
+  hasOptions,
   onClose,
   onSaved,
 }: {
   initial: ConfigCategory | null;
+  hasOptions: boolean;
   onClose: () => void;
   onSaved: () => void;
 }) {
@@ -816,7 +1509,11 @@ function ConfigCategoryFormDialog({
                 name="previewType"
                 control={control}
                 render={({ field }) => (
-                  <Select value={field.value} onValueChange={field.onChange}>
+                  <Select
+                    disabled={hasOptions}
+                    value={field.value}
+                    onValueChange={field.onChange}
+                  >
                     <SelectTrigger className="h-15">
                       <SelectValue placeholder="Select preview type">
                         {field.value && (
@@ -840,6 +1537,12 @@ function ConfigCategoryFormDialog({
                   </Select>
                 )}
               />
+              {hasOptions && (
+                <span className="text-xs text-description-color">
+                  Locked — this category already has options. Delete all its
+                  options first to change the preview type.
+                </span>
+              )}
           </div>
           <DialogFooter>
             <CustomButton
@@ -912,18 +1615,27 @@ function ConfigOptionFormDialog({
     });
   const [isSaving, setIsSaving] = useState(false);
 
-  // tooltip.label auto-fills from label until manually edited
+  // tooltip.label auto-fills from label (or beam angle) until manually edited
   const [tooltipTouched, setTooltipTouched] = useState(
     !!initial?.tooltip?.label,
   );
 
   const label = watch("label");
+  const beamAngle = watch("beamAngle");
+
   useEffect(() => {
-    if (!tooltipTouched) {
+    if (tooltipTouched) return;
+    if (previewType === "beam") {
+      const angle = Number(beamAngle);
+      setValue(
+        "tooltipLabel",
+        beamAngle ? `${angle}° ${beamClassification(angle)}` : "",
+      );
+    } else {
       setValue("tooltipLabel", label);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [label]);
+  }, [label, beamAngle, previewType]);
 
   const onSubmit = async (data: FormValues) => {
     setIsSaving(true);
@@ -1041,7 +1753,11 @@ function ConfigOptionFormDialog({
                 setTooltipTouched(true);
                 setValue("tooltipLabel", e.target.value);
               }}
-              placeholder="Auto-fills from Label"
+              placeholder={
+                previewType === "beam"
+                  ? "Auto-fills from Beam Angle, e.g. 15° NARROW"
+                  : "Auto-fills from Label"
+              }
             />
           </div>
           <div className="flex flex-col gap-2">

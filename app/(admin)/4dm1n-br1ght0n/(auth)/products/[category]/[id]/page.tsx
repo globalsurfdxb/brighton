@@ -4,7 +4,12 @@ import { useEffect, useState } from "react";
 import { useForm, Controller, useFieldArray } from "react-hook-form";
 import { useRouter, useParams } from "next/navigation";
 import { toast } from "sonner";
-import { RiDeleteBinLine, RiAddLine, RiSearchLine } from "react-icons/ri";
+import {
+  RiDeleteBinLine,
+  RiAddLine,
+  RiSearchLine,
+  RiCheckLine,
+} from "react-icons/ri";
 
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
@@ -17,8 +22,10 @@ import {
   SelectItem,
 } from "@/components/ui/select";
 import { ImageUploader } from "@/components/ui/image-uploader";
+import { MultiImageUploader } from "@/components/ui/multi-image-uploader";
 import AdminItemContainer from "@/app/components/admin/common/AdminItemContainer";
 import CustomButton from "@/app/components/client/common/CustomButton";
+import { slugify } from "@/lib/utils/slugify";
 
 type ConfigCategory = {
   _id: string;
@@ -27,9 +34,12 @@ type ConfigCategory = {
 };
 type ConfigOption = { _id: string; label: string; code: string };
 type SubCategoryOption = { _id: string; title: string };
+type SpecOption = { _id: string; label: string };
+type IconOption = { _id: string; image: string };
 
 type ProductForm = {
   title: string;
+  slug: string;
   category: string;
   subCategory: string;
   thumbImage: string;
@@ -39,8 +49,12 @@ type ProductForm = {
   productCode: string;
   featured: boolean;
   description: string;
-  stats: { value: string }[];
-  images: { value: string }[];
+  specs: {
+    common: { spec: string; enabled: boolean }[];
+    custom: { value: string }[];
+  };
+  images: { image: string; imageAlt: string }[];
+  photometrics: { image: string; imageAlt: string; name: string }[];
   secondSection: {
     title: string;
     description: string;
@@ -57,10 +71,18 @@ type ProductForm = {
       items: { key: string; value: string }[];
     }[];
   };
+  datasheet: {
+    image: string;
+    icons: {
+      common: { icon: string; enabled: boolean }[];
+      custom: { value: string }[];
+    };
+  };
 };
 
 const defaultValues: ProductForm = {
   title: "",
+  slug: "",
   category: "",
   subCategory: "",
   thumbImage: "",
@@ -70,11 +92,16 @@ const defaultValues: ProductForm = {
   productCode: "",
   featured: false,
   description: "",
-  stats: [],
+  specs: { common: [], custom: [] },
   images: [],
+  photometrics: [],
   secondSection: { title: "", description: "", configurations: [] },
   thirdSection: { title: "", items: [] },
+  datasheet: { image: "", icons: { common: [], custom: [] } },
 };
+
+// sentinel for the "no default" choice — the actual stored value stays ""
+const NO_DEFAULT_OPTION = "none";
 
 const addIconBtnClass =
   "flex items-center justify-center h-9 w-9 shrink-0 rounded-lg border border-primary/30 bg-primary/5 text-primary hover:bg-primary/10 active:scale-95 transition-all cursor-pointer";
@@ -92,7 +119,7 @@ export default function ProductDetailPage() {
   const params = useParams<{ category: string; id: string }>();
   const isNew = params.id === "new";
 
-  const { register, control, handleSubmit, reset, watch, setValue } =
+  const { register, control, handleSubmit, reset, watch, setValue, getValues } =
     useForm<ProductForm>({ defaultValues });
   const [isSaving, setIsSaving] = useState(false);
   const [categoryId, setCategoryId] = useState<string | null>(null);
@@ -100,6 +127,8 @@ export default function ProductDetailPage() {
   const [configCategories, setConfigCategories] = useState<ConfigCategory[]>(
     [],
   );
+  const [commonSpecs, setCommonSpecs] = useState<SpecOption[]>([]);
+  const [commonIcons, setCommonIcons] = useState<IconOption[]>([]);
   const [optionsByCategory, setOptionsByCategory] = useState<
     Record<string, ConfigOption[]>
   >({});
@@ -108,8 +137,9 @@ export default function ProductDetailPage() {
     {},
   );
 
-  const statsArray = useFieldArray({ control, name: "stats" });
+  const customSpecsArray = useFieldArray({ control, name: "specs.custom" });
   const imagesArray = useFieldArray({ control, name: "images" });
+  const photometricsArray = useFieldArray({ control, name: "photometrics" });
   const configArray = useFieldArray({
     control,
     name: "secondSection.configurations",
@@ -117,6 +147,10 @@ export default function ProductDetailPage() {
   const sectionItemsArray = useFieldArray({
     control,
     name: "thirdSection.items",
+  });
+  const datasheetIconsArray = useFieldArray({
+    control,
+    name: "datasheet.icons.custom",
   });
 
   const resolveCategory = async () => {
@@ -138,6 +172,16 @@ export default function ProductDetailPage() {
     setConfigCategories(await res.json());
   };
 
+  const fetchCommonSpecs = async () => {
+    const res = await fetch("/api/admin/products/spec");
+    setCommonSpecs(await res.json());
+  };
+
+  const fetchCommonIcons = async () => {
+    const res = await fetch("/api/admin/products/icon");
+    setCommonIcons(await res.json());
+  };
+
   const fetchOptionsForCategory = async (configCategoryId: string) => {
     if (optionsByCategory[configCategoryId]) return;
     const res = await fetch(
@@ -157,8 +201,19 @@ export default function ProductDetailPage() {
         ...data,
         category: data.category?._id ?? data.category,
         subCategory: data.subCategory?._id ?? data.subCategory,
-        stats: (data.stats ?? []).map((v: string) => ({ value: v })),
-        images: (data.images ?? []).map((v: string) => ({ value: v })),
+        specs: {
+          common: (data.specs?.common ?? []).map((c: any) => ({
+            spec: c.spec?._id ?? c.spec,
+            enabled: c.enabled,
+          })),
+          custom: (data.specs?.custom ?? []).map((v: string) => ({ value: v })),
+        },
+        images: (data.images ?? []).map((img: any) =>
+          typeof img === "string"
+            ? { image: img, imageAlt: "" }
+            : { image: img.image ?? "", imageAlt: img.imageAlt ?? "" },
+        ),
+        photometrics: data.photometrics ?? [],
         secondSection: {
           title: data.secondSection?.title ?? "",
           description: data.secondSection?.description ?? "",
@@ -173,6 +228,18 @@ export default function ProductDetailPage() {
         thirdSection: {
           title: data.thirdSection?.title ?? "",
           items: data.thirdSection?.items ?? [],
+        },
+        datasheet: {
+          image: data.datasheet?.image ?? "",
+          icons: {
+            common: (data.datasheet?.icons?.common ?? []).map((c: any) => ({
+              icon: c.icon?._id ?? c.icon,
+              enabled: c.enabled,
+            })),
+            custom: (data.datasheet?.icons?.custom ?? []).map(
+              (v: string) => ({ value: v }),
+            ),
+          },
         },
       });
       // preload options for already-selected config categories
@@ -189,6 +256,8 @@ export default function ProductDetailPage() {
   useEffect(() => {
     resolveCategory();
     fetchConfigCategories();
+    fetchCommonSpecs();
+    fetchCommonIcons();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [params.category]);
 
@@ -202,8 +271,29 @@ export default function ProductDetailPage() {
     try {
       const payload = {
         ...formData,
-        stats: formData.stats.map((s) => s.value),
-        images: formData.images.map((i) => i.value),
+        specs: {
+          // resolve against the live common-spec list so newly added ones
+          // that were never toggled still default to enabled
+          common: commonSpecs.map((cs) => {
+            const found = formData.specs.common.find(
+              (c) => c.spec === cs._id,
+            );
+            return { spec: cs._id, enabled: found ? found.enabled : true };
+          }),
+          custom: formData.specs.custom.map((s) => s.value),
+        },
+        datasheet: {
+          image: formData.datasheet.image,
+          icons: {
+            common: commonIcons.map((ci) => {
+              const found = formData.datasheet.icons.common.find(
+                (c) => c.icon === ci._id,
+              );
+              return { icon: ci._id, enabled: found ? found.enabled : true };
+            }),
+            custom: formData.datasheet.icons.custom.map((s) => s.value),
+          },
+        },
       };
 
       const res = isNew
@@ -236,6 +326,35 @@ export default function ProductDetailPage() {
   };
 
   const watchedConfigurations = watch("secondSection.configurations");
+  const watchedCommonSpecs = watch("specs.common");
+  const watchedCommonIcons = watch("datasheet.icons.common");
+
+  const toggleCommonSpec = (specId: string, enabled: boolean) => {
+    const current = getValues("specs.common") ?? [];
+    const idx = current.findIndex((c) => c.spec === specId);
+    if (idx === -1) {
+      setValue("specs.common", [...current, { spec: specId, enabled }]);
+    } else {
+      const next = [...current];
+      next[idx] = { ...next[idx], enabled };
+      setValue("specs.common", next);
+    }
+  };
+
+  const toggleCommonIcon = (iconId: string, enabled: boolean) => {
+    const current = getValues("datasheet.icons.common") ?? [];
+    const idx = current.findIndex((c) => c.icon === iconId);
+    if (idx === -1) {
+      setValue("datasheet.icons.common", [
+        ...current,
+        { icon: iconId, enabled },
+      ]);
+    } else {
+      const next = [...current];
+      next[idx] = { ...next[idx], enabled };
+      setValue("datasheet.icons.common", next);
+    }
+  };
 
   return (
     <div className="flex flex-col gap-6">
@@ -254,6 +373,22 @@ export default function ProductDetailPage() {
                   placeholder="Title"
                 />
               </div>
+              <div className="flex flex-col gap-2">
+                <Label className="font-bold">Slug</Label>
+                <div className="flex items-center gap-2">
+                  <Input {...register("slug")} placeholder="Slug" />
+                  <CustomButton
+                    btnClass="-mt-[2px]"
+                    variant="3"
+                    text="Generate"
+                    type="button"
+                    onClick={() => setValue("slug", slugify(watch("title")))}
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-5">
               <div className="flex flex-col gap-2">
                 <Label className="font-bold">Subcategory</Label>
                 <Controller
@@ -361,41 +496,96 @@ export default function ProductDetailPage() {
 
             <Divider />
 
-            <div className="flex flex-col gap-3">
-              <div className="flex items-center justify-between">
-                <Label className="font-bold">Stats</Label>
-                <button
-                  type="button"
-                  onClick={() => statsArray.append({ value: "" })}
-                  className={addIconBtnClass}
-                  aria-label="Add stat"
-                >
-                  <RiAddLine size={18} />
-                </button>
-              </div>
-              {statsArray.fields.length > 0 && (
-                <div className="grid grid-cols-2 gap-4">
-                  {statsArray.fields.map((field, i) => (
-                    <div
-                      key={field.id}
-                      className="flex items-center gap-2 border border-secondary rounded-lg p-2"
-                    >
-                      <Input
-                        {...register(`stats.${i}.value`)}
-                        placeholder="Stat"
-                      />
-                      <button
-                        type="button"
-                        onClick={() => statsArray.remove(i)}
-                        className={deleteIconBtnClassSm}
-                        aria-label="Remove stat"
-                      >
-                        <RiDeleteBinLine size={16} />
-                      </button>
-                    </div>
-                  ))}
+            <div className="flex flex-col gap-4">
+              <Label className="font-bold">Specs</Label>
+
+              {/* product-specific specs, unique to this product only */}
+              <div className="rounded-lg border border-secondary/30 p-4 flex flex-col gap-3">
+                <div className="flex items-center justify-between">
+                  <Label className="text-sm">Product Specific Specs</Label>
+                  <button
+                    type="button"
+                    onClick={() => customSpecsArray.append({ value: "" })}
+                    className={addIconBtnClass}
+                    aria-label="Add spec"
+                  >
+                    <RiAddLine size={18} />
+                  </button>
                 </div>
-              )}
+                {customSpecsArray.fields.length > 0 ? (
+                  <div className="grid grid-cols-2 gap-4">
+                    {customSpecsArray.fields.map((field, i) => (
+                      <div
+                        key={field.id}
+                        className="flex items-center gap-2 border border-secondary rounded-lg p-2"
+                      >
+                        <Input
+                          {...register(`specs.custom.${i}.value`)}
+                          placeholder="Spec"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => customSpecsArray.remove(i)}
+                          className={deleteIconBtnClassSm}
+                          aria-label="Remove spec"
+                        >
+                          <RiDeleteBinLine size={16} />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-sm text-description-color">
+                    No product-specific specs added yet.
+                  </p>
+                )}
+              </div>
+
+              {/* common specs — managed under Products > Common Data, enabled by default */}
+              <div className="rounded-lg border border-secondary/30 p-4 flex flex-col gap-3">
+                <div className="flex items-center justify-between gap-3">
+                  <Label className="text-sm">Common Specs</Label>
+                  <span className="text-xs text-description-color">
+                    {commonSpecs.filter((cs) => {
+                      const entry = watchedCommonSpecs?.find(
+                        (c) => c.spec === cs._id,
+                      );
+                      return entry ? entry.enabled : true;
+                    }).length}{" "}
+                    of {commonSpecs.length} enabled
+                  </span>
+                </div>
+                {commonSpecs.length === 0 ? (
+                  <p className="text-sm text-description-color">
+                    No common specs added yet. Add some under Products →
+                    Common Data.
+                  </p>
+                ) : (
+                  <div className="flex flex-wrap gap-2">
+                    {commonSpecs.map((cs) => {
+                      const entry = watchedCommonSpecs?.find(
+                        (c) => c.spec === cs._id,
+                      );
+                      const enabled = entry ? entry.enabled : true;
+                      return (
+                        <button
+                          key={cs._id}
+                          type="button"
+                          onClick={() => toggleCommonSpec(cs._id, !enabled)}
+                          className={`flex items-center gap-1.5 text-sm rounded-md px-3 py-1.5 border transition-all cursor-pointer ${
+                            enabled
+                              ? "bg-primary text-white border-primary"
+                              : "border-secondary/60 text-description-color hover:border-primary/50"
+                          }`}
+                        >
+                          {enabled && <RiCheckLine size={14} />}
+                          {cs.label}
+                        </button>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
             </div>
 
             <Divider />
@@ -405,13 +595,20 @@ export default function ProductDetailPage() {
                 <Label className="font-bold">Images</Label>
                 <button
                   type="button"
-                  onClick={() => imagesArray.append({ value: "" })}
+                  onClick={() => imagesArray.append({ image: "", imageAlt: "" })}
                   className={addIconBtnClass}
                   aria-label="Add image"
                 >
                   <RiAddLine size={18} />
                 </button>
               </div>
+              <MultiImageUploader
+                onUpload={(urls) =>
+                  urls.forEach((url) =>
+                    imagesArray.append({ image: url, imageAlt: "" }),
+                  )
+                }
+              />
               <div className="grid grid-cols-4 gap-4">
                 {imagesArray.fields.map((field, i) => (
                   <div
@@ -419,7 +616,7 @@ export default function ProductDetailPage() {
                     className="flex flex-col gap-2 p-2 rounded-lg border border-secondary/20"
                   >
                     <Controller
-                      name={`images.${i}.value`}
+                      name={`images.${i}.image`}
                       control={control}
                       render={({ field }) => (
                         <ImageUploader
@@ -427,6 +624,10 @@ export default function ProductDetailPage() {
                           onChange={field.onChange}
                         />
                       )}
+                    />
+                    <Input
+                      {...register(`images.${i}.imageAlt`)}
+                      placeholder="Image Alt"
                     />
                     <button
                       type="button"
@@ -439,6 +640,69 @@ export default function ProductDetailPage() {
                   </div>
                 ))}
               </div>
+            </div>
+
+            <Divider />
+
+            <div className="flex flex-col gap-3">
+              <div className="flex items-center justify-between">
+                <Label className="font-bold">Photometric Images</Label>
+                <button
+                  type="button"
+                  onClick={() =>
+                    photometricsArray.append({
+                      image: "",
+                      imageAlt: "",
+                      name: "",
+                    })
+                  }
+                  className={addIconBtnClass}
+                  aria-label="Add photometric image"
+                >
+                  <RiAddLine size={18} />
+                </button>
+              </div>
+              {photometricsArray.fields.length > 0 ? (
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                  {photometricsArray.fields.map((field, i) => (
+                    <div
+                      key={field.id}
+                      className="flex flex-col gap-2 p-2 rounded-lg border border-secondary/20"
+                    >
+                      <Controller
+                        name={`photometrics.${i}.image`}
+                        control={control}
+                        render={({ field }) => (
+                          <ImageUploader
+                            value={field.value}
+                            onChange={field.onChange}
+                          />
+                        )}
+                      />
+                      <Input
+                        {...register(`photometrics.${i}.name`)}
+                        placeholder="Name"
+                      />
+                      <Input
+                        {...register(`photometrics.${i}.imageAlt`)}
+                        placeholder="Image Alt"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => photometricsArray.remove(i)}
+                        className="flex items-center justify-center gap-1 text-xs rounded-md py-1.5 text-red-400 hover:text-red-600 hover:bg-red-50 transition-colors cursor-pointer"
+                      >
+                        <RiDeleteBinLine size={14} />
+                        Remove
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-sm text-description-color">
+                  No photometric images added yet.
+                </p>
+              )}
             </div>
           </div>
         </AdminItemContainer>
@@ -612,9 +876,6 @@ export default function ProductDetailPage() {
                                     key={opt._id}
                                     type="button"
                                     onClick={() => {
-                                      const currentDefault = watch(
-                                        `secondSection.configurations.${i}.defaultOption`,
-                                      );
                                       const next = isChecked
                                         ? selectedOptions.filter(
                                             (o) => o !== opt._id,
@@ -625,22 +886,15 @@ export default function ProductDetailPage() {
                                         next,
                                       );
 
-                                      // keep defaultOption in sync: auto-fill
-                                      // when nothing is chosen yet, and re-pick
-                                      // if the current default just got removed
-                                      // — still freely editable via the select below
-                                      if (!isChecked && !currentDefault) {
+                                      // clear the default back to "no default"
+                                      // if the option it pointed to was removed
+                                      const currentDefault = watch(
+                                        `secondSection.configurations.${i}.defaultOption`,
+                                      );
+                                      if (isChecked && currentDefault === opt._id) {
                                         setValue(
                                           `secondSection.configurations.${i}.defaultOption`,
-                                          opt._id,
-                                        );
-                                      } else if (
-                                        isChecked &&
-                                        currentDefault === opt._id
-                                      ) {
-                                        setValue(
-                                          `secondSection.configurations.${i}.defaultOption`,
-                                          next[0] ?? "",
+                                          "",
                                         );
                                       }
                                     }}
@@ -670,13 +924,23 @@ export default function ProductDetailPage() {
                               control={control}
                               render={({ field }) => (
                                 <Select
-                                  value={field.value}
-                                  onValueChange={field.onChange}
+                                  value={field.value || NO_DEFAULT_OPTION}
+                                  onValueChange={(val) =>
+                                    field.onChange(
+                                      val === NO_DEFAULT_OPTION ? "" : val,
+                                    )
+                                  }
                                 >
                                   <SelectTrigger className="cursor-pointer">
-                                    <SelectValue placeholder="Select default" />
+                                    <SelectValue />
                                   </SelectTrigger>
                                   <SelectContent>
+                                    <SelectItem
+                                      className="cursor-pointer"
+                                      value={NO_DEFAULT_OPTION}
+                                    >
+                                      No default option needed
+                                    </SelectItem>
                                     {availableOptions
                                       .filter((o) =>
                                         selectedOptions.includes(o._id),
@@ -739,6 +1003,136 @@ export default function ProductDetailPage() {
                   onRemove={() => sectionItemsArray.remove(i)}
                 />
               ))}
+            </div>
+          </div>
+        </AdminItemContainer>
+
+        {/* Datasheet */}
+        <AdminItemContainer>
+          <Label main>Datasheet</Label>
+          <div className="p-6 flex flex-col gap-5">
+            <div className="flex flex-col gap-2">
+              <Label className="font-bold">Datasheet Image</Label>
+              <Controller
+                name="datasheet.image"
+                control={control}
+                render={({ field }) => (
+                  <ImageUploader value={field.value} onChange={field.onChange} />
+                )}
+              />
+            </div>
+
+            <Divider />
+
+            <div className="flex flex-col gap-4">
+              <Label className="font-bold">Icons</Label>
+
+              {/* common icons — managed under Products > Datasheet, enabled by default */}
+              <div className="rounded-lg border border-secondary/30 p-4 flex flex-col gap-3">
+                <div className="flex items-center justify-between gap-3">
+                  <Label className="text-sm">Common Icons</Label>
+                  <span className="text-xs text-description-color">
+                    {commonIcons.filter((ci) => {
+                      const entry = watchedCommonIcons?.find(
+                        (c) => c.icon === ci._id,
+                      );
+                      return entry ? entry.enabled : true;
+                    }).length}{" "}
+                    of {commonIcons.length} enabled
+                  </span>
+                </div>
+                {commonIcons.length === 0 ? (
+                  <p className="text-sm text-description-color">
+                    No common icons added yet. Add some under Products →
+                    Datasheet.
+                  </p>
+                ) : (
+                  <div className="flex flex-wrap gap-3">
+                    {commonIcons.map((ci) => {
+                      const entry = watchedCommonIcons?.find(
+                        (c) => c.icon === ci._id,
+                      );
+                      const enabled = entry ? entry.enabled : true;
+                      return (
+                        <button
+                          key={ci._id}
+                          type="button"
+                          onClick={() => toggleCommonIcon(ci._id, !enabled)}
+                          className={`relative flex items-center justify-center h-14 w-14 rounded-lg border transition-all cursor-pointer bg-[#161618] ${
+                            enabled
+                              ? "border-primary ring-2 ring-primary"
+                              : "border-secondary/40 opacity-50 hover:opacity-80"
+                          }`}
+                        >
+                          {ci.image && (
+                            // eslint-disable-next-line @next/next/no-img-element
+                            <img
+                              src={ci.image}
+                              alt=""
+                              className="w-8 h-8 object-contain"
+                            />
+                          )}
+                          {enabled && (
+                            <span className="absolute -top-1.5 -right-1.5 flex items-center justify-center h-4 w-4 rounded-full bg-primary text-white">
+                              <RiCheckLine size={11} />
+                            </span>
+                          )}
+                        </button>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+
+              {/* product-specific icons, unique to this product only */}
+              <div className="rounded-lg border border-secondary/30 p-4 flex flex-col gap-3">
+                <div className="flex items-center justify-between">
+                  <Label className="text-sm">Product Specific Icons</Label>
+                  <button
+                    type="button"
+                    onClick={() =>
+                      datasheetIconsArray.append({ value: "" })
+                    }
+                    className={addIconBtnClass}
+                    aria-label="Add icon"
+                  >
+                    <RiAddLine size={18} />
+                  </button>
+                </div>
+                {datasheetIconsArray.fields.length > 0 ? (
+                  <div className="grid grid-cols-4 lg:grid-cols-6 gap-4">
+                    {datasheetIconsArray.fields.map((field, i) => (
+                      <div
+                        key={field.id}
+                        className="flex flex-col gap-2 p-2 rounded-lg border border-secondary/20"
+                      >
+                        <Controller
+                          name={`datasheet.icons.custom.${i}.value`}
+                          control={control}
+                          render={({ field }) => (
+                            <ImageUploader
+                              value={field.value}
+                              onChange={field.onChange}
+                            />
+                          )}
+                        />
+                        <button
+                          type="button"
+                          onClick={() => datasheetIconsArray.remove(i)}
+                          className="flex items-center justify-center gap-1 text-xs rounded-md py-1.5 text-red-400 hover:text-red-600 hover:bg-red-50 transition-colors cursor-pointer"
+                        >
+                          <RiDeleteBinLine size={14} />
+                          Remove
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-sm text-description-color">
+                    No product-specific icons added yet.
+                  </p>
+                )}
+              </div>
             </div>
           </div>
         </AdminItemContainer>

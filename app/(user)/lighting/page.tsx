@@ -1,9 +1,14 @@
 import Index from "@/app/components/client/products/Index";
+import { GetProductsResult } from "@/app/types/product";
+import { getProductsPageData } from "@/lib/services/products.service";
+
+export const dynamic = "force-dynamic";
 
 const page = async () => {
+  const data: GetProductsResult = await getProductsPageData();
   return (
     <>
-      <Index />
+      <Index data={data} />
     </>
   );
 };

@@ -3,17 +3,28 @@
 import { useState } from "react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
-import { productBannerData } from "../data";
 import CustomButton from "../../common/CustomButton";
 import AnimatedDivider from "../../animations/AnimatedDivider";
 import AnimatedTitle from "../../animations/AnimatedTitle";
 import SectionDescription from "../../animations/SectionDescription";
 import { moveUp, moveUpV2 } from "../../animations/motionVariants";
 import Reveal from "../../animations/RevealItemsOneByOneAnimation";
+import { Product } from "@/app/types/product";
 
-export default function ProductBanner() {
-  const { category, subCategory, name, description, images, specs, buttons } =
-    productBannerData;
+export default function ProductBanner({ product }: { product: Product }) {
+  const name = product.title;
+  const subCategoryTitle = product.subCategory?.title ?? "";
+  const categoryTitle = product.category?.title ?? "";
+  const description = product.description;
+  const images = product.images.length
+    ? product.images.map((img) => ({ src: img.image, alt: img.imageAlt || name }))
+    : [{ src: product.thumbImage, alt: product.thumbImageAlt || name }];
+  const specs = [
+    ...product.specs.custom,
+    ...product.specs.common
+      .filter((c) => c.enabled)
+      .map((c) => c.spec.label),
+  ];
   const [activeIndex, setActiveIndex] = useState(0);
 
   return (
@@ -70,7 +81,7 @@ export default function ProductBanner() {
           <SectionDescription
             direction="y"
             className="text-subtitle-2 text-description-color uppercase mb-30 min-[1920px]:min-h-[19px]"
-            text={`${category} · ${subCategory}`}
+            text={`${subCategoryTitle} · ${categoryTitle} Lighting`}
           />
           <AnimatedTitle
             tag="h1"
@@ -91,7 +102,7 @@ export default function ProductBanner() {
                 initial="hidden"
                 whileInView="show"
                 viewport={{ once: true }}
-                key={spec}
+                key={`${spec}-${i}`}
                 className="flex flex-1 min-w-0 aspect-square 3xl:flex-none 3xl:w-[162px] 3xl:h-[162px] px-20 flex-col items-center justify-center rounded-[10px] bg-primary text-description-4 text-center text-white"
               >
                 <span className="text-trim">{spec}</span>
@@ -106,16 +117,10 @@ export default function ProductBanner() {
             viewport={{ once: true }}
             className="flex flex-wrap items-center gap-[9px]"
           >
-            {/* <CustomButton
-              variant="2"
-              text={buttons[0].text}
-              link={buttons[0].link}
-              btnClass="w-fit"
-            /> */}
             <CustomButton
               variant="3"
-              text={buttons[1].text}
-              link={buttons[1].link}
+              text="Configure Variant"
+              link="#product-configuration"
               btnClass="w-fit"
               iconDirection="down"
             />

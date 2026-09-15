@@ -62,7 +62,7 @@ const AdminPageHeader = () => {
   const title = crumbs[crumbs.length - 1];
 
   return (
-    <header className="shrink-0 bg-white border-b border-secondary/60 px-8 py-8">
+    <header className="shrink-0 bg-white border-b border-secondary/60 px-8 py-5">
       {crumbs.length > 1 && (
         <div className="flex items-center gap-1.5 text-[12.5px] text-description-color mb-1">
           {crumbs.map((crumb, index) => (
@@ -79,6 +79,9 @@ const AdminPageHeader = () => {
           ))}
         </div>
       )}
+      <h1 className="text-xl font-semibold text-primary tracking-tight">
+        {title}
+      </h1>
     </header>
   );
 };

@@ -8,13 +8,17 @@ export async function GET(req: NextRequest) {
   const filter = categoryId ? { category: categoryId } : {};
   const subCategories = await SubCategory.find(filter)
     .populate("category")
-    .sort({ _id: -1 });
+    .sort({ order: 1, _id: 1 });
   return NextResponse.json(subCategories);
 }
 
 export async function POST(req: NextRequest) {
   await connectDB();
   const body = await req.json();
+  if (body.order === undefined) {
+    const filter = body.category ? { category: body.category } : {};
+    body.order = await SubCategory.countDocuments(filter);
+  }
   const subCategory = await SubCategory.create(body);
   return NextResponse.json(subCategory, { status: 201 });
 }

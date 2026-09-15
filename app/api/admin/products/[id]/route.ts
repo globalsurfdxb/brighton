@@ -48,7 +48,9 @@ export async function GET(
     .populate("subCategory")
     .populate("secondSection.configurations.category")
     .populate("secondSection.configurations.options")
-    .populate("secondSection.configurations.defaultOption");
+    .populate("secondSection.configurations.defaultOption")
+    .populate("specs.common.spec")
+    .populate("datasheet.icons.common.icon");
   if (!product)
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   return NextResponse.json(product);
@@ -65,7 +67,7 @@ export async function PATCH(
 
   try {
     const product = await Product.findByIdAndUpdate(id, cleanBody, {
-      new: true,
+      returnDocument: "after",
       runValidators: true,
     });
     if (!product)

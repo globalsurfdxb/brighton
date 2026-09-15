@@ -1,8 +1,7 @@
 "use client";
 
-import { useMemo, useState, useEffect } from "react";
+import { useMemo, useState } from "react";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
-import { products, subcategories, categories } from "../data";
 import ProductCard from "./ProductCard";
 import SubCategoryTabs from "./SubCategoryTabs";
 import PillBtn from "../../common/PillBtn";
@@ -10,59 +9,94 @@ import AnimatedTitle from "../../animations/AnimatedTitle";
 import Reveal from "../../animations/RevealItemsOneByOneAnimation";
 import { moveLeft, moveUpV2 } from "../../animations/motionVariants";
 import { motion } from "framer-motion";
+import { GetProductsResult, Category, SubCategory } from "@/app/types/product";
+import { slugify } from "@/lib/utils/slugify";
 
-export function CategoryTabs({ active, onChange }: any) {
+function categoryIdOf(subCategory: SubCategory): string {
+  return typeof subCategory.category === "string"
+    ? subCategory.category
+    : subCategory.category?._id ?? "";
+}
+
+function categorySlugOf(category: Category): string {
+  return category.slug || slugify(category.title);
+}
+
+function subCategorySlugOf(subCategory: SubCategory): string {
+  return subCategory.slug || slugify(subCategory.title);
+}
+
+export function CategoryTabs({
+  categories,
+  active,
+  onChange,
+}: {
+  categories: Category[];
+  active: string;
+  onChange: (id: string) => void;
+}) {
   return (
     <div className="flex gap-1.5">
-      {categories.map((cat) => {
-        const isActive = active === cat.id;
-        return (
-          <PillBtn
-            key={cat.id}
-            label={cat.label}
-            active={isActive}
-            onClick={() => onChange(cat.id)}
-          />
-        );
-      })}
+      {categories.map((cat) => (
+        <PillBtn
+          key={cat._id}
+          label={cat.title}
+          active={active === cat._id}
+          onClick={() => onChange(cat._id)}
+        />
+      ))}
     </div>
   );
 }
 
-export default function Main() {
+export default function Main({ data }: { data: GetProductsResult }) {
+  const { categories, subCategories, products } = data;
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
-  const [category, setCategory] = useState(
-    () => searchParams.get("category") || "interior",
-  );
+  const [category, setCategory] = useState(() => {
+    const fromUrl = searchParams.get("category");
+    const matched = categories.find((c) => categorySlugOf(c) === fromUrl);
+    return matched?._id ?? categories[0]?._id ?? "";
+  });
 
   const categorySubcategories = useMemo(
-    () => subcategories.filter((s) => s.category === category),
-    [category],
+    () => subCategories.filter((s) => categoryIdOf(s) === category),
+    [category, subCategories],
   );
 
   const [subcategoryId, setSubcategoryId] = useState(() => {
     const fromUrl = searchParams.get("subcategory");
-    const initialCategory = searchParams.get("category") || "interior";
-    const validForCategory = subcategories.find(
-      (s) => s.id === fromUrl && s.category === initialCategory,
+    const initialCategory =
+      categories.find((c) => categorySlugOf(c) === searchParams.get("category"))
+        ?._id ?? categories[0]?._id;
+    const validForCategory = subCategories.find(
+      (s) => subCategorySlugOf(s) === fromUrl && categoryIdOf(s) === initialCategory,
     );
     return validForCategory
-      ? fromUrl!
-      : subcategories.find((s) => s.category === initialCategory)?.id ?? "";
+      ? validForCategory._id
+      : (subCategories.find((s) => categoryIdOf(s) === initialCategory)
+          ?._id ?? "");
   });
 
-  const updateUrl = (nextCategory: string, nextSubcategory: string) => {
+  const activeCategory = categories.find((c) => c._id === category);
+
+  const updateUrl = (nextCategoryId: string, nextSubcategoryId: string) => {
+    const nextCategory = categories.find((c) => c._id === nextCategoryId);
+    const nextSubcategory = subCategories.find((s) => s._id === nextSubcategoryId);
     const params = new URLSearchParams(searchParams.toString());
-    params.set("category", nextCategory);
-    params.set("subcategory", nextSubcategory);
+    params.set("category", nextCategory ? categorySlugOf(nextCategory) : "");
+    params.set(
+      "subcategory",
+      nextSubcategory ? subCategorySlugOf(nextSubcategory) : "",
+    );
     router.replace(`${pathname}?${params.toString()}`, { scroll: false });
   };
 
   const handleCategoryChange = (id: string) => {
-    const firstSub = subcategories.find((s) => s.category === id)?.id ?? "";
+    const firstSub =
+      subCategories.find((s) => categoryIdOf(s) === id)?._id ?? "";
     setCategory(id);
     setSubcategoryId(firstSub);
     updateUrl(id, firstSub);
@@ -76,19 +110,19 @@ export default function Main() {
   const filteredProducts = useMemo(
     () =>
       products.filter(
-        (p) => p.category === category && p.subcategoryId === subcategoryId,
+        (p) => p.category?._id === category && p.subCategory?._id === subcategoryId,
       ),
-    [category, subcategoryId],
+    [products, category, subcategoryId],
   );
 
   return (
     <section className="bg-white top-spacing pb-100 not-visited:overflow-hidden">
       <div className="container flex flex-col md:flex-row gap-40 items-center justify-between items-start">
         <AnimatedTitle
-          key={`${category}`}
+          key={category}
           tag="h1"
           className="hero-title"
-          text={`${category === "interior" ? "Interior" : "Exterior"} Lighting`}
+          text={`${activeCategory?.title ?? ""} Lighting`}
         />
         <motion.div
           variants={moveLeft(0.1)}
@@ -96,7 +130,11 @@ export default function Main() {
           whileInView="show"
           viewport={{ once: true }}
         >
-          <CategoryTabs active={category} onChange={handleCategoryChange} />
+          <CategoryTabs
+            categories={categories}
+            active={category}
+            onChange={handleCategoryChange}
+          />
         </motion.div>
       </div>
 
@@ -112,7 +150,7 @@ export default function Main() {
       {filteredProducts.length > 0 ? (
         <div className="container mt-7 sm:mt-60 grid grid-cols-1 sm:grid-cols-2 gap-y-60 gap-x-7.5 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4">
           {filteredProducts.map((product, index) => (
-            <Reveal key={index} variants={moveUpV2} delayRange={index * 0.02}>
+            <Reveal key={product._id} variants={moveUpV2} delayRange={index * 0.02}>
               <ProductCard product={product} />
             </Reveal>
           ))}

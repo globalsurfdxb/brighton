@@ -22,7 +22,7 @@ export async function PATCH(
   const { id } = await params;
   const body = await req.json();
   const configOption = await ConfigOption.findByIdAndUpdate(id, body, {
-    new: true,
+    returnDocument: "after",
   });
   if (!configOption)
     return NextResponse.json({ error: "Not found" }, { status: 404 });

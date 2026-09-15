@@ -15,6 +15,7 @@ interface CustomButtonProps {
   iconDirection?: "default" | "down";
   onClick?: () => void;
   showIcon?: boolean;
+  disabled?: boolean;
 }
 
 export default function CustomButton({
@@ -28,6 +29,7 @@ export default function CustomButton({
   iconDirection = "default",
   onClick,
   showIcon = true,
+  disabled = false,
 }: CustomButtonProps) {
   const { scrollTo } = useLenis();
 
@@ -35,6 +37,7 @@ export default function CustomButton({
   const isFileLink = link ? /\.(pdf|docx?|xlsx?|zip|csv)$/i.test(link) : false;
 
   const handleClick = () => {
+    if (disabled) return;
     if (isHashLink) {
       const el = document.getElementById(link!.slice(1));
       if (el) {
@@ -67,7 +70,7 @@ export default function CustomButton({
   const iconRotation =
     iconDirection === "down" ? "rotate-135" : "group-hover/button:rotate-45";
 
-  const sharedClassName = `btn-fill-center cursor-pointer group/button flex items-center justify-center gap-4 max-h-9.25 md:max-h-10.5 rounded-[50px] border px-4.5 md:px-5.5 py-[11.5px] md:py-3.5 transition-colors duration-500 ${variantStyles[variant].button} ${btnClass}`;
+  const sharedClassName = `btn-fill-center cursor-pointer group/button flex items-center justify-center gap-4 max-h-9.25 md:max-h-10.5 rounded-[50px] border px-4.5 md:px-5.5 py-[11.5px] md:py-3.5 transition-colors duration-500 ${variantStyles[variant].button} ${disabled ? "opacity-40 cursor-not-allowed pointer-events-none" : ""} ${btnClass}`;
   const sharedStyle = {
     "--fill-color": variantStyles[variant].fill,
   } as React.CSSProperties;
@@ -97,6 +100,7 @@ export default function CustomButton({
       <button
         type={type as "button" | "submit" | "reset"}
         onClick={handleClick}
+        disabled={disabled}
         className={sharedClassName}
         style={sharedStyle}
       >

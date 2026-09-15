@@ -18,6 +18,8 @@ const categorySchema = new mongoose.Schema({
 
 const subCategorySchema = new mongoose.Schema({
   title: { type: String },
+  slug: { type: String },
+  order: { type: Number, default: 0 },
   icon: { type: String },
   iconAlt: { type: String },
   category: { type: mongoose.Schema.Types.ObjectId, ref: "category" },
@@ -25,6 +27,7 @@ const subCategorySchema = new mongoose.Schema({
 
 const configCategorySchema = new mongoose.Schema({
   title: { type: String },
+  order: { type: Number, default: 0 },
   previewType: {
     type: String,
     enum: ["none", "shape", "swatch", "size", "beam", "gradient"],
@@ -34,6 +37,7 @@ const configCategorySchema = new mongoose.Schema({
 
 const configOptionSchema = new mongoose.Schema({
   category: { type: mongoose.Schema.Types.ObjectId, ref: "configcategory" },
+  order: { type: Number, default: 0 },
   label: { type: String },
   code: { type: String },
   swatchColor: { type: String },
@@ -70,10 +74,36 @@ const configOptionSchema = new mongoose.Schema({
   },
 });
 
+// SPEC (common, reusable across products)
+
+const specSchema = new mongoose.Schema({
+  label: { type: String },
+});
+
+// ICON (common, reusable across products' datasheets)
+
+const iconSchema = new mongoose.Schema({
+  image: { type: String },
+});
+
+// GENERATED QR (created whenever a shopper generates a QR code for a configured product)
+
+const generatedQrSchema = new mongoose.Schema(
+  {
+    product: { type: mongoose.Schema.Types.ObjectId, ref: "product" },
+    productTitle: { type: String },
+    productCode: { type: String },
+    url: { type: String },
+    image: { type: String },
+  },
+  { timestamps: true },
+);
+
 // PRODUCT
 
 const productSchema = new mongoose.Schema({
   title: { type: String },
+  slug: { type: String },
   isHidden: { type: Boolean, default: false },
   category: { type: mongoose.Schema.Types.ObjectId, ref: "category" },
   subCategory: { type: mongoose.Schema.Types.ObjectId, ref: "subcategory" },
@@ -88,12 +118,39 @@ const productSchema = new mongoose.Schema({
 
   // First section
   description: { type: String },
-  stats: {
-    type: [String],
-    default: [],
+  specs: {
+    // common specs toggled on/off for this product, plus product-specific ones
+    common: {
+      type: [
+        {
+          spec: { type: mongoose.Schema.Types.ObjectId, ref: "spec" },
+          enabled: { type: Boolean, default: true },
+        },
+      ],
+      default: [],
+    },
+    custom: {
+      type: [String],
+      default: [],
+    },
   },
   images: {
-    type: [String],
+    type: [
+      {
+        image: { type: String },
+        imageAlt: { type: String },
+      },
+    ],
+    default: [],
+  },
+  photometrics: {
+    type: [
+      {
+        image: { type: String },
+        imageAlt: { type: String },
+        name: { type: String },
+      },
+    ],
     default: [],
   },
 
@@ -144,6 +201,27 @@ const productSchema = new mongoose.Schema({
       default: [],
     },
   },
+
+  // Datasheet
+  datasheet: {
+    image: { type: String },
+    icons: {
+      // common icons toggled on/off for this product, plus product-specific ones
+      common: {
+        type: [
+          {
+            icon: { type: mongoose.Schema.Types.ObjectId, ref: "icon" },
+            enabled: { type: Boolean, default: true },
+          },
+        ],
+        default: [],
+      },
+      custom: {
+        type: [String],
+        default: [],
+      },
+    },
+  },
 });
 
 export const Category =
@@ -161,5 +239,15 @@ export const ConfigOption =
   mongoose.models.configoption ||
   mongoose.model("configoption", configOptionSchema);
 
+export const Spec =
+  mongoose.models.spec || mongoose.model("spec", specSchema);
+
+export const Icon =
+  mongoose.models.icon || mongoose.model("icon", iconSchema);
+
 export const Product =
   mongoose.models.product || mongoose.model("product", productSchema);
+
+export const GeneratedQr =
+  mongoose.models.generatedqr ||
+  mongoose.model("generatedqr", generatedQrSchema);

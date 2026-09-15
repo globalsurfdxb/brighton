@@ -24,7 +24,7 @@ export async function PATCH(
   const configCategory = await ConfigCategory.findByIdAndUpdate(
     id,
     body,
-    { new: true },
+    { returnDocument: "after" },
   );
   if (!configCategory)
     return NextResponse.json({ error: "Not found" }, { status: 404 });

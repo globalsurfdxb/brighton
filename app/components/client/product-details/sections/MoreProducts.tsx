@@ -4,15 +4,16 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { motion } from "framer-motion";
 import "swiper/css";
 
-import { moreProductsData } from "../data";
 import AnimatedTitle from "../../animations/AnimatedTitle";
 import ProductCard from "../../products/sections/ProductCard";
 import CustomButton from "../../common/CustomButton";
 import { moveLeft, moveUpV2 } from "../../animations/motionVariants";
 import Reveal from "../../animations/RevealItemsOneByOneAnimation";
+import { Product } from "@/app/types/product";
 
-export default function MoreProducts() {
-  const { sectionTitle, products } = moreProductsData;
+export default function MoreProducts({ products }: { products: Product[] }) {
+  const sectionTitle = "Explore More Families";
+  if (!products.length) return null;
 
   return (
     <section className="w-full py-100 bg-cream-background overflow-hidden">
@@ -69,9 +70,9 @@ export default function MoreProducts() {
             className="!overflow-visible lg:!overflow-hidden"
           >
             {products.map((product, index) => (
-              <SwiperSlide key={index}>
+              <SwiperSlide key={product._id}>
                 <Reveal
-                  key={product.id}
+                  key={product._id}
                   variants={moveUpV2}
                   delayRange={index * 0.12}
                 >
