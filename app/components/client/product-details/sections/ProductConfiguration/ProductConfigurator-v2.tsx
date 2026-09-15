@@ -97,12 +97,23 @@ export default function ProductConfigurator({ product }: { product: Product }) {
   );
 
   const handleSelect = (cfg: ProductConfiguration, optionId: string) => {
-    setSelections((prev) => ({ ...prev, [cfg.category._id]: optionId }));
+    const isDeselecting = selections[cfg.category._id] === optionId;
 
-    const option = cfg.options.find((o) => o._id === optionId);
-    if (!option) return;
+    setSelections((prev) => {
+      if (!isDeselecting) return { ...prev, [cfg.category._id]: optionId };
+      const next = { ...prev };
+      delete next[cfg.category._id];
+      return next;
+    });
+
     const params = new URLSearchParams(searchParams.toString());
-    params.set(configKey(cfg), option.code);
+    if (isDeselecting) {
+      params.delete(configKey(cfg));
+    } else {
+      const option = cfg.options.find((o) => o._id === optionId);
+      if (!option) return;
+      params.set(configKey(cfg), option.code);
+    }
     router.replace(`${pathname}?${params.toString()}`, { scroll: false });
   };
 
