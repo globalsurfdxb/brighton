@@ -1,94 +1,59 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
-import { useRouter, usePathname, useSearchParams } from "next/navigation";
-import { QRCodeCanvas } from "qrcode.react";
+import { useMemo, useState } from "react";
+import { attributes, product } from "../../data";
 import OptionButton from "./OptionButton";
 import AnimatedTitle from "../../../animations/AnimatedTitle";
 import CustomButton from "../../../common/CustomButton";
 import SectionDescription from "../../../animations/SectionDescription";
 import { motion } from "framer-motion";
 import { moveUp } from "../../../animations/motionVariants";
-import { Product, ProductConfiguration } from "@/app/types/product";
-import { slugify } from "@/lib/utils/slugify";
 
-function configKey(cfg: ProductConfiguration): string {
-  return slugify(cfg.category.title);
-}
-
-function buildInitialSelections(
-  product: Product,
-  searchParams: URLSearchParams,
-) {
+function buildDefaultSelections() {
   const initial: Record<string, string> = {};
-  product.secondSection.configurations.forEach((cfg) => {
-    const fromUrl = searchParams.get(configKey(cfg));
-    const matched = fromUrl && cfg.options.find((o) => o.code === fromUrl);
-    const optionId = matched ? matched._id : cfg.defaultOption?._id;
-    if (optionId) initial[cfg.category._id] = optionId;
+  attributes.forEach((attr) => {
+    const defaultOption =
+      attr.options.find((o) => o.default) ?? attr.options[0];
+    initial[attr.id] = defaultOption.id;
   });
   return initial;
 }
 
-export default function ProductConfigurator({ product }: { product: Product }) {
-  const configurations = product.secondSection.configurations;
-  const router = useRouter();
-  const pathname = usePathname();
-  const searchParams = useSearchParams();
-
-  const [selections, setSelections] = useState(() =>
-    buildInitialSelections(product, searchParams),
-  );
+export default function ProductConfigurator() {
+  const [selections, setSelections] = useState(buildDefaultSelections);
   const [copied, setCopied] = useState(false);
-  const [downloadState, setDownloadState] = useState<
-    "idle" | "working" | "error"
-  >("idle");
-  const [qrUrl, setQrUrl] = useState<string | null>(null);
-  const qrCanvasRef = useRef<HTMLCanvasElement>(null);
-  const qrSavedFor = useRef<string | null>(null);
 
   const selectedOptions = useMemo(
     () =>
-      configurations.map((cfg) => {
-        const option = cfg.options.find(
-          (o) => o._id === selections[cfg.category._id],
-        );
-        return { configuration: cfg, option };
+      attributes.map((attr) => {
+        const option =
+          attr.options.find((o) => o.id === selections[attr.id]) ??
+          attr.options[0];
+        return { attribute: attr, option };
       }),
-    [configurations, selections],
-  );
-
-  const hasSelection = useMemo(
-    () => selectedOptions.some((s) => s.option),
-    [selectedOptions],
+    [selections],
   );
 
   const productCode = useMemo(() => {
     const codeParts = [
-      "BR",
+      product.brand,
       product.productCode,
-      ...selectedOptions.map((s) => s.option?.code).filter(Boolean),
+      ...selectedOptions.map((s) => s.option.code),
     ];
     return codeParts.join("-");
-  }, [product.productCode, selectedOptions]);
+  }, [selectedOptions]);
 
   const summary = useMemo(
     () =>
       selectedOptions
-        .map((s) => s.option?.tooltip.label?.trim())
+        .map((s) => s.option.tooltip.label?.trim())
         .filter(Boolean)
         .join(" - "),
     [selectedOptions],
   );
 
-  const handleSelect = (cfg: ProductConfiguration, optionId: string) => {
-    setSelections((prev) => ({ ...prev, [cfg.category._id]: optionId }));
-
-    const option = cfg.options.find((o) => o._id === optionId);
-    if (!option) return;
-    const params = new URLSearchParams(searchParams.toString());
-    params.set(configKey(cfg), option.code);
-    router.replace(`${pathname}?${params.toString()}`, { scroll: false });
+  const handleSelect = (attributeId: string, optionId: string) => {
+    setSelections((prev) => ({ ...prev, [attributeId]: optionId }));
   };
 
   const handleCopy = async () => {
@@ -99,85 +64,9 @@ export default function ProductConfigurator({ product }: { product: Product }) {
     } catch {}
   };
 
-  const handleGenerateQr = () => {
-    setQrUrl(window.location.href);
+  const handleDownload = () => {
+    console.log("Download configured datasheet for:", productCode);
   };
-
-  // Once the QR canvas has rendered for a newly generated URL, download it
-  // and persist a record so admins can see it under Products → QR Generated.
-  useEffect(() => {
-    if (!qrUrl || qrSavedFor.current === qrUrl) return;
-    const canvas = qrCanvasRef.current;
-    if (!canvas) return;
-    qrSavedFor.current = qrUrl;
-
-    canvas.toBlob((blob) => {
-      if (!blob) return;
-      const objectUrl = URL.createObjectURL(blob);
-      const anchor = document.createElement("a");
-      anchor.href = objectUrl;
-      anchor.download = `${productCode || "product"}-qr.png`;
-      anchor.rel = "noopener";
-      document.body.appendChild(anchor);
-      anchor.click();
-      anchor.remove();
-      setTimeout(() => URL.revokeObjectURL(objectUrl), 1000);
-    }, "image/png");
-
-    fetch("/api/admin/products/qr", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        product: product._id,
-        productTitle: product.title,
-        productCode,
-        url: qrUrl,
-        image: canvas.toDataURL("image/png"),
-      }),
-    }).catch((error) => {
-      console.error("Failed to save generated QR code", error);
-    });
-  }, [qrUrl, product._id, product.title, productCode]);
-
-  const handleDownload = async () => {
-    if (downloadState === "working") return;
-    setDownloadState("working");
-    try {
-      const [{ buildDatasheetData }, { downloadDatasheet }] = await Promise.all([
-        import("../../datasheet/buildDatasheetData"),
-        import("../../datasheet/generateDatasheet"),
-      ]);
-      const data = buildDatasheetData({
-        product: {
-          name: product.title,
-          category: product.category?.title ?? "",
-        },
-        selectedOptions: selectedOptions
-          .filter((s) => s.option)
-          .map((s) => ({
-            attribute: {
-              id: s.configuration.category._id,
-              label: s.configuration.category.title,
-            },
-            option: {
-              id: s.option!._id,
-              code: s.option!.code,
-              label: s.option!.label,
-              tooltip: s.option!.tooltip,
-            },
-          })),
-        productCode,
-        summary,
-      });
-      await downloadDatasheet(data);
-      setDownloadState("idle");
-    } catch (error) {
-      console.error("Failed to generate configured datasheet", error);
-      setDownloadState("error");
-    }
-  };
-
-  if (!configurations.length) return null;
 
   return (
     <section id="product-configuration" className="w-full bg-white py-100">
@@ -186,7 +75,7 @@ export default function ProductConfigurator({ product }: { product: Product }) {
           <AnimatedTitle
             tag="h1"
             className="section-title mb-20"
-            text={`Configure Your ${product.title}`}
+            text={`Configure Your ${product.name}`}
           />
           <SectionDescription
             text="Hover any option to preview the visual or property. Click to select.
@@ -204,27 +93,29 @@ export default function ProductConfigurator({ product }: { product: Product }) {
                 key={colIndex}
                 className="flex flex-col gap-y-6 sm:gap-y-40 3xl:gap-y-[44px] flex-1"
               >
-                {configurations
+                {attributes
                   .filter((_, i) => i % 2 === colIndex)
-                  .map((cfg, i) => (
+                  .map((attr, i) => (
                     <motion.div
-                      variants={moveUp(i * 0.006)}
+                    variants={moveUp( i * 0.006)}
                       initial="hidden"
                       whileInView={"show"}
                       viewport={{ once: true }}
-                      key={cfg.category._id}
+                      key={attr.id}
                       className="flex flex-col gap-[16px] max-w-[481px]"
                     >
                       <span className="text-description-color text-subtitle-2 text-trim">
-                        {cfg.category.title}
+                        {attr.label}
                       </span>
                       <div className="flex flex-wrap gap-[6px]">
-                        {cfg.options.map((option) => (
+                        {attr.options.map((option: any) => (
                           <OptionButton
-                            key={option._id}
+                            key={option.id}
                             option={option}
-                            isActive={selections[cfg.category._id] === option._id}
-                            onSelect={(optionId) => handleSelect(cfg, optionId)}
+                            isActive={selections[attr.id] === option.id}
+                            onSelect={(optionId: string) =>
+                              handleSelect(attr.id, optionId)
+                            }
                           />
                         ))}
                       </div>
@@ -237,8 +128,8 @@ export default function ProductConfigurator({ product }: { product: Product }) {
           {/* Summary / live code sidebar */}
           <aside className="xl:max-w-[463px] h-fit xl:sticky xl:top-20 bg-cream-background p-5 sm:p-40 rounded-[10px]">
             <h3 className="text-subtitle mb-20 xl:max-w-[27ch]">
-              {product.title} {product.subCategory?.title}
-              <span className="block">- {product.category?.title} Lighting</span>
+              {product.name} Ceiling Recessed Downlight
+              <span className="block">- {product.category}</span>
             </h3>
 
             <p className="text-description text-trim text-description-color mb-6 md:mb-60">
@@ -248,60 +139,25 @@ export default function ProductConfigurator({ product }: { product: Product }) {
             <div className="mb-20">
               <div className="bg-white border-secondary border px-4 md:px-[27px] py-4 md:py-[30.35px] rounded-[10px] flex items-center justify-center">
                 <span className="text-description-color text-description text-trim">
-                  {hasSelection
-                    ? productCode
-                    : "Select an option to generate your product code."}
+                  {productCode}
                 </span>
               </div>
             </div>
 
             <div className="flex flex-col gap-2">
               <CustomButton
-                text={
-                  downloadState === "working"
-                    ? "Generating…"
-                    : downloadState === "error"
-                      ? "Retry Download"
-                      : "Download Configured Datasheet"
-                }
-                onClick={handleDownload}
+                text="Download Configured Datasheet"
+                link="/assets/files/spin-10w.pdf"
                 variant="3"
                 iconDirection="down"
                 btnClass="xl:!px-40"
-                disabled={!hasSelection}
               />
-              {downloadState === "error" && (
-                <span className="text-13 text-red-600">
-                  Could not generate the datasheet. Please try again.
-                </span>
-              )}
               <CustomButton
                 text={copied ? "Copied!" : "Copy Code"}
                 onClick={handleCopy}
                 variant="2"
-                disabled={!hasSelection}
                 showIcon={false}
               />
-              <CustomButton
-                text="Generate QR Code"
-                onClick={handleGenerateQr}
-                variant="3"
-                showIcon={false}
-                disabled={!hasSelection}
-              />
-              {qrUrl && (
-                <div className="mt-2 flex flex-col items-center gap-3 rounded-[10px] p-5">
-                  <QRCodeCanvas
-                    ref={qrCanvasRef}
-                    bgColor="transparent"
-                    value={qrUrl}
-                    size={200}
-                  />
-                  {/* <p className="text-center text-xs break-all text-description-color">
-                    {qrUrl}
-                  </p> */}
-                </div>
-              )}
             </div>
           </aside>
         </div>

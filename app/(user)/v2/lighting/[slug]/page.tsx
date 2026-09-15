@@ -1,4 +1,4 @@
-import Index from "@/app/components/client/product-details/Index";
+import Index from "@/app/components/client/product-details/Index-v2";
 import { getProductBySlug } from "@/lib/services/products.service";
 import { notFound } from "next/navigation";
 

@@ -3,8 +3,17 @@
 import { useState, useRef, useLayoutEffect } from "react";
 import { motion } from "framer-motion";
 import TooltipPreview from "./ToolTip";
+import { ConfigOption } from "@/app/types/product";
 
-export default function OptionButton({ option, isActive, onSelect }: any) {
+export default function OptionButton({
+  option,
+  isActive,
+  onSelect,
+}: {
+  option: ConfigOption;
+  isActive: boolean;
+  onSelect: (optionId: string) => void;
+}) {
   const [isHovered, setIsHovered] = useState(false);
   const [shiftX, setShiftX] = useState(0);
   const buttonRef = useRef<HTMLButtonElement>(null);
@@ -31,7 +40,7 @@ export default function OptionButton({ option, isActive, onSelect }: any) {
     <button
       ref={buttonRef}
       type="button"
-      onClick={() => onSelect(option.id)}
+      onClick={() => onSelect(option._id)}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       className={`cursor-pointer group relative inline-flex items-center rounded-[5px] gap-2 px-3 sm:px-4 py-3 md:py-[18px] max-h-[42px] 3xl:max-h-[50px] min-[1900px]:min-h-[50px] text-description-4 leading-none transition-colors duration-400 ${

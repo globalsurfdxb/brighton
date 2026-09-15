@@ -3,11 +3,15 @@ import {
   Category as CategoryModel,
   SubCategory as SubCategoryModel,
   Product as ProductModel,
+  ConfigOption as ConfigOptionModel,
 } from "@/app/models/product";
 import {
   Category,
   SubCategory,
   Product,
+  ProductConfiguration,
+  ConfigCategory,
+  ConfigOption,
   GetProductsResult,
   GetProductResult,
 } from "@/app/types/product";
@@ -56,8 +60,48 @@ function populateProductDetail(query: ReturnType<typeof ProductModel.findOne>) {
     .populate("secondSection.configurations.category")
     .populate("secondSection.configurations.options")
     .populate("secondSection.configurations.defaultOption")
+    .populate("secondSection.commonConfigurations.category")
     .populate("specs.common.spec")
     .populate("datasheet.icons.common.icon");
+}
+
+/**
+ * Common config categories aren't stored pre-expanded — each product just
+ * toggles them on/off. Here (once, at read time) we pull in every current
+ * option for the enabled ones and merge them into `configurations`, so
+ * every consumer downstream can keep treating it as one flat list.
+ */
+async function mergeCommonConfigurations(
+  product: Product & {
+    secondSection: {
+      commonConfigurations?: { category: unknown; enabled: boolean }[];
+    };
+  },
+): Promise<ProductConfiguration[]> {
+  const enabled = (product.secondSection.commonConfigurations ?? [])
+    .filter((c) => c.enabled && c.category && typeof c.category === "object")
+    .map((c) => c.category as ConfigCategory);
+
+  if (!enabled.length) return product.secondSection.configurations;
+
+  const categoryIds = enabled.map((c) => c._id);
+  const options = serialize<ConfigOption[]>(
+    await ConfigOptionModel.find({ category: { $in: categoryIds } }).sort({
+      order: 1,
+      _id: 1,
+    }),
+  );
+
+  const commonEntries: ProductConfiguration[] = enabled.map((category) => ({
+    category,
+    options: options.filter(
+      (o) =>
+        (typeof o.category === "string" ? o.category : o.category._id) ===
+        category._id,
+    ),
+  }));
+
+  return [...product.secondSection.configurations, ...commonEntries];
 }
 
 export async function getProductBySlug(
@@ -76,6 +120,8 @@ export async function getProductBySlug(
   if (!productDoc) return null;
 
   const product = serialize<Product>(productDoc);
+  product.secondSection.configurations =
+    await mergeCommonConfigurations(product);
 
   const relatedProducts = await getProducts(
     product.category?._id ? { category: product.category._id } : {},

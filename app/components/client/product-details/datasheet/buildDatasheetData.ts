@@ -7,7 +7,6 @@
  */
 
 import {
-  BADGES,
   BRAND,
   DIMENSIONS_BY_SIZE,
   DISCLAIMER,
@@ -16,9 +15,8 @@ import {
   INSTALLATION_NOTE,
   LUMEN_BY_WATTAGE,
   OPERATING_NOTE,
-  PEAK_CANDELA_BY_WATTAGE,
 } from "./datasheetContent";
-import type { DatasheetData, PhotometricDistribution, SpecRow } from "./types";
+import type { DatasheetData, SpecRow } from "./types";
 
 /** Minimal view of a configurator option — matches `data.ts` and stays lax on extras. */
 interface OptionLike {
@@ -39,14 +37,17 @@ export interface SelectedOption {
 }
 
 export interface BuildDatasheetInput {
-  product: { name: string; category: string };
+  product: { name: string; category: string; description: string };
   selectedOptions: SelectedOption[];
   productCode: string;
   summary: string;
+  datasheetImage?: string;
+  installationGuideLink?: string;
+  qrCodeImage?: string;
+  icons?: string[];
 }
 
 const DEFAULT_DIMENSIONS = { diameter: 85, height: 76, cutout: 75 };
-const PHOTOMETRIC_STEP_DEG = 5;
 
 function pick(selected: SelectedOption[], attributeId: string) {
   return selected.find((s) => s.attribute.id === attributeId)?.option;
@@ -58,41 +59,17 @@ function toAngle(label: string | undefined, fallback: number): number {
   return Number.isFinite(n) && n > 0 ? n : fallback;
 }
 
-/**
- * Models the polar intensity curve from the on-axis peak and the beam angle.
- *
- * Beam angle is treated as the full angle at 50% intensity, so the half-power
- * half-angle is `beam / 2`. Intensity follows a Gaussian falloff in the angle
- * domain, which reads correctly against the reference sheet's grid without
- * claiming lab-measured precision (the sheet's own note says as much).
- */
-function buildPhotometric(
-  peakCandela: number,
-  beamAngleDeg: number,
-): PhotometricDistribution {
-  const halfPower = Math.max(beamAngleDeg / 2, 4);
-  const k = Math.LN2 / (halfPower * halfPower);
-
-  const samples: number[] = [];
-  for (let angle = 0; angle <= 90; angle += PHOTOMETRIC_STEP_DEG) {
-    const value = peakCandela * Math.exp(-k * angle * angle);
-    samples.push(Math.round(value));
-  }
-
-  // Round the outer ring up to a clean number above the peak.
-  const magnitude = Math.pow(10, Math.floor(Math.log10(peakCandela)));
-  const maxScale = Math.ceil(peakCandela / magnitude) * magnitude;
-
-  return {
-    samples,
-    stepDeg: PHOTOMETRIC_STEP_DEG,
-    maxScale,
-    ringStep: maxScale / 5,
-  };
-}
-
 export function buildDatasheetData(input: BuildDatasheetInput): DatasheetData {
-  const { product, selectedOptions, productCode, summary } = input;
+  const {
+    product,
+    selectedOptions,
+    productCode,
+    summary,
+    datasheetImage,
+    installationGuideLink,
+    qrCodeImage,
+    icons,
+  } = input;
 
   const reflector = pick(selectedOptions, "reflector");
   const size = pick(selectedOptions, "size");
@@ -108,7 +85,6 @@ export function buildDatasheetData(input: BuildDatasheetInput): DatasheetData {
   const wattageLabel = wattage?.label ?? "10W";
   const criValue = cri?.label === "90" ? "> 90" : (cri?.label ?? "80");
   const beamAngle = toAngle(beam?.label, 38);
-  const peakCandela = PEAK_CANDELA_BY_WATTAGE[wattage?.id ?? ""] ?? 1800;
 
   const specs: SpecRow[] = [
     { label: "Finish", value: FIXED_SPECS.finish },
@@ -149,15 +125,16 @@ export function buildDatasheetData(input: BuildDatasheetInput): DatasheetData {
       name: product.name,
       code: productCode,
       summary: summary || `${product.name} configured datasheet`,
-      description:
-        "Designed for clean, uniform illumination, this reflectorless downlight delivers soft, glare-controlled lighting with a minimalist appearance. Its recessed light source and precision optical design ensure excellent visual comfort while maintaining high lighting efficiency. Ideal for indoor applications requiring seamless architectural integration and consistent illumination.",
+      description: product.description,
       category: product.category,
     },
     formFields: FORM_FIELDS,
     dimensions,
-    badges: BADGES,
     specs,
-    photometric: buildPhotometric(peakCandela, beamAngle),
+    datasheetImage: datasheetImage ?? "",
+    icons: icons ?? [],
+    installationGuideLink: installationGuideLink ?? "",
+    qrCodeImage: qrCodeImage ?? "",
     disclaimer: DISCLAIMER,
     operatingNote: OPERATING_NOTE,
     installationNote: INSTALLATION_NOTE,

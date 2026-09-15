@@ -1,4 +1,4 @@
-import Index from "@/app/components/client/products/Index";
+import Index from "@/app/components/client/product-details/Index";
 
 const page = async () => {
   return (

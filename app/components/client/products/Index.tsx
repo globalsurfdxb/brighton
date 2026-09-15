@@ -2,13 +2,12 @@ import Cta from "../common/Cta";
 import { productsCtaData } from "./data";
 import Main from "./sections/Main";
 import { Suspense } from "react";
-import { GetProductsResult } from "@/app/types/product";
 
-const Index = ({ data }: { data: GetProductsResult }) => {
+const Index = () => {
   return (
     <>
       <Suspense>
-        <Main data={data} />
+        <Main />
       </Suspense>
       <Cta data={productsCtaData} />
     </>

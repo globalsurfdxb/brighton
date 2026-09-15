@@ -11,7 +11,6 @@
  * Layout targets A4. All sizing is in PostScript points (1/72").
  */
 
-import React from "react";
 import {
   Document,
   Page,
@@ -20,12 +19,10 @@ import {
   Svg,
   Text,
   View,
-  Circle,
+  Image,
   Line,
-  Polyline,
-  Rect,
 } from "@react-pdf/renderer";
-import type { DatasheetData, PhotometricDistribution } from "./types";
+import type { DatasheetData } from "./types";
 
 const COLORS = {
   ink: "#1a1a1a",
@@ -50,23 +47,18 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: "row",
     justifyContent: "space-between",
-    alignItems: "flex-start",
+    alignItems: "center",
     marginBottom: 16,
   },
-  wordmark: {
-    fontFamily: "Helvetica-Bold",
-    fontSize: 20,
-    letterSpacing: 3,
-    color: COLORS.ink,
-  },
+  wordmark: { width: 120, height: 16, objectFit: "contain" },
   docTitle: {
     fontSize: 20,
     color: "#c7c7c7",
     letterSpacing: 0.5,
   },
 
-  body: { flexDirection: "row", gap: 18 },
-  rail: { width: 150 },
+  body: { flexDirection: "row", gap: 18, height: 700, overflow: "hidden" },
+  rail: { width: 150, marginTop: 40 },
   main: { flex: 1 },
 
   fieldGroup: { marginBottom: 18 },
@@ -78,6 +70,7 @@ const styles = StyleSheet.create({
     height: 96,
     marginTop: 4,
     marginBottom: 4,
+    objectFit: "contain",
   },
   qrCaption: {
     backgroundColor: COLORS.ink,
@@ -100,23 +93,24 @@ const styles = StyleSheet.create({
   productCode: { fontSize: 8, color: COLORS.muted, marginTop: 2, marginBottom: 12 },
 
   visualRow: { flexDirection: "row", gap: 12, marginBottom: 12 },
+  datasheetImage: { width: 200, height: 140, objectFit: "contain" },
 
-  badgeRow: {
+  iconRow: {
     flexDirection: "row",
     flexWrap: "wrap",
-    gap: 4,
+    gap: 6,
     marginBottom: 14,
   },
-  badge: {
+  iconBox: {
+    width: 34,
+    height: 34,
     borderWidth: 0.75,
     borderColor: COLORS.hairline,
     borderRadius: 2,
-    paddingVertical: 3,
-    paddingHorizontal: 5,
     alignItems: "center",
+    justifyContent: "center",
   },
-  badgeLabel: { fontSize: 6.5, fontFamily: "Helvetica-Bold", color: COLORS.ink },
-  badgeCaption: { fontSize: 5, color: COLORS.muted },
+  iconImage: { width: 18, height: 18, objectFit: "contain" },
 
   descBlock: { flexDirection: "row", gap: 8, marginBottom: 12 },
   descLabel: { width: 78, color: COLORS.ink, fontSize: 7.5 },
@@ -135,8 +129,8 @@ const styles = StyleSheet.create({
   footer: {
     position: "absolute",
     bottom: 22,
-    left: 34,
-    right: 34,
+    left: "20%",
+    right: "20%",
     textAlign: "center",
     fontSize: 6,
     color: COLORS.muted,
@@ -145,84 +139,6 @@ const styles = StyleSheet.create({
 });
 
 /* ----------------------------- sub-components ----------------------------- */
-
-const SCAN_MODULES = 21;
-
-/**
- * Builds a deterministic module matrix for the scan-code block: a stable
- * pattern derived from the configuration code, framed by the three finder
- * squares of a QR symbol. Pure geometry — this is a visual element, not an
- * encoder. Computed at module scope so no mutable state lives in render.
- */
-function buildScanMatrix(seedText: string): { x: number; y: number }[] {
-  let seed = 0;
-  for (let i = 0; i < seedText.length; i += 1) {
-    seed = (seed * 33 + seedText.charCodeAt(i)) >>> 0;
-  }
-  const rand = () => {
-    let s = seed;
-    s ^= s << 13;
-    s ^= s >>> 17;
-    s ^= s << 5;
-    seed = s >>> 0;
-    return seed / 0xffffffff;
-  };
-
-  const finderOrigins = [
-    [0, 0],
-    [0, SCAN_MODULES - 7],
-    [SCAN_MODULES - 7, 0],
-  ];
-  const inFinderArea = (r: number, c: number) =>
-    finderOrigins.some(
-      ([fr, fc]) => r >= fr - 1 && r <= fr + 7 && c >= fc - 1 && c <= fc + 7,
-    );
-  const isFinderModule = (r: number, c: number) =>
-    finderOrigins.some(([fr, fc]) => {
-      const dr = r - fr;
-      const dc = c - fc;
-      if (dr < 0 || dr > 6 || dc < 0 || dc > 6) return false;
-      const ring = Math.max(Math.abs(dr - 3), Math.abs(dc - 3));
-      return ring !== 2;
-    });
-
-  const cells: { x: number; y: number }[] = [];
-  for (let r = 0; r < SCAN_MODULES; r += 1) {
-    for (let c = 0; c < SCAN_MODULES; c += 1) {
-      if (inFinderArea(r, c)) {
-        if (isFinderModule(r, c)) cells.push({ x: c, y: r });
-      } else if (rand() > 0.55) {
-        cells.push({ x: c, y: r });
-      }
-    }
-  }
-  return cells;
-}
-
-function ScanCode({ seedText }: { seedText: string }) {
-  const cells = buildScanMatrix(seedText);
-  return (
-    <Svg style={styles.qrBox} viewBox={`0 0 ${SCAN_MODULES} ${SCAN_MODULES}`}>
-      <Rect
-        x={0}
-        y={0}
-        width={SCAN_MODULES}
-        height={SCAN_MODULES}
-        fill="#ffffff"
-      />
-      {cells.map((cell, i) => (
-        <Rect
-          key={i}
-          x={cell.x}
-          y={cell.y}
-          width={1}
-          height={1}
-          fill={COLORS.ink}
-        />
-      ))}
-    </Svg>
-  );
-}
 
 /** Simple recessed-downlight cross-section with dimension callouts. */
 function DimensionDrawing({
@@ -319,122 +235,9 @@ function DimensionDrawing({
   );
 }
 
-function PhotometricChart({ data }: { data: PhotometricDistribution }) {
-  const SIZE = 168;
-  const cx = SIZE / 2;
-  const cy = SIZE / 2;
-  const R = SIZE / 2 - 16;
-  const { samples, stepDeg, maxScale, ringStep } = data;
-
-  const rings: number[] = [];
-  for (let v = ringStep; v <= maxScale + 0.001; v += ringStep) rings.push(v);
-
-  const radial = [0, 15, 30, 45, 60, 75, 90];
-
-  const toPoint = (angleDeg: number, value: number, mirror: boolean) => {
-    const r = (Math.min(value, maxScale) / maxScale) * R;
-    const rad = (angleDeg * Math.PI) / 180;
-    const x = cx + (mirror ? -1 : 1) * r * Math.sin(rad);
-    const y = cy + r * Math.cos(rad);
-    return `${x.toFixed(1)},${y.toFixed(1)}`;
-  };
-
-  const leftPts = samples
-    .map((v, i) => ({ v, a: i * stepDeg }))
-    .slice()
-    .reverse()
-    .map(({ v, a }) => toPoint(a, v, true));
-  const rightPts = samples.map((v, i) => toPoint(i * stepDeg, v, false));
-  const curve = [...leftPts, ...rightPts].join(" ");
-
-  return (
-    <Svg width={SIZE} height={SIZE} viewBox={`0 0 ${SIZE} ${SIZE}`}>
-      {rings.map((v, i) => (
-        <Circle
-          key={i}
-          cx={cx}
-          cy={cy}
-          r={(v / maxScale) * R}
-          stroke={COLORS.hairline}
-          strokeWidth={0.5}
-          fill="none"
-        />
-      ))}
-
-      {radial.map((angle) => {
-        const rad = (angle * Math.PI) / 180;
-        const dx = R * Math.sin(rad);
-        const dy = R * Math.cos(rad);
-        // Lower half only (0° = straight down), mirrored left and right.
-        return (
-          <React.Fragment key={angle}>
-            <Line
-              x1={cx}
-              y1={cy}
-              x2={cx + dx}
-              y2={cy + dy}
-              stroke={COLORS.hairline}
-              strokeWidth={0.4}
-            />
-            <Line
-              x1={cx}
-              y1={cy}
-              x2={cx - dx}
-              y2={cy + dy}
-              stroke={COLORS.hairline}
-              strokeWidth={0.4}
-            />
-          </React.Fragment>
-        );
-      })}
-
-      {/* upper reference spokes (dashed feel via light stroke) */}
-      <Line
-        x1={cx}
-        y1={cy}
-        x2={cx}
-        y2={cy - R}
-        stroke={COLORS.hairline}
-        strokeWidth={0.4}
-      />
-
-      <Polyline
-        points={curve}
-        stroke={COLORS.accent}
-        strokeWidth={1.1}
-        fill="none"
-      />
-
-      {radial.map((angle) => {
-        const rad = (angle * Math.PI) / 180;
-        const lx = cx + (R + 8) * Math.sin(rad);
-        const ly = cy + (R + 8) * Math.cos(rad);
-        return (
-          <Text
-            key={`l-${angle}`}
-            x={lx}
-            y={ly}
-            style={{ fontSize: 5, fill: COLORS.muted }}
-            textAnchor="middle"
-          >
-            {`${angle}°`}
-          </Text>
-        );
-      })}
-    </Svg>
-  );
-}
-
 /* --------------------------------- page --------------------------------- */
 
 export function DatasheetDocument({ data }: { data: DatasheetData }) {
-  const generated = new Date(data.meta.generatedAt);
-  const generatedLabel = `${generated.toLocaleDateString("en-GB", {
-    day: "2-digit",
-    month: "short",
-    year: "numeric",
-  })}`;
-
   return (
     <Document
       title={`${data.product.name} ${data.product.code} — ${data.brand.documentTitle}`}
@@ -446,7 +249,7 @@ export function DatasheetDocument({ data }: { data: DatasheetData }) {
       <Page size="A4" style={styles.page}>
         {/* header */}
         <View style={styles.header}>
-          <Text style={styles.wordmark}>{data.brand.name}</Text>
+          <Image src="/assets/logos/brighton-wordmark.png" style={styles.wordmark} />
           <Text style={styles.docTitle}>{data.brand.documentTitle}</Text>
         </View>
 
@@ -460,8 +263,13 @@ export function DatasheetDocument({ data }: { data: DatasheetData }) {
               </View>
             ))}
 
-            <ScanCode seedText={data.product.code} />
-            <Text style={styles.qrCaption}>Installation</Text>
+            {data.installationGuideLink && data.qrCodeImage ? (
+              <>
+                <Image src={data.qrCodeImage} style={styles.qrBox} />
+                <Text style={styles.qrCaption}>Installation</Text>
+                <Text style={styles.installNote}>{data.installationNote}</Text>
+              </>
+            ) : null}
 
             <View style={{ marginTop: 16 }}>
               <Text style={styles.sectionHeading}>Disclaimer</Text>
@@ -475,23 +283,26 @@ export function DatasheetDocument({ data }: { data: DatasheetData }) {
             <Text style={styles.productCode}>{data.product.code}</Text>
 
             <View style={styles.visualRow}>
-              <DimensionDrawing
-                diameter={data.dimensions.diameter}
-                height={data.dimensions.height}
-                cutout={data.dimensions.cutout}
-              />
+              {data.datasheetImage ? (
+                <Image src={data.datasheetImage} style={styles.datasheetImage} />
+              ) : (
+                <DimensionDrawing
+                  diameter={data.dimensions.diameter}
+                  height={data.dimensions.height}
+                  cutout={data.dimensions.cutout}
+                />
+              )}
             </View>
 
-            <View style={styles.badgeRow}>
-              {data.badges.map((badge) => (
-                <View key={badge.label} style={styles.badge}>
-                  <Text style={styles.badgeLabel}>{badge.label}</Text>
-                  {badge.caption ? (
-                    <Text style={styles.badgeCaption}>{badge.caption}</Text>
-                  ) : null}
-                </View>
-              ))}
-            </View>
+            {data.icons.length > 0 ? (
+              <View style={styles.iconRow}>
+                {data.icons.map((icon, i) => (
+                  <View key={i} style={styles.iconBox}>
+                    <Image src={icon} style={styles.iconImage} />
+                  </View>
+                ))}
+              </View>
+            ) : null}
 
             <View style={styles.descBlock}>
               <Text style={styles.descLabel}>Product Description</Text>
@@ -507,19 +318,11 @@ export function DatasheetDocument({ data }: { data: DatasheetData }) {
                 </View>
               ))}
             </View>
-
-            <View style={{ marginTop: 12 }}>
-              <Text style={styles.sectionHeading}>Photometric</Text>
-              <PhotometricChart data={data.photometric} />
-              <Text style={styles.installNote}>{data.installationNote}</Text>
-            </View>
           </View>
         </View>
 
         <Text style={styles.footer} fixed>
           {data.operatingNote}
-          {"\n"}
-          {`${data.product.code}   ·   Generated ${generatedLabel}`}
         </Text>
       </Page>
     </Document>

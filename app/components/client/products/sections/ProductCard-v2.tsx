@@ -11,12 +11,14 @@ import {
 } from "framer-motion";
 import AnimatedDivider from "../../animations/AnimatedDivider";
 import Link from "next/link";
+import { Product } from "@/app/types/product";
+import { slugify } from "@/lib/utils/slugify";
 
 export default function ProductCard({
   product,
   bgColor = "bg-cream-background",
 }: {
-  product: any;
+  product: Product;
   bgColor?: string;
 }) {
   const [isHovered, setIsHovered] = useState(false);
@@ -49,9 +51,7 @@ export default function ProductCard({
   }, [isHovered, radius, feather]);
 
   return (
-    <Link
-      href={`/lighting/${product.title.toLowerCase().replace(/\s/g, "-")}`}
-    >
+    <Link href={`/v2/lighting/${product.slug || slugify(product.title)}`}>
       <div
         className="group cursor-pointer select-none"
         onMouseEnter={() => setIsHovered(true)}
@@ -67,13 +67,13 @@ export default function ProductCard({
             transition={{ duration: 0.7, ease: [0.65, 0, 0.35, 1] }}
           >
             <Image
-              src={product.image}
-              alt={product.title}
+              src={product.thumbImage || "/assets/images/placeholder.png"}
+              alt={product.thumbImageAlt || product.title}
               fill
               className="object-contain pointer-events-none"
             />
           </motion.div>
-          
+
           {product.hoverImage && (
             <motion.div
               className="absolute inset-0 rounded-t-2xl overflow-hidden"
@@ -94,7 +94,7 @@ export default function ProductCard({
               >
                 <Image
                   src={product.hoverImage}
-                  alt={product.title}
+                  alt={product.hoverImageAlt || product.title}
                   fill
                   priority
                   className="object-cover pointer-events-none"
@@ -142,7 +142,7 @@ export default function ProductCard({
             hoverColor="#0A0A0A"
           />
           <p className="text-description-3 text-description-color">
-            {product.subtitle}
+            {product.subCategory?.title}
           </p>
         </div>
       </div>

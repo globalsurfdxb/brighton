@@ -72,6 +72,7 @@ type ConfigCategory = {
   title: string;
   order: number;
   previewType: "none" | "shape" | "swatch" | "size" | "beam" | "gradient";
+  isCommon?: boolean;
 };
 type ConfigOption = {
   _id: string;
@@ -262,7 +263,20 @@ function SortableConfigCategoryCard({
         <RiDraggable size={18} />
       </button>
       <div className="flex flex-col gap-1">
-        <span className="text-md font-itc-medium">{configCategory.title}</span>
+        <span className="text-md font-itc-medium flex items-center gap-2">
+          {configCategory.title}
+          {configCategory.isCommon && (
+            <span
+              className={`text-[10px] font-itc-medium uppercase tracking-wide rounded-full px-2 py-0.5 border ${
+                isActive
+                  ? "border-white text-white"
+                  : "border-primary text-primary"
+              }`}
+            >
+              Common
+            </span>
+          )}
+        </span>
         <span className="text-xs">
           Preview Type: {configCategory.previewType.toUpperCase()}
         </span>
@@ -1450,12 +1464,13 @@ function ConfigCategoryFormDialog({
   onClose: () => void;
   onSaved: () => void;
 }) {
-  type FormValues = { title: string; previewType: string };
+  type FormValues = { title: string; previewType: string; isCommon: boolean };
 
   const { register, control, handleSubmit } = useForm<FormValues>({
     defaultValues: {
       title: initial?.title ?? "",
       previewType: initial?.previewType ?? "none",
+      isCommon: initial?.isCommon ?? false,
     },
   });
   const [isSaving, setIsSaving] = useState(false);
@@ -1544,6 +1559,28 @@ function ConfigCategoryFormDialog({
                 </span>
               )}
           </div>
+          <div className="flex items-center gap-2">
+            <Controller
+              name="isCommon"
+              control={control}
+              render={({ field }) => (
+                <input
+                  type="checkbox"
+                  className="size-4"
+                  checked={field.value}
+                  onChange={(e) => field.onChange(e.target.checked)}
+                />
+              )}
+            />
+            <Label className="font-bold text-trim">
+              Common — include in every product automatically
+            </Label>
+          </div>
+          <span className="text-xs text-description-color -mt-2">
+            Shows up pre-ticked under Second Section → Common Configurations
+            on every product, with all of this category&apos;s options
+            included. Admins can untick it per product to exclude it.
+          </span>
           <DialogFooter>
             <CustomButton
               variant="2"

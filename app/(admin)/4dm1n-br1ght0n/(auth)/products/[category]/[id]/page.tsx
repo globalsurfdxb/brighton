@@ -23,6 +23,7 @@ import {
 } from "@/components/ui/select";
 import { ImageUploader } from "@/components/ui/image-uploader";
 import { MultiImageUploader } from "@/components/ui/multi-image-uploader";
+import { FileUploader } from "@/components/ui/file-uploader";
 import AdminItemContainer from "@/app/components/admin/common/AdminItemContainer";
 import CustomButton from "@/app/components/client/common/CustomButton";
 import { slugify } from "@/lib/utils/slugify";
@@ -31,6 +32,7 @@ type ConfigCategory = {
   _id: string;
   title: string;
   previewType: string;
+  isCommon?: boolean;
 };
 type ConfigOption = { _id: string; label: string; code: string };
 type SubCategoryOption = { _id: string; title: string };
@@ -63,6 +65,7 @@ type ProductForm = {
       options: string[];
       defaultOption: string;
     }[];
+    commonConfigurations: { category: string; enabled: boolean }[];
   };
   thirdSection: {
     title: string;
@@ -71,8 +74,13 @@ type ProductForm = {
       items: { key: string; value: string }[];
     }[];
   };
+  fourthSection: {
+    title: string;
+    items: { title: string; link: string; size: string }[];
+  }[];
   datasheet: {
     image: string;
+    installationGuide: { link: string; size: string };
     icons: {
       common: { icon: string; enabled: boolean }[];
       custom: { value: string }[];
@@ -95,9 +103,19 @@ const defaultValues: ProductForm = {
   specs: { common: [], custom: [] },
   images: [],
   photometrics: [],
-  secondSection: { title: "", description: "", configurations: [] },
+  secondSection: {
+    title: "",
+    description: "",
+    configurations: [],
+    commonConfigurations: [],
+  },
   thirdSection: { title: "", items: [] },
-  datasheet: { image: "", icons: { common: [], custom: [] } },
+  fourthSection: [],
+  datasheet: {
+    image: "",
+    installationGuide: { link: "", size: "" },
+    icons: { common: [], custom: [] },
+  },
 };
 
 // sentinel for the "no default" choice — the actual stored value stays ""
@@ -147,6 +165,10 @@ export default function ProductDetailPage() {
   const sectionItemsArray = useFieldArray({
     control,
     name: "thirdSection.items",
+  });
+  const fourthSectionArray = useFieldArray({
+    control,
+    name: "fourthSection",
   });
   const datasheetIconsArray = useFieldArray({
     control,
@@ -224,13 +246,30 @@ export default function ProductDetailPage() {
               defaultOption: c.defaultOption?._id ?? c.defaultOption ?? "",
             }),
           ),
+          commonConfigurations: (
+            data.secondSection?.commonConfigurations ?? []
+          ).map((c: any) => ({
+            category: c.category?._id ?? c.category,
+            enabled: c.enabled,
+          })),
         },
         thirdSection: {
           title: data.thirdSection?.title ?? "",
           items: data.thirdSection?.items ?? [],
         },
+        fourthSection: (Array.isArray(data.fourthSection)
+          ? data.fourthSection
+          : []
+        ).map((tile: any) => ({
+          title: tile.title ?? "",
+          items: tile.items ?? [],
+        })),
         datasheet: {
           image: data.datasheet?.image ?? "",
+          installationGuide: {
+            link: data.datasheet?.installationGuide?.link ?? "",
+            size: data.datasheet?.installationGuide?.size ?? "",
+          },
           icons: {
             common: (data.datasheet?.icons?.common ?? []).map((c: any) => ({
               icon: c.icon?._id ?? c.icon,
@@ -271,6 +310,19 @@ export default function ProductDetailPage() {
     try {
       const payload = {
         ...formData,
+        secondSection: {
+          ...formData.secondSection,
+          // resolve against the live common-category list so newly marked
+          // common categories that were never toggled still default to enabled
+          commonConfigurations: configCategories
+            .filter((cc) => cc.isCommon)
+            .map((cc) => {
+              const found = formData.secondSection.commonConfigurations.find(
+                (c) => c.category === cc._id,
+              );
+              return { category: cc._id, enabled: found ? found.enabled : true };
+            }),
+        },
         specs: {
           // resolve against the live common-spec list so newly added ones
           // that were never toggled still default to enabled
@@ -284,6 +336,7 @@ export default function ProductDetailPage() {
         },
         datasheet: {
           image: formData.datasheet.image,
+          installationGuide: formData.datasheet.installationGuide,
           icons: {
             common: commonIcons.map((ci) => {
               const found = formData.datasheet.icons.common.find(
@@ -325,9 +378,14 @@ export default function ProductDetailPage() {
     }
   };
 
+  const commonConfigCategories = configCategories.filter((cc) => cc.isCommon);
+
   const watchedConfigurations = watch("secondSection.configurations");
   const watchedCommonSpecs = watch("specs.common");
   const watchedCommonIcons = watch("datasheet.icons.common");
+  const watchedCommonConfigurations = watch(
+    "secondSection.commonConfigurations",
+  );
 
   const toggleCommonSpec = (specId: string, enabled: boolean) => {
     const current = getValues("specs.common") ?? [];
@@ -353,6 +411,21 @@ export default function ProductDetailPage() {
       const next = [...current];
       next[idx] = { ...next[idx], enabled };
       setValue("datasheet.icons.common", next);
+    }
+  };
+
+  const toggleCommonConfiguration = (categoryId: string, enabled: boolean) => {
+    const current = getValues("secondSection.commonConfigurations") ?? [];
+    const idx = current.findIndex((c) => c.category === categoryId);
+    if (idx === -1) {
+      setValue("secondSection.commonConfigurations", [
+        ...current,
+        { category: categoryId, enabled },
+      ]);
+    } else {
+      const next = [...current];
+      next[idx] = { ...next[idx], enabled };
+      setValue("secondSection.commonConfigurations", next);
     }
   };
 
@@ -725,6 +798,62 @@ export default function ProductDetailPage() {
 
             <Divider />
 
+            {/* common config categories — managed under Products > Configuration, enabled by default */}
+            <div className="rounded-lg border border-secondary/30 p-4 flex flex-col gap-3">
+              <div className="flex items-center justify-between gap-3">
+                <Label className="text-sm">Common Configurations</Label>
+                <span className="text-xs text-description-color">
+                  {
+                    commonConfigCategories.filter((cc) => {
+                      const entry = watchedCommonConfigurations?.find(
+                        (c) => c.category === cc._id,
+                      );
+                      return entry ? entry.enabled : true;
+                    }).length
+                  }{" "}
+                  of {commonConfigCategories.length} enabled
+                </span>
+              </div>
+              {commonConfigCategories.length === 0 ? (
+                <p className="text-sm text-description-color">
+                  No common config categories added yet. Add some under
+                  Products → Configuration.
+                </p>
+              ) : (
+                <div className="flex flex-wrap gap-2">
+                  {commonConfigCategories.map((cc) => {
+                    const entry = watchedCommonConfigurations?.find(
+                      (c) => c.category === cc._id,
+                    );
+                    const enabled = entry ? entry.enabled : true;
+                    return (
+                      <button
+                        key={cc._id}
+                        type="button"
+                        onClick={() =>
+                          toggleCommonConfiguration(cc._id, !enabled)
+                        }
+                        className={`flex items-center gap-1.5 text-sm rounded-md px-3 py-1.5 border transition-all cursor-pointer ${
+                          enabled
+                            ? "bg-primary text-white border-primary"
+                            : "border-secondary/60 text-description-color hover:border-primary/50"
+                        }`}
+                      >
+                        {enabled && <RiCheckLine size={14} />}
+                        {cc.title}
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
+              <span className="text-xs text-description-color">
+                Includes the category and every one of its current options.
+                Untick to exclude it from this product.
+              </span>
+            </div>
+
+            <Divider />
+
             <div className="flex flex-col gap-4">
               <div className="flex items-center justify-between">
                 <Label className="font-bold">Configurations</Label>
@@ -770,7 +899,7 @@ export default function ProductDetailPage() {
                 const selectableConfigCategories = configCategories.filter(
                   (cc) =>
                     cc._id === selectedConfigCategory ||
-                    !usedElsewhere.has(cc._id),
+                    (!cc.isCommon && !usedElsewhere.has(cc._id)),
                 );
 
                 return (
@@ -1007,6 +1136,45 @@ export default function ProductDetailPage() {
           </div>
         </AdminItemContainer>
 
+        {/* Fourth section — downloadable resource tiles */}
+        <AdminItemContainer>
+          <Label main>Fourth Section</Label>
+          <div className="p-6 flex flex-col gap-5">
+            <div className="flex items-center justify-between">
+              <Label className="font-bold">Tiles</Label>
+              <CustomButton
+                variant="3"
+                type="button"
+                text="Add Tile"
+                showIcon={false}
+                onClick={() =>
+                  fourthSectionArray.append({ title: "", items: [] })
+                }
+              />
+            </div>
+
+            <div className="flex flex-col gap-4">
+              {fourthSectionArray.fields.map((field, i) => (
+                <FourthSectionTile
+                  key={field.id}
+                  control={control}
+                  register={register}
+                  setValue={setValue}
+                  getValues={getValues}
+                  watch={watch}
+                  index={i}
+                  onRemove={() => fourthSectionArray.remove(i)}
+                />
+              ))}
+            </div>
+            {fourthSectionArray.fields.length === 0 && (
+              <p className="text-sm text-description-color">
+                No tiles added yet.
+              </p>
+            )}
+          </div>
+        </AdminItemContainer>
+
         {/* Datasheet */}
         <AdminItemContainer>
           <Label main>Datasheet</Label>
@@ -1020,6 +1188,34 @@ export default function ProductDetailPage() {
                   <ImageUploader value={field.value} onChange={field.onChange} />
                 )}
               />
+            </div>
+
+            <Divider />
+
+            <div className="flex flex-col gap-2">
+              <Label className="font-bold">Installation Guide</Label>
+              <span className="text-xs text-description-color">
+                Used by the QR code on the generated datasheet PDF — the QR
+                only appears when a guide is uploaded here.
+              </span>
+              <Controller
+                name="datasheet.installationGuide.link"
+                control={control}
+                render={({ field }) => (
+                  <FileUploader
+                    value={field.value}
+                    onChange={(url, _fileName, size) => {
+                      field.onChange(url);
+                      setValue("datasheet.installationGuide.size", size);
+                    }}
+                  />
+                )}
+              />
+              {watch("datasheet.installationGuide.size") ? (
+                <span className="text-xs text-description-color">
+                  {watch("datasheet.installationGuide.size")}
+                </span>
+              ) : null}
             </div>
 
             <Divider />
@@ -1223,6 +1419,147 @@ function ThirdSectionItem({
           Add key/value
         </button>
       </div>
+    </div>
+  );
+}
+
+function FourthSectionTile({
+  control,
+  register,
+  setValue,
+  getValues,
+  watch,
+  index,
+  onRemove,
+}: {
+  control: any;
+  register: any;
+  setValue: any;
+  getValues: any;
+  watch: any;
+  index: number;
+  onRemove: () => void;
+}) {
+  const itemsArray = useFieldArray({
+    control,
+    name: `fourthSection.${index}.items`,
+  });
+
+  return (
+    <div className="border border-secondary/30 rounded-lg p-5 flex flex-col gap-4">
+      <div className="flex items-center justify-between gap-3">
+        <Input
+          {...register(`fourthSection.${index}.title`)}
+          placeholder="Tile Title"
+        />
+        <button
+          type="button"
+          onClick={onRemove}
+          className={deleteIconBtnClass}
+          aria-label="Remove tile"
+        >
+          <RiDeleteBinLine size={18} />
+        </button>
+      </div>
+
+      <Divider />
+
+      <div className="flex items-center justify-between">
+        <Label className="text-sm">Items</Label>
+        <button
+          type="button"
+          onClick={() =>
+            itemsArray.append({ title: "", link: "", size: "" })
+          }
+          className={addIconBtnClass}
+          aria-label="Add item"
+        >
+          <RiAddLine size={18} />
+        </button>
+      </div>
+
+      <div className="grid grid-cols-2 gap-4">
+        {itemsArray.fields.map((field, j) => (
+          <FourthSectionItem
+            key={field.id}
+            control={control}
+            register={register}
+            setValue={setValue}
+            getValues={getValues}
+            watch={watch}
+            tileIndex={index}
+            itemIndex={j}
+            onRemove={() => itemsArray.remove(j)}
+          />
+        ))}
+      </div>
+      {itemsArray.fields.length === 0 && (
+        <p className="text-sm text-description-color">
+          No items added yet.
+        </p>
+      )}
+    </div>
+  );
+}
+
+function FourthSectionItem({
+  control,
+  register,
+  setValue,
+  getValues,
+  watch,
+  tileIndex,
+  itemIndex,
+  onRemove,
+}: {
+  control: any;
+  register: any;
+  setValue: any;
+  getValues: any;
+  watch: any;
+  tileIndex: number;
+  itemIndex: number;
+  onRemove: () => void;
+}) {
+  const path = `fourthSection.${tileIndex}.items.${itemIndex}` as const;
+  const size = watch(`${path}.size`);
+
+  return (
+    <div className="border border-secondary/30 rounded-lg p-4 flex flex-col gap-3">
+      <div className="flex items-center justify-between gap-3">
+        <Input
+          {...register(`${path}.title`)}
+          placeholder="Item Title"
+        />
+        <button
+          type="button"
+          onClick={onRemove}
+          className={deleteIconBtnClassSm}
+          aria-label="Remove item"
+        >
+          <RiDeleteBinLine size={16} />
+        </button>
+      </div>
+
+      <Controller
+        name={`${path}.link`}
+        control={control}
+        render={({ field }) => (
+          <FileUploader
+            value={field.value}
+            onChange={(url, fileName, fileSize) => {
+              field.onChange(url);
+              setValue(`${path}.size`, fileSize);
+              if (!getValues(`${path}.title`)) {
+                setValue(`${path}.title`, fileName);
+              }
+            }}
+          />
+        )}
+      />
+      {size ? (
+        <span className="text-xs text-description-color">{size}</span>
+      ) : null}
     </div>
   );
 }

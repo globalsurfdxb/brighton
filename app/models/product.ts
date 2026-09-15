@@ -33,6 +33,9 @@ const configCategorySchema = new mongoose.Schema({
     enum: ["none", "shape", "swatch", "size", "beam", "gradient"],
     default: "none",
   },
+  // Common categories are auto-included (with all their current options) in
+  // every product's configuration, toggled per-product like common specs/icons.
+  isCommon: { type: Boolean, default: false },
 });
 
 const configOptionSchema = new mongoose.Schema({
@@ -178,6 +181,21 @@ const productSchema = new mongoose.Schema({
       ],
       default: [],
     },
+    // common config categories toggled on/off for this product — enabled
+    // ones are merged into `configurations` (with every current option)
+    // when the product is served to shoppers
+    commonConfigurations: {
+      type: [
+        {
+          category: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "configcategory",
+          },
+          enabled: { type: Boolean, default: true },
+        },
+      ],
+      default: [],
+    },
   },
 
   // Third section
@@ -202,9 +220,33 @@ const productSchema = new mongoose.Schema({
     },
   },
 
+  // Fourth section — downloadable resource tiles (datasheet, CAD, certifications, etc.)
+  fourthSection: {
+    type: [
+      {
+        title: { type: String },
+        items: {
+          type: [
+            {
+              title: { type: String },
+              link: { type: String },
+              size: { type: String },
+            },
+          ],
+          default: [],
+        },
+      },
+    ],
+    default: [],
+  },
+
   // Datasheet
   datasheet: {
     image: { type: String },
+    installationGuide: {
+      link: { type: String },
+      size: { type: String },
+    },
     icons: {
       // common icons toggled on/off for this product, plus product-specific ones
       common: {

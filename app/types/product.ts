@@ -116,6 +116,17 @@ export interface ProductDatasheetIconCommon {
   enabled: boolean;
 }
 
+export interface ProductResourceItem {
+  title: string;
+  link: string;
+  size: string;
+}
+
+export interface ProductResourceTile {
+  title: string;
+  items: ProductResourceItem[];
+}
+
 export interface Product {
   _id: string;
   title: string;
@@ -150,8 +161,14 @@ export interface Product {
     items: ProductSpecTableGroup[];
   };
 
+  fourthSection: ProductResourceTile[];
+
   datasheet: {
     image: string;
+    installationGuide: {
+      link: string;
+      size: string;
+    };
     icons: {
       common: ProductDatasheetIconCommon[];
       custom: string[];

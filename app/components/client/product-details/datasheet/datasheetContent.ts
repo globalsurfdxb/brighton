@@ -8,7 +8,7 @@
  * a CMS/`fetch()` source later with no change to `buildDatasheetData`.
  */
 
-import type { DatasheetBadge, FormField } from "./types";
+import type { FormField } from "./types";
 
 export const BRAND = {
   name: "BRIGHTON",
@@ -64,16 +64,6 @@ export const DIMENSIONS_BY_SIZE: Record<
   "105x130": { diameter: 130, height: 105, cutout: 120 },
 };
 
-export const BADGES: DatasheetBadge[] = [
-  { label: "IK 02" },
-  { label: "IP 44" },
-  { label: "SDCM < 3" },
-  { label: "5 yrs", caption: "Warranty" },
-  { label: "PF > 0.9" },
-  { label: "No Flicker" },
-  { label: "Anti Glare" },
-];
-
 export const DISCLAIMER =
   "Brighton Lighting reserves the right to revise, modify, or discontinue any product in this catalogue without prior notice as LED technology evolves. Information herein is for general purposes only and based on data available at publication. Tolerances are ±10% luminous flux, ±12% efficacy, and ±1.5 CRI. All sales are subject to Brighton Lighting's general terms and conditions.";
 
@@ -82,16 +72,3 @@ export const OPERATING_NOTE =
 
 export const INSTALLATION_NOTE =
   "For detailed installation instructions, please consult the QR code.";
-
-/**
- * Nominal on-axis intensity (candela) per wattage option id. Used as the
- * peak of the modelled photometric curve; the shape is derived from the
- * configured beam angle in `buildDatasheetData`.
- */
-export const PEAK_CANDELA_BY_WATTAGE: Record<string, number> = {
-  "7w": 1250,
-  "10w": 1800,
-  "12w": 2150,
-  "18w": 3200,
-  "25w": 4400,
-};
