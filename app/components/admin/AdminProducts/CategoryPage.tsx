@@ -10,7 +10,23 @@ import {
   RiExternalLinkLine,
   RiEyeLine,
   RiEyeOffLine,
+  RiDraggable,
 } from "react-icons/ri";
+import {
+  DndContext,
+  closestCenter,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  type DragEndEvent,
+} from "@dnd-kit/core";
+import {
+  SortableContext,
+  arrayMove,
+  rectSortingStrategy,
+  useSortable,
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 
 import {
   Dialog,
@@ -23,13 +39,17 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ImageUploader } from "@/components/ui/image-uploader";
 import CustomButton from "../../client/common/CustomButton";
+import AdminPageActions from "../common/AdminPageActions";
 import Image from "next/image";
 import Link from "next/link";
+import { slugify } from "@/lib/utils/slugify";
 
 type Category = { _id: string; title: string; slug: string };
 type SubCategory = {
   _id: string;
   title: string;
+  slug: string;
+  order: number;
   icon: string;
   iconAlt: string;
   category: string | Category;
@@ -37,6 +57,7 @@ type SubCategory = {
 type ProductListItem = {
   _id: string;
   title: string;
+  slug: string;
   isHidden?: boolean;
   subCategory?: { _id: string; title: string };
 };
@@ -52,6 +73,68 @@ const deleteLabels: Record<DeleteTarget["type"], string> = {
   product: "Product",
 };
 
+function SortableSubCategoryCard({
+  subCategory,
+  onEdit,
+  onDelete,
+}: {
+  subCategory: SubCategory;
+  onEdit: () => void;
+  onDelete: () => void;
+}) {
+  const { attributes, listeners, setNodeRef, transform, transition } =
+    useSortable({ id: subCategory._id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+  };
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={style}
+      className="flex items-center justify-between border border-secondary/60 rounded-md px-4 py-2"
+    >
+      <div className="flex items-center justify-center gap-2">
+        <button
+          type="button"
+          {...attributes}
+          {...listeners}
+          className="cursor-grab active:cursor-grabbing touch-none"
+          aria-label="Drag to reorder"
+        >
+          <RiDraggable size={18} />
+        </button>
+        <Image
+          src={subCategory.icon || "/assets/images/placeholder.png"}
+          alt={subCategory.iconAlt || ""}
+          width={60}
+          height={60}
+          className="object-cover"
+        />
+        <span className="text-md font-itc-medium">{subCategory.title}</span>
+      </div>
+      <div className="flex items-center gap-3">
+        <button
+          type="button"
+          className="cursor-pointer hover:scale-110 transition-all"
+          onClick={onEdit}
+        >
+          <RiPencilLine className="text-gray-500 hover:text-primary" size={20} />
+        </button>
+        <button
+          type="button"
+          className="cursor-pointer hover:scale-110 transition-all"
+          onClick={onDelete}
+        >
+          <RiDeleteBinLine className="text-red-400 hover:text-red-600" size={20} />
+        </button>
+      </div>
+    </div>
+  );
+}
+
 export default function CategoryProductsPage() {
   const router = useRouter();
   const params = useParams<{ category: string }>();
@@ -64,6 +147,32 @@ export default function CategoryProductsPage() {
     SubCategory | null | "new"
   >(null);
   const [deleteTarget, setDeleteTarget] = useState<DeleteTarget | null>(null);
+
+  const dndSensors = useSensors(useSensor(PointerSensor));
+
+  const handleSubCategoryDragEnd = async (event: DragEndEvent) => {
+    const { active, over } = event;
+    if (!over || active.id === over.id) return;
+
+    const oldIndex = subCategories.findIndex((s) => s._id === active.id);
+    const newIndex = subCategories.findIndex((s) => s._id === over.id);
+    if (oldIndex === -1 || newIndex === -1) return;
+
+    const reordered = arrayMove(subCategories, oldIndex, newIndex);
+    setSubCategories(reordered);
+
+    const res = await fetch("/api/admin/products/subcategory/reorder", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ ids: reordered.map((s) => s._id) }),
+    });
+    if (res.ok) {
+      toast.success("Subcategory order updated");
+    } else {
+      toast.error("Failed to save order");
+      if (category) fetchSubCategories(category._id);
+    }
+  };
 
   const fetchCategory = async () => {
     const res = await fetch("/api/admin/products/category");
@@ -153,6 +262,12 @@ export default function CategoryProductsPage() {
 
   return (
     <div className="flex flex-col gap-5">
+      <AdminPageActions>
+        <Link href={`/lighting?category=${params.category}`} target="_blank">
+          <CustomButton variant="2" type="button" text="Visit Page" />
+        </Link>
+      </AdminPageActions>
+
       {/* Subcategories */}
       <div className="bg-white border border-secondary rounded-[10px] p-5 flex flex-col gap-4">
         <div className="flex items-center justify-between border-b border-secondary pb-3">
@@ -167,58 +282,37 @@ export default function CategoryProductsPage() {
             onClick={() => setSubCategoryDialog("new")}
           />
         </div>
-        <div className="grid grid-cols-2 2xl:grid-cols-3 gap-4">
-          {subCategories.length === 0 && (
-            <p className="text-sm text-black/40">No subcategories added yet.</p>
-          )}
-          {subCategories.map((sub) => (
-            <div
-              key={sub._id}
-              className="flex items-center justify-between border border-secondary/60 rounded-md px-4 py-2"
+        {subCategories.length === 0 ? (
+          <p className="text-sm text-black/40">No subcategories added yet.</p>
+        ) : (
+          <DndContext
+            sensors={dndSensors}
+            collisionDetection={closestCenter}
+            onDragEnd={handleSubCategoryDragEnd}
+          >
+            <SortableContext
+              items={subCategories.map((s) => s._id)}
+              strategy={rectSortingStrategy}
             >
-              <div className="flex items-center justify-center gap-2">
-                <div>
-                  <Image
-                    src={sub.icon || "/assets/images/placeholder.png"}
-                    alt={sub.iconAlt || ""}
-                    width={60}
-                    height={60}
-                    className="object-cover"
+              <div className="grid grid-cols-2 2xl:grid-cols-3 gap-4">
+                {subCategories.map((sub) => (
+                  <SortableSubCategoryCard
+                    key={sub._id}
+                    subCategory={sub}
+                    onEdit={() => setSubCategoryDialog(sub)}
+                    onDelete={() =>
+                      setDeleteTarget({
+                        type: "subcategory",
+                        id: sub._id,
+                        label: sub.title,
+                      })
+                    }
                   />
-                </div>
-                <span className="text-md font-itc-medium">{sub.title}</span>
+                ))}
               </div>
-              <div className="flex items-center gap-3">
-                <button
-                  type="button"
-                  className="cursor-pointer hover:scale-110 transition-all"
-                  onClick={() => setSubCategoryDialog(sub)}
-                >
-                  <RiPencilLine
-                    className="text-gray-500 hover:text-primary"
-                    size={20}
-                  />
-                </button>
-                <button
-                  type="button"
-                  className="cursor-pointer hover:scale-110 transition-all"
-                  onClick={() =>
-                    setDeleteTarget({
-                      type: "subcategory",
-                      id: sub._id,
-                      label: sub.title,
-                    })
-                  }
-                >
-                  <RiDeleteBinLine
-                    className="text-red-400 hover:text-red-600"
-                    size={20}
-                  />
-                </button>
-              </div>
-            </div>
-          ))}
-        </div>
+            </SortableContext>
+          </DndContext>
+        )}
       </div>
 
       {/* Products */}
@@ -271,7 +365,10 @@ export default function CategoryProductsPage() {
                     className="cursor-pointer hover:scale-110 transition-all"
                     onClick={(e) => {
                       e.stopPropagation();
-                      window.open(`/lighting/${product._id}`, "_blank");
+                      window.open(
+                        `/lighting/${product.slug || slugify(product.title)}`,
+                        "_blank",
+                      );
                     }}
                   >
                     <RiExternalLinkLine
@@ -321,12 +418,6 @@ export default function CategoryProductsPage() {
               </div>
             </div>
           ))}
-        </div>
-
-        <div className="fixed top-2 right-8 z-50 flex gap-5">
-          <Link href={`/lighting?category=${params.category}`} target="_blank">
-            <CustomButton variant="2" type="button" text="Visit Page" />
-          </Link>
         </div>
       </div>
 
@@ -392,15 +483,22 @@ function SubCategoryFormDialog({
   onClose: () => void;
   onSaved: () => void;
 }) {
-  type FormValues = { title: string; icon: string; iconAlt: string };
+  type FormValues = {
+    title: string;
+    slug: string;
+    icon: string;
+    iconAlt: string;
+  };
 
-  const { register, control, handleSubmit } = useForm<FormValues>({
-    defaultValues: {
-      title: initial?.title ?? "",
-      icon: initial?.icon ?? "",
-      iconAlt: initial?.iconAlt ?? "",
-    },
-  });
+  const { register, control, handleSubmit, setValue, watch } =
+    useForm<FormValues>({
+      defaultValues: {
+        title: initial?.title ?? "",
+        slug: initial?.slug ?? "",
+        icon: initial?.icon ?? "",
+        iconAlt: initial?.iconAlt ?? "",
+      },
+    });
   const [isSaving, setIsSaving] = useState(false);
 
   const onSubmit = async (data: FormValues) => {
@@ -444,6 +542,19 @@ function SubCategoryFormDialog({
               {...register("title", { required: true })}
               placeholder="Title"
             />
+          </div>
+          <div className="flex flex-col gap-2">
+            <Label className="font-bold">Slug</Label>
+            <div className="flex items-center gap-2">
+              <Input {...register("slug")} placeholder="Slug" />
+              <CustomButton
+                btnClass="-mt-[2px]"
+                variant="3"
+                text="Generate"
+                type="button"
+                onClick={() => setValue("slug", slugify(watch("title")))}
+              />
+            </div>
           </div>
           <div className="flex flex-col gap-2">
             <Label className="font-bold">Icon</Label>

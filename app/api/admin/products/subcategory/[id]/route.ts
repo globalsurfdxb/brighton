@@ -22,7 +22,7 @@ export async function PATCH(
   await connectDB();
   const body = await req.json();
   const subCategory = await SubCategory.findByIdAndUpdate(id, body, {
-    new: true,
+    returnDocument: "after",
   });
   if (!subCategory)
     return NextResponse.json({ error: "Not found" }, { status: 404 });

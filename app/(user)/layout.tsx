@@ -17,8 +17,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html style={{ overflow: "hidden" }} className={`h-full antialiased`}>
-      <body className="min-h-full flex flex-col">
+    <div style={{ overflow: "hidden" }} className={`h-full antialiased`}>
+      <div className="min-h-full flex flex-col">
         <LenisProvider>
           <IntroAnimation />
           <Suspense fallback={null}>
@@ -27,7 +27,7 @@ export default function RootLayout({
           {children}
           <Footer />
         </LenisProvider>
-      </body>
-    </html>
+      </div>
+    </div>
   );
 }

@@ -1,0 +1,88 @@
+"use client";
+
+import { Swiper, SwiperSlide } from "swiper/react";
+import { motion } from "framer-motion";
+import "swiper/css";
+
+import AnimatedTitle from "../../animations/AnimatedTitle";
+import ProductCard from "../../products/sections/ProductCard-v2";
+import CustomButton from "../../common/CustomButton";
+import { moveLeft, moveUpV2 } from "../../animations/motionVariants";
+import Reveal from "../../animations/RevealItemsOneByOneAnimation";
+import { Product } from "@/app/types/product";
+
+export default function MoreProducts({ products }: { products: Product[] }) {
+  const sectionTitle = "Explore More Families";
+  if (!products.length) return null;
+
+  return (
+    <section className="w-full py-100 bg-cream-background overflow-hidden">
+      <div className="container">
+        <div className="flex flex-col md:flex-row md:items-center justify-between mb-[30px] md:mb-40 gap-2.5 lg:gap-0">
+          <AnimatedTitle
+            tag="h2"
+            text={sectionTitle}
+            className="section-title"
+          />
+          <motion.div
+            variants={moveLeft(0)}
+            initial="hidden"
+            whileInView="show"
+            viewport={{ once: true }}
+          >
+            <CustomButton
+              text="VIEW ALL FAMILIES"
+              variant="2"
+              link="#"
+              btnClass="w-fit"
+            />
+          </motion.div>
+        </div>
+
+        {/* Slider */}
+        <div className="cursor-grab">
+          <Swiper
+            spaceBetween={15}
+            speed={800}
+            slidesPerView={1.2687}
+            breakpoints={{
+              640: {
+                slidesPerView: 2,
+                spaceBetween: 20,
+              },
+              768: {
+                slidesPerView: 2.4,
+                spaceBetween: 20,
+              },
+              1024: {
+                slidesPerView: 3,
+                spaceBetween: 20,
+              },
+              1280: {
+                slidesPerView: 4,
+                spaceBetween: 24,
+              },
+              1700: {
+                slidesPerView: 4,
+                spaceBetween: 30,
+              },
+            }}
+            className="!overflow-visible lg:!overflow-hidden"
+          >
+            {products.map((product, index) => (
+              <SwiperSlide key={product._id}>
+                <Reveal
+                  key={product._id}
+                  variants={moveUpV2}
+                  delayRange={index * 0.12}
+                >
+                  <ProductCard product={product} bgColor="bg-white" />
+                </Reveal>
+              </SwiperSlide>
+            ))}
+          </Swiper>
+        </div>
+      </div>
+    </section>
+  );
+}

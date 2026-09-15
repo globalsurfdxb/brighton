@@ -193,50 +193,50 @@ const Settings = () => {
         </div>
       </AdminItemContainer>
 
-      <AdminItemContainer expansion={false}>
-        <div className="border-b border-secondary">
-          <Label main>Change Password</Label>
-        </div>
-        {!currentPasswordIsCorrect ? (
-          <form className="flex flex-col gap-5 p-5">
-            <div className="flex flex-col gap-2">
-              <Label className="">Current Password</Label>
-              <Input {...register("currentPassword")}></Input>
-            </div>
-
-            <div className="flex flex-col gap-2">
-              <p className="text-[16px]">
-                Type in the current password and hit continue
-              </p>
-              <CustomButton
-                btnClass="w-fit"
-                variant="3"
-                onClick={checkCurrentPassword}
-                text="Continue"
-              />
-            </div>
-          </form>
-        ) : (
-          <form className="flex flex-col gap-5 p-5">
-            <div className="flex flex-col gap-2">
-              <Label className="">New Password</Label>
-              <Input {...register("newPassword")}></Input>
-            </div>
-
-            <div className="flex flex-col gap-1">
-              <p className="text-[16px]">
-                Type in the new password and hit continue
-              </p>
-              <CustomButton
-                onClick={submitNewPassword}
-                btnClass="w-fit"
-                variant="3"
-                text="Confirm"
-              />
-            </div>
-          </form>
-        )}
-      </AdminItemContainer>
+      <div className="h-fit">
+        <AdminItemContainer expansion={false}>
+          <div className="border-b border-secondary">
+            <Label main>Change Password</Label>
+          </div>
+          {!currentPasswordIsCorrect ? (
+            <form className="flex flex-col gap-5 p-5">
+              <div className="flex flex-col gap-2">
+                <Label className="">Current Password</Label>
+                <Input {...register("currentPassword")}></Input>
+              </div>
+              <div className="flex flex-col gap-2">
+                <p className="text-[16px]">
+                  Type in the current password and hit continue
+                </p>
+                <CustomButton
+                  btnClass="w-fit"
+                  variant="3"
+                  onClick={checkCurrentPassword}
+                  text="Continue"
+                />
+              </div>
+            </form>
+          ) : (
+            <form className="flex flex-col gap-5 p-5">
+              <div className="flex flex-col gap-2">
+                <Label className="">New Password</Label>
+                <Input {...register("newPassword")}></Input>
+              </div>
+              <div className="flex flex-col gap-1">
+                <p className="text-[16px]">
+                  Type in the new password and hit continue
+                </p>
+                <CustomButton
+                  onClick={submitNewPassword}
+                  btnClass="w-fit"
+                  variant="3"
+                  text="Confirm"
+                />
+              </div>
+            </form>
+          )}
+        </AdminItemContainer>
+      </div>
 
       <AdminItemContainer expansion={false}>
         <div className="border-b border-secondary">

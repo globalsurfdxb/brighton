@@ -18,20 +18,21 @@ const AdminItemContainer = ({
   const [header, ...content] = childArray;
 
   return (
-    <div className="flex flex-col bg-white rounded-[10px] shadow-lg overflow-hidden border border-secondary">
+    <div className="flex flex-col bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow duration-300 overflow-hidden border border-secondary/60">
       <div className="flex items-center justify-between">
-        <div className="flex-1">{header}</div>
+        <div className="flex-1 min-w-0">{header}</div>
 
         {expansion && (
           <button
             type="button"
+            aria-label={isExpanded ? "Collapse section" : "Expand section"}
             onClick={() => setIsExpanded((prev) => !prev)}
-            className="p-1 text-primary cursor-pointer hover:scale-120 transition-all duration-500 ease-in-out pr-5"
+            className="mr-4 p-1.5 rounded-full text-description-color cursor-pointer hover:text-primary hover:bg-cream-background hover:scale-110 transition-all duration-300 ease-in-out"
           >
             {isExpanded ? (
-              <Minimize2 size={16} className="-rotate-45" />
+              <Minimize2 size={15} className="-rotate-45" />
             ) : (
-              <Maximize2 size={16} className="-rotate-45" />
+              <Maximize2 size={15} className="-rotate-45" />
             )}
           </button>
         )}
@@ -41,7 +42,7 @@ const AdminItemContainer = ({
         <div
           className={`grid transition-[grid-template-rows,border-top] duration-500 ease-in-out ${
             isExpanded
-              ? "border-t border-secondary"
+              ? "border-t border-secondary/60"
               : "border-t-0"
           }`}
           style={{

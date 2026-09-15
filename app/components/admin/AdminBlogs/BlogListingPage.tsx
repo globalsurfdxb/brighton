@@ -25,6 +25,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import AdminItemContainer from "../common/AdminItemContainer";
+import AdminPageActions from "../common/AdminPageActions";
 import CustomButton from "../../client/common/CustomButton";
 import Link from "next/link";
 
@@ -241,6 +242,18 @@ export default function BlogsListingPage() {
   return (
     <div className="flex flex-col gap-5">
       <form className="flex flex-col gap-5" onSubmit={handleSubmit(onSubmit)}>
+        <AdminPageActions>
+          <Link href="/blog" target="_blank">
+            <CustomButton variant="2" type="button" text="Visit Page" />
+          </Link>
+          <CustomButton
+            variant="3"
+            type="submit"
+            text={isSaving ? "Saving..." : "Page Submit"}
+            showIcon={false}
+          />
+        </AdminPageActions>
+
         <AdminItemContainer expansion={false}>
           <div className="flex items-center justify-between border-b border-secondary">
             <Label main>Banner Section</Label>
@@ -266,13 +279,17 @@ export default function BlogsListingPage() {
             )}
           />
           <div className="p-5 flex flex-col gap-4">
-            <Label className="font-bold">Title</Label>
-            <Input {...register("ctaSection.title")} placeholder="Title" />
-            <Label className="font-bold">Description</Label>
-            <Textarea
-              {...register("ctaSection.description")}
-              placeholder="Description"
-            />
+            <div className="flex flex-col gap-2">
+              <Label className="font-bold">Title</Label>
+              <Input {...register("ctaSection.title")} placeholder="Title" />
+            </div>
+            <div className="flex flex-col gap-2">
+              <Label className="font-bold">Description</Label>
+              <Textarea
+                {...register("ctaSection.description")}
+                placeholder="Description"
+              />
+            </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="flex flex-col gap-2">
                 <Label className="font-bold">Button Text</Label>
@@ -295,29 +312,24 @@ export default function BlogsListingPage() {
         <AdminItemContainer>
           <Label main>SEO</Label>
           <div className="p-5 flex flex-col gap-4">
-            <Label className="font-bold">Meta Title</Label>
-            <Input {...register("seo.metaTitle")} placeholder="Meta Title" />
-            <Label className="font-bold">Meta Description</Label>
-            <Input
-              {...register("seo.metaDescription")}
-              placeholder="Meta Description"
-            />
-            <Label className="font-bold">Script</Label>
-            <Textarea {...register("seo.script")} placeholder="Script" />
+            <div className="flex flex-col gap-2">
+              <Label className="font-bold">Meta Title</Label>
+              <Input {...register("seo.metaTitle")} placeholder="Meta Title" />
+            </div>
+            <div className="flex flex-col gap-2">
+              <Label className="font-bold">Meta Description</Label>
+              <Input
+                {...register("seo.metaDescription")}
+                placeholder="Meta Description"
+              />
+            </div>
+            <div className="flex flex-col gap-2">
+              <Label className="font-bold">Script</Label>
+              <Textarea {...register("seo.script")} placeholder="Script" />
+            </div>
           </div>
         </AdminItemContainer>
 
-        <div className="fixed top-2 right-8 z-50 flex gap-5">
-          <Link href="/blog" target="_blank">
-            <CustomButton variant="2" type="button" text="Visit Page" />
-          </Link>
-          <CustomButton
-            variant="3"
-            type="submit"
-            text={isSaving ? "Saving..." : "Page Submit"}
-            showIcon={false}
-          />
-        </div>
       </form>
 
       {/* Regions & Sectors */}
