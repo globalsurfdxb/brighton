@@ -109,9 +109,9 @@ function SortableSubCategoryCard({
         <Image
           src={subCategory.icon || "/assets/images/placeholder.png"}
           alt={subCategory.iconAlt || ""}
-          width={60}
-          height={60}
-          className="object-cover"
+          width={40}
+          height={40}
+          className="object-cover ml-3"
         />
         <span className="text-md font-itc-medium">{subCategory.title}</span>
       </div>
