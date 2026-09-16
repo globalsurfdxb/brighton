@@ -62,7 +62,8 @@ function populateProductDetail(query: ReturnType<typeof ProductModel.findOne>) {
     .populate("secondSection.configurations.defaultOption")
     .populate("secondSection.commonConfigurations.category")
     .populate("specs.common.spec")
-    .populate("datasheet.icons.common.icon");
+    .populate("datasheet.icons.common.icon")
+    .populate("datasheet.icons.specific");
 }
 
 /**

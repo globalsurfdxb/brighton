@@ -179,7 +179,7 @@ export default function ProductConfigurator({ product }: { product: Product }) {
         ...product.datasheet.icons.common
           .filter((c) => c.enabled && c.icon?.image)
           .map((c) => c.icon.image),
-        ...product.datasheet.icons.custom,
+        ...product.datasheet.icons.specific.map((i) => i.image),
       ].filter(Boolean);
 
       const guideLink = product.datasheet.installationGuide?.link;

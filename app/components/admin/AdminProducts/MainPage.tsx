@@ -47,14 +47,14 @@ import { Home } from "lucide-react";
 const TABS = [
   { key: "category", label: "Category" },
   { key: "configuration", label: "Configuration" },
-  { key: "commonData", label: "Common Data" },
+  { key: "masterData", label: "Master Data" },
   { key: "qrGenerated", label: "QR Generated" },
 ] as const;
 type TabKey = (typeof TABS)[number]["key"];
 
 const COMMON_DATA_SUB_TABS = [
   { key: "product", label: "Product" },
-  { key: "datasheet", label: "Datasheet" },
+  { key: "icons", label: "Icons" },
 ] as const;
 type CommonDataSubTabKey = (typeof COMMON_DATA_SUB_TABS)[number]["key"];
 
@@ -108,6 +108,7 @@ type Spec = {
 type Icon = {
   _id: string;
   image: string;
+  isCommon?: boolean;
 };
 
 type GeneratedQr = {
@@ -798,8 +799,8 @@ export default function ProductsMainPage() {
       </>
       )}
 
-      {/* Common Data */}
-      {activeTab === "commonData" && (
+      {/* Master Data */}
+      {activeTab === "masterData" && (
         <>
           <div className="flex items-center gap-2 bg-white border border-secondary rounded-[10px] p-2 w-fit">
             {COMMON_DATA_SUB_TABS.map((tab) => (
@@ -822,9 +823,16 @@ export default function ProductsMainPage() {
           {activeCommonDataSubTab === "product" && (
             <div className="bg-white border border-secondary rounded-[10px] p-5 flex flex-col gap-4">
               <div className="flex items-center justify-between border-b border-secondary pb-3">
-                <Label className="!text-xl !font-semibold">
-                  Specs {`(${specs.length})`}
-                </Label>
+                <div className="flex flex-col gap-1">
+                  <Label className="!text-xl !font-semibold">
+                    Specs {`(${specs.length})`}
+                  </Label>
+                  <span className="text-sm text-description-color">
+                    Master list of specs available to every product. Each
+                    product can enable/disable individual specs, plus add its
+                    own product-specific ones.
+                  </span>
+                </div>
                 <CustomButton
                   variant="3"
                   type="button"
@@ -879,13 +887,19 @@ export default function ProductsMainPage() {
             </div>
           )}
 
-          {/* Datasheet — Icons */}
-          {activeCommonDataSubTab === "datasheet" && (
+          {/* Icons — master list for every product's datasheet */}
+          {activeCommonDataSubTab === "icons" && (
             <div className="bg-white border border-secondary rounded-[10px] p-5 flex flex-col gap-4">
               <div className="flex items-center justify-between border-b border-secondary pb-3">
-                <Label className="!text-xl !font-semibold">
-                  Icons {`(${icons.length})`}
-                </Label>
+                <div className="flex flex-col gap-1">
+                  <Label className="!text-xl !font-semibold">
+                    Icons {`(${icons.length})`}
+                  </Label>
+                  <span className="text-sm text-description-color">
+                    Common icons are added to every product&apos;s datasheet
+                    automatically. Others can be picked per product.
+                  </span>
+                </div>
                 <CustomButton
                   variant="3"
                   type="button"
@@ -903,14 +917,21 @@ export default function ProductsMainPage() {
                     key={icon._id}
                     className="flex items-center justify-between border border-secondary/60 rounded-md px-3 py-2 gap-2"
                   >
-                    <div className="w-12 h-12 shrink-0 rounded-[4px] border border-[#2A2A2A] flex items-center justify-center overflow-hidden">
-                      {icon.image && (
-                        // eslint-disable-next-line @next/next/no-img-element
-                        <img
-                          src={icon.image}
-                          alt=""
-                          className="w-8 h-8 object-contain"
-                        />
+                    <div className="flex items-center gap-3">
+                      <div className="w-12 h-12 shrink-0 rounded-[4px] border border-[#2A2A2A] flex items-center justify-center overflow-hidden">
+                        {icon.image && (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img
+                            src={icon.image}
+                            alt=""
+                            className="w-8 h-8 object-contain"
+                          />
+                        )}
+                      </div>
+                      {icon.isCommon && (
+                        <span className="text-[10px] font-itc-medium uppercase text-trim rounded-full px-2 py-1.5 border border-primary text-primary">
+                          Common
+                        </span>
                       )}
                     </div>
                     <div className="flex items-center gap-2 ml-auto">
@@ -1410,12 +1431,18 @@ function IconFormDialog({
   onClose: () => void;
   onSaved: () => void;
 }) {
-  const { control, handleSubmit } = useForm<{ image: string }>({
-    defaultValues: { image: initial?.image ?? "" },
+  const { control, register, handleSubmit } = useForm<{
+    image: string;
+    isCommon: boolean;
+  }>({
+    defaultValues: {
+      image: initial?.image ?? "",
+      isCommon: initial?.isCommon ?? false,
+    },
   });
   const [isSaving, setIsSaving] = useState(false);
 
-  const onSubmit = async (data: { image: string }) => {
+  const onSubmit = async (data: { image: string; isCommon: boolean }) => {
     setIsSaving(true);
     try {
       const res = initial
@@ -1458,6 +1485,16 @@ function IconFormDialog({
                 <ImageUploader value={field.value} onChange={field.onChange} />
               )}
             />
+          </div>
+          <div className="flex items-center gap-2">
+            <input
+              type="checkbox"
+              className="size-4"
+              {...register("isCommon")}
+            />
+            <Label className="font-bold text-trim">
+              Common — include on every product&apos;s datasheet automatically
+            </Label>
           </div>
           <DialogFooter>
             <CustomButton

@@ -50,7 +50,8 @@ export async function GET(
     .populate("secondSection.configurations.options")
     .populate("secondSection.configurations.defaultOption")
     .populate("specs.common.spec")
-    .populate("datasheet.icons.common.icon");
+    .populate("datasheet.icons.common.icon")
+    .populate("datasheet.icons.specific");
   if (!product)
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   return NextResponse.json(product);

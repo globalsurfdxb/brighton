@@ -83,10 +83,14 @@ const specSchema = new mongoose.Schema({
   label: { type: String },
 });
 
-// ICON (common, reusable across products' datasheets)
+// ICON (reusable across products' datasheets — master list lives under
+// Products > Master Data > Icons)
 
 const iconSchema = new mongoose.Schema({
   image: { type: String },
+  // common icons are automatically included on every product's datasheet;
+  // non-common ones are picked per-product under datasheet.icons.specific
+  isCommon: { type: Boolean, default: false },
 });
 
 // GENERATED QR (created whenever a shopper generates a QR code for a configured product)
@@ -248,7 +252,8 @@ const productSchema = new mongoose.Schema({
       size: { type: String },
     },
     icons: {
-      // common icons toggled on/off for this product, plus product-specific ones
+      // common icons (Icon.isCommon) toggled on/off for this product,
+      // default enabled — mirrors specs.common
       common: {
         type: [
           {
@@ -258,8 +263,9 @@ const productSchema = new mongoose.Schema({
         ],
         default: [],
       },
-      custom: {
-        type: [String],
+      // icons picked from the non-common master list, specific to this product
+      specific: {
+        type: [{ type: mongoose.Schema.Types.ObjectId, ref: "icon" }],
         default: [],
       },
     },

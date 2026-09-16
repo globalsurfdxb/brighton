@@ -21,6 +21,12 @@ function formatBytes(bytes: number): string {
   return `${Math.round(bytes / Math.pow(k, i))} ${sizes[i]}`;
 }
 
+function fileNameFromUrl(url?: string): string {
+  if (!url) return "";
+  const parts = url.split("/");
+  return parts[parts.length - 1];
+}
+
 export function FileUploader({
   value,
   onChange,
@@ -38,13 +44,11 @@ export function FileUploader({
 }: FileUploaderProps) {
   const [isUploading, setIsUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [fileName, setFileName] = useState<string>(() => {
-    if (value) {
-      const parts = value.split("/");
-      return parts[parts.length - 1];
-    }
-    return "";
-  });
+  // Only holds the human-readable name of a file just uploaded in this
+  // session — otherwise we derive it from `value`, so a name loaded later
+  // (e.g. after an async form reset) still displays correctly.
+  const [localFileName, setLocalFileName] = useState<string | null>(null);
+  const fileName = localFileName ?? fileNameFromUrl(value);
 
   const onDrop = useCallback(
     async (acceptedFiles: File[]) => {
@@ -69,7 +73,7 @@ export function FileUploader({
         }
 
         const data = await response.json();
-        setFileName(file.name);
+        setLocalFileName(file.name);
         onChange(data.url, file.name, formatBytes(file.size));
       } catch (err) {
         setError(err instanceof Error ? err.message : "Failed to upload file");
@@ -90,7 +94,7 @@ export function FileUploader({
   const removeFile = () => {
     // Purely clears the field, same as ImageUploader — the blob garbage
     // collector reclaims the now-unreferenced file later.
-    setFileName("");
+    setLocalFileName(null);
     onChange("", "", "0");
   };
 
