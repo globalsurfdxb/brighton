@@ -37,7 +37,7 @@ type ConfigCategory = {
 type ConfigOption = { _id: string; label: string; code: string };
 type SubCategoryOption = { _id: string; title: string };
 type SpecOption = { _id: string; label: string };
-type IconOption = { _id: string; image: string };
+type IconOption = { _id: string; image: string; isCommon?: boolean };
 
 type ProductForm = {
   title: string;
@@ -83,7 +83,7 @@ type ProductForm = {
     installationGuide: { link: string; size: string };
     icons: {
       common: { icon: string; enabled: boolean }[];
-      custom: { value: string }[];
+      specific: string[];
     };
   };
 };
@@ -114,7 +114,7 @@ const defaultValues: ProductForm = {
   datasheet: {
     image: "",
     installationGuide: { link: "", size: "" },
-    icons: { common: [], custom: [] },
+    icons: { common: [], specific: [] },
   },
 };
 
@@ -146,7 +146,7 @@ export default function ProductDetailPage() {
     [],
   );
   const [commonSpecs, setCommonSpecs] = useState<SpecOption[]>([]);
-  const [commonIcons, setCommonIcons] = useState<IconOption[]>([]);
+  const [allIcons, setAllIcons] = useState<IconOption[]>([]);
   const [optionsByCategory, setOptionsByCategory] = useState<
     Record<string, ConfigOption[]>
   >({});
@@ -170,11 +170,6 @@ export default function ProductDetailPage() {
     control,
     name: "fourthSection",
   });
-  const datasheetIconsArray = useFieldArray({
-    control,
-    name: "datasheet.icons.custom",
-  });
-
   const resolveCategory = async () => {
     const res = await fetch("/api/admin/products/category");
     const all = await res.json();
@@ -199,9 +194,9 @@ export default function ProductDetailPage() {
     setCommonSpecs(await res.json());
   };
 
-  const fetchCommonIcons = async () => {
+  const fetchIcons = async () => {
     const res = await fetch("/api/admin/products/icon");
-    setCommonIcons(await res.json());
+    setAllIcons(await res.json());
   };
 
   const fetchOptionsForCategory = async (configCategoryId: string) => {
@@ -275,8 +270,8 @@ export default function ProductDetailPage() {
               icon: c.icon?._id ?? c.icon,
               enabled: c.enabled,
             })),
-            custom: (data.datasheet?.icons?.custom ?? []).map(
-              (v: string) => ({ value: v }),
+            specific: (data.datasheet?.icons?.specific ?? []).map(
+              (v: any) => v?._id ?? v,
             ),
           },
         },
@@ -296,7 +291,7 @@ export default function ProductDetailPage() {
     resolveCategory();
     fetchConfigCategories();
     fetchCommonSpecs();
-    fetchCommonIcons();
+    fetchIcons();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [params.category]);
 
@@ -338,13 +333,15 @@ export default function ProductDetailPage() {
           image: formData.datasheet.image,
           installationGuide: formData.datasheet.installationGuide,
           icons: {
+            // resolve against the live common-icon list so newly marked
+            // common icons that were never toggled still default to enabled
             common: commonIcons.map((ci) => {
               const found = formData.datasheet.icons.common.find(
                 (c) => c.icon === ci._id,
               );
               return { icon: ci._id, enabled: found ? found.enabled : true };
             }),
-            custom: formData.datasheet.icons.custom.map((s) => s.value),
+            specific: formData.datasheet.icons.specific,
           },
         },
       };
@@ -379,10 +376,13 @@ export default function ProductDetailPage() {
   };
 
   const commonConfigCategories = configCategories.filter((cc) => cc.isCommon);
+  const commonIcons = allIcons.filter((i) => i.isCommon);
+  const nonCommonIcons = allIcons.filter((i) => !i.isCommon);
 
   const watchedConfigurations = watch("secondSection.configurations");
   const watchedCommonSpecs = watch("specs.common");
   const watchedCommonIcons = watch("datasheet.icons.common");
+  const watchedSpecificIcons = watch("datasheet.icons.specific");
   const watchedCommonConfigurations = watch(
     "secondSection.commonConfigurations",
   );
@@ -412,6 +412,16 @@ export default function ProductDetailPage() {
       next[idx] = { ...next[idx], enabled };
       setValue("datasheet.icons.common", next);
     }
+  };
+
+  const toggleSpecificIcon = (iconId: string) => {
+    const current = getValues("datasheet.icons.specific") ?? [];
+    setValue(
+      "datasheet.icons.specific",
+      current.includes(iconId)
+        ? current.filter((id) => id !== iconId)
+        : [...current, iconId],
+    );
   };
 
   const toggleCommonConfiguration = (categoryId: string, enabled: boolean) => {
@@ -614,7 +624,7 @@ export default function ProductDetailPage() {
                 )}
               </div>
 
-              {/* common specs — managed under Products > Common Data, enabled by default */}
+              {/* common specs — managed under Products > Master Data, enabled by default */}
               <div className="rounded-lg border border-secondary/30 p-4 flex flex-col gap-3">
                 <div className="flex items-center justify-between gap-3">
                   <Label className="text-sm">Common Specs</Label>
@@ -631,7 +641,7 @@ export default function ProductDetailPage() {
                 {commonSpecs.length === 0 ? (
                   <p className="text-sm text-description-color">
                     No common specs added yet. Add some under Products →
-                    Common Data.
+                    Master Data.
                   </p>
                 ) : (
                   <div className="flex flex-wrap gap-2">
@@ -1223,7 +1233,7 @@ export default function ProductDetailPage() {
             <div className="flex flex-col gap-4">
               <Label className="font-bold">Icons</Label>
 
-              {/* common icons — managed under Products > Datasheet, enabled by default */}
+              {/* common icons — managed under Products > Master Data > Icons, enabled by default */}
               <div className="rounded-lg border border-secondary/30 p-4 flex flex-col gap-3">
                 <div className="flex items-center justify-between gap-3">
                   <Label className="text-sm">Common Icons</Label>
@@ -1240,7 +1250,7 @@ export default function ProductDetailPage() {
                 {commonIcons.length === 0 ? (
                   <p className="text-sm text-description-color">
                     No common icons added yet. Add some under Products →
-                    Datasheet.
+                    Master Data → Icons.
                   </p>
                 ) : (
                   <div className="flex flex-wrap gap-3">
@@ -1254,9 +1264,9 @@ export default function ProductDetailPage() {
                           key={ci._id}
                           type="button"
                           onClick={() => toggleCommonIcon(ci._id, !enabled)}
-                          className={`relative flex items-center justify-center h-14 w-14 rounded-lg border transition-all cursor-pointer bg-[#161618] ${
+                          className={`relative flex items-center justify-center h-14 w-14 rounded-lg border transition-all cursor-pointer ${
                             enabled
-                              ? "border-primary ring-2 ring-primary"
+                              ? "border-primary ring-1 ring-primary"
                               : "border-secondary/40 opacity-50 hover:opacity-80"
                           }`}
                         >
@@ -1280,53 +1290,54 @@ export default function ProductDetailPage() {
                 )}
               </div>
 
-              {/* product-specific icons, unique to this product only */}
+              {/* product-specific icons, picked from the non-common master list */}
               <div className="rounded-lg border border-secondary/30 p-4 flex flex-col gap-3">
-                <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between gap-3">
                   <Label className="text-sm">Product Specific Icons</Label>
-                  <button
-                    type="button"
-                    onClick={() =>
-                      datasheetIconsArray.append({ value: "" })
-                    }
-                    className={addIconBtnClass}
-                    aria-label="Add icon"
-                  >
-                    <RiAddLine size={18} />
-                  </button>
+                  <span className="text-xs text-description-color">
+                    {watchedSpecificIcons?.length ?? 0} of{" "}
+                    {nonCommonIcons.length} selected
+                  </span>
                 </div>
-                {datasheetIconsArray.fields.length > 0 ? (
-                  <div className="grid grid-cols-4 lg:grid-cols-6 gap-4">
-                    {datasheetIconsArray.fields.map((field, i) => (
-                      <div
-                        key={field.id}
-                        className="flex flex-col gap-2 p-2 rounded-lg border border-secondary/20"
-                      >
-                        <Controller
-                          name={`datasheet.icons.custom.${i}.value`}
-                          control={control}
-                          render={({ field }) => (
-                            <ImageUploader
-                              value={field.value}
-                              onChange={field.onChange}
+                {nonCommonIcons.length === 0 ? (
+                  <p className="text-sm text-description-color">
+                    No non-common icons added yet. Add some under Products →
+                    Master Data → Icons.
+                  </p>
+                ) : (
+                  <div className="flex flex-wrap gap-3">
+                    {nonCommonIcons.map((ci) => {
+                      const selected = !!watchedSpecificIcons?.includes(
+                        ci._id,
+                      );
+                      return (
+                        <button
+                          key={ci._id}
+                          type="button"
+                          onClick={() => toggleSpecificIcon(ci._id)}
+                          className={`relative flex items-center justify-center h-14 w-14 rounded-lg border transition-all cursor-pointer ${
+                            selected
+                              ? "border-primary ring-1 ring-primary"
+                              : "border-secondary/40 opacity-50 hover:opacity-80"
+                          }`}
+                        >
+                          {ci.image && (
+                            // eslint-disable-next-line @next/next/no-img-element
+                            <img
+                              src={ci.image}
+                              alt=""
+                              className="w-8 h-8 object-contain"
                             />
                           )}
-                        />
-                        <button
-                          type="button"
-                          onClick={() => datasheetIconsArray.remove(i)}
-                          className="flex items-center justify-center gap-1 text-xs rounded-md py-1.5 text-red-400 hover:text-red-600 hover:bg-red-50 transition-colors cursor-pointer"
-                        >
-                          <RiDeleteBinLine size={14} />
-                          Remove
+                          {selected && (
+                            <span className="absolute -top-1.5 -right-1.5 flex items-center justify-center h-4 w-4 rounded-full bg-primary text-white">
+                              <RiCheckLine size={11} />
+                            </span>
+                          )}
                         </button>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
-                ) : (
-                  <p className="text-sm text-description-color">
-                    No product-specific icons added yet.
-                  </p>
                 )}
               </div>
             </div>

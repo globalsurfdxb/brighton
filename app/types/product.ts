@@ -77,6 +77,7 @@ export interface Spec {
 export interface Icon {
   _id: string;
   image: string;
+  isCommon?: boolean;
 }
 
 export interface ProductSpecCommon {
@@ -170,8 +171,10 @@ export interface Product {
       size: string;
     };
     icons: {
+      // common icons toggled on/off for this product, default enabled
       common: ProductDatasheetIconCommon[];
-      custom: string[];
+      // icons picked specifically for this product from the non-common list
+      specific: Icon[];
     };
   };
 }

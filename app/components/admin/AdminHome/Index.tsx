@@ -5,7 +5,7 @@ const Welcome = () => {
   return (
     <div className="h-full min-h-[60vh] w-full flex justify-center items-center flex-col gap-6">
       <AnimatedTitle
-        text="Welcome to the ABM Dashboard"
+        text="Welcome to the Brighton Dashboard"
         className="text-subtitle"
         skipIntroWait
       />
