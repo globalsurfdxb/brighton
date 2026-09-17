@@ -27,7 +27,6 @@ const Settings = () => {
   const [currentPasswordIsCorrect, setCurrentPasswordIsCorrect] =
     React.useState<boolean>(false);
 
-  const [toEmailCatalogue, setToEmailCatalogue] = useState("");
   const [toEmailContact, setToEmailContact] = useState("");
 
   const onSubmit = async (data: FormValues | FormValues2) => {
@@ -133,7 +132,7 @@ const Settings = () => {
     try {
       const response = await fetch("/api/admin/emails", {
         method: "PATCH",
-        body: JSON.stringify({ toEmailCatalogue, toEmailContact }),
+        body: JSON.stringify({ toEmailContact }),
       });
       if (response.ok) {
         const data = await response.json();
@@ -152,7 +151,6 @@ const Settings = () => {
       const response = await fetch("/api/admin/emails");
       if (response.ok) {
         const data = await response.json();
-        setToEmailCatalogue(data.data.toEmailCatalogue);
         setToEmailContact(data.data.toEmailContact);
       } else {
         const data = await response.json();
@@ -249,13 +247,6 @@ const Settings = () => {
               <Input
                 value={toEmailContact}
                 onChange={(e) => setToEmailContact(e.target.value)}
-              ></Input>
-            </div>
-            <div className="flex flex-col gap-2">
-              <Label className="">To email (Catalogue)</Label>
-              <Input
-                value={toEmailCatalogue}
-                onChange={(e) => setToEmailCatalogue(e.target.value)}
               ></Input>
             </div>
             <CustomButton

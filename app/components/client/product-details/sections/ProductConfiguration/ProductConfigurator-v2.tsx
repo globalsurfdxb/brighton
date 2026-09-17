@@ -295,7 +295,7 @@ export default function ProductConfigurator({ product }: { product: Product }) {
                 <span className="text-description-color text-description text-trim">
                   {hasSelection
                     ? productCode
-                    : "Select an option to generate your product code."}
+                    : "Select an option to generate product code."}
                 </span>
               </div>
             </div>

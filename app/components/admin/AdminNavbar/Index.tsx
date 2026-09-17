@@ -66,6 +66,14 @@ const AdminNavbar = () => {
       name: "Digital Catalogue",
       href: "/4dm1n-br1ght0n/digital-catalogue",
       icon: LayoutGrid,
+      hasChild: true,
+      children: [
+        { name: "Page", href: "/4dm1n-br1ght0n/digital-catalogue" },
+        {
+          name: "Requests",
+          href: "/4dm1n-br1ght0n/digital-catalogue/requests",
+        },
+      ],
     },
     {
       name: "Contact",

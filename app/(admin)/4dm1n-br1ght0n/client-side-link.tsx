@@ -87,34 +87,50 @@ function ClientSideLink({
         >
           <div className="overflow-hidden">
             <div className="flex pl-8 pr-1 py-1 my-1 flex-col items-start gap-0.5 border-l border-secondary/60 ml-6">
-              {children.map((item, index) => {
-                const isChildActive =
-                  pathname === item.href ||
-                  pathname?.startsWith(`${item.href}/`);
-                return (
-                  <div key={index} className="flex items-center gap-2 w-full">
-                    <div
-                      className={cn(
-                        "w-1.5 h-1.5 rounded-full shrink-0",
-                        isChildActive
-                          ? "bg-primary"
-                          : "bg-description-color/40",
-                      )}
-                    />
-                    <Link
-                      href={item.href}
-                      className={cn(
-                        "w-full rounded-[6px] font-itc-medium flex items-center cursor-pointer text-[13.5px] px-2 py-2 transition-colors hover:text-primary",
-                        isChildActive
-                          ? "text-primary font-semibold"
-                          : "text-description-color/80",
-                      )}
-                    >
-                      <span className="text-trim">{item.name}</span>
-                    </Link>
-                  </div>
+              {(() => {
+                const bestMatch = children.reduce<string | null>(
+                  (best, child) => {
+                    const matches =
+                      pathname === child.href ||
+                      pathname?.startsWith(`${child.href}/`);
+                    if (!matches) return best;
+                    if (!best || child.href.length > best.length) {
+                      return child.href;
+                    }
+                    return best;
+                  },
+                  null,
                 );
-              })}
+                return children.map((item, index) => {
+                  const isChildActive = item.href === bestMatch;
+                  return (
+                    <div
+                      key={index}
+                      className="flex items-center gap-2 w-full"
+                    >
+                      <div
+                        className={cn(
+                          "w-1.5 h-1.5 rounded-full shrink-0",
+                          isChildActive
+                            ? "bg-primary"
+                            : "bg-description-color/40",
+                        )}
+                      />
+                      <Link
+                        href={item.href}
+                        className={cn(
+                          "w-full rounded-[6px] font-itc-medium flex items-center cursor-pointer text-[13.5px] px-2 py-2 transition-colors hover:text-primary",
+                          isChildActive
+                            ? "text-primary font-semibold"
+                            : "text-description-color/80",
+                        )}
+                      >
+                        <span className="text-trim">{item.name}</span>
+                      </Link>
+                    </div>
+                  );
+                });
+              })()}
             </div>
           </div>
         </div>

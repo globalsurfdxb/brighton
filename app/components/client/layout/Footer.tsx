@@ -16,6 +16,7 @@ import Reveal from "../animations/RevealItemsOneByOneAnimation";
 import { moveUp, moveUpV2 } from "../animations/motionVariants";
 import SectionDescription from "../animations/SectionDescription";
 import { useLenis } from "./LenisProvider";
+import CatalogueRequestDrawer from "../digital-catalogue/CatalogueRequestDrawer";
 
 function AccordionToggleIcon({ isOpen }: { isOpen: boolean }) {
   return (
@@ -45,6 +46,7 @@ function AccordionToggleIcon({ isOpen }: { isOpen: boolean }) {
 
 export default function Footer() {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
+  const [isCatalogueDrawerOpen, setIsCatalogueDrawerOpen] = useState(false);
   const containerRefs = useRef<(HTMLDivElement | null)[]>([]);
   const { scrollTo } = useLenis();
 
@@ -228,22 +230,24 @@ export default function Footer() {
             whileInView="show"
             variants={moveUp(0.1)}
             viewport={{ once: true }}
-            className="mt-3.75 md:mt-0 col-span-2 lg:col-start-5 flex flex-wrap gap-x-30 gap-y-2 text-description text-description-color"
+            className="mt-3.75 md:mt-0 col-span-2 lg:col-start-5 flex flex-wrap gap-x-30 gap-y-2 text-description text-description-color w-fit"
           >
-            <Link href={"#"}>
-              <button className="btn-fill-center cursor-pointer max-h-[51px] md:max-h-[80px] rounded-[50px] border border-secondary px-[30px] sm:px-8 3xl:px-[39.5px] py-[15.5px] lg:py-6 3xl:py-[27px] transition-colors duration-500 group w-full flex items-center justify-center gap-2.5 sm:gap-4 bg-primary">
-                <span className="text-subtitle text-28 md:text-24 3xl:text-28  !leading-none text-white max-h-[21px] group-hover:text-primary">
-                  Download Catalogue
-                </span>
-                <Image
-                  src="/assets/icons/download-primary.svg"
-                  alt="Download Catalogue"
-                  width={26}
-                  height={26}
-                  className="pointer-events-none invert brightness-0 transition-all duration-500 group-hover:invert-0 group-hover:brightness-100 w-auto h-5 3xl:h-[26px]"
-                />
-              </button>
-            </Link>
+            <button
+              type="button"
+              onClick={() => setIsCatalogueDrawerOpen(true)}
+              className="btn-fill-center cursor-pointer max-h-[51px] md:max-h-[80px] rounded-[50px] border border-secondary px-[30px] sm:px-8 3xl:px-[39.5px] py-[15.5px] lg:py-6 3xl:py-[27px] transition-colors duration-500 group w-full flex items-center justify-center gap-2.5 sm:gap-4 bg-primary"
+            >
+              <span className="text-subtitle text-28 md:text-24 3xl:text-28  !leading-none text-white max-h-[21px] group-hover:text-primary">
+                Download Catalogue
+              </span>
+              <Image
+                src="/assets/icons/download-primary.svg"
+                alt="Download Catalogue"
+                width={26}
+                height={26}
+                className="pointer-events-none invert brightness-0 transition-all duration-500 group-hover:invert-0 group-hover:brightness-100 w-auto h-5 3xl:h-[26px]"
+              />
+            </button>
           </motion.div>
         </div>
       </div>
@@ -266,6 +270,11 @@ export default function Footer() {
           </div>
         </div>
       </div>
+
+      <CatalogueRequestDrawer
+        isOpen={isCatalogueDrawerOpen}
+        onClose={() => setIsCatalogueDrawerOpen(false)}
+      />
     </footer>
   );
 }

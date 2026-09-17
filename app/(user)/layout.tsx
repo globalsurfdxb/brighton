@@ -4,6 +4,7 @@ import LenisProvider from "../components/client/layout/LenisProvider";
 import Footer from "../components/client/layout/Footer";
 import Header from "../components/client/layout/Header";
 import IntroAnimation from "../components/client/animations/IntroAnimation";
+import { Toaster } from "@/components/ui/sonner";
 import { Suspense } from "react";
 
 export const metadata: Metadata = {
@@ -27,6 +28,7 @@ export default function RootLayout({
           {children}
           <Footer />
         </LenisProvider>
+        <Toaster />
       </div>
     </div>
   );
