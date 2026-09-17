@@ -71,7 +71,7 @@ export function buildDatasheetData(input: BuildDatasheetInput): DatasheetData {
     icons,
   } = input;
 
-  const reflector = pick(selectedOptions, "reflector");
+  const reflector = pick(selectedOptions, "finish");
   const size = pick(selectedOptions, "size");
   const wattage = pick(selectedOptions, "wattage");
   const cct = pick(selectedOptions, "cct");

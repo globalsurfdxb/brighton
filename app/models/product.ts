@@ -81,6 +81,7 @@ const configOptionSchema = new mongoose.Schema({
 
 const specSchema = new mongoose.Schema({
   label: { type: String },
+  order: { type: Number, default: 0 },
 });
 
 // ICON (reusable across products' datasheets — master list lives under

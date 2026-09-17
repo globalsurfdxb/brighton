@@ -5,9 +5,9 @@ import { Product, ProductSpecTableGroup } from "@/app/types/product";
 function SpecGroup({ group }: { group: ProductSpecTableGroup }) {
   return (
     <div className="rounded-[10px]">
-      <div className="mb-[14px] rounded-full bg-white px-30 py-3 sm:py-5 flex items-center">
+      {/* <div className="mb-[14px] rounded-full bg-white px-30 py-3 sm:py-5 flex items-center">
         <AnimatedTitle text={group.title} className="text-subtitle text-trim" />
-      </div>
+      </div> */}
 
       <div className="flex flex-col px-30">
         {group.items.map((row, i) => (

@@ -72,6 +72,7 @@ export interface ConfigOption {
 export interface Spec {
   _id: string;
   label: string;
+  order: number;
 }
 
 export interface Icon {
