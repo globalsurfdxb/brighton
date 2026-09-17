@@ -88,26 +88,22 @@ function ClientSideLink({
           <div className="overflow-hidden">
             <div className="flex pl-8 pr-1 py-1 my-1 flex-col items-start gap-0.5 border-l border-secondary/60 ml-6">
               {(() => {
-                const bestMatch = children.reduce<string | null>(
-                  (best, child) => {
-                    const matches =
-                      pathname === child.href ||
-                      pathname?.startsWith(`${child.href}/`);
-                    if (!matches) return best;
-                    if (!best || child.href.length > best.length) {
-                      return child.href;
-                    }
-                    return best;
-                  },
-                  null,
-                );
+                const activeChild = children.reduce<{
+                  href: string;
+                  name: string;
+                } | null>((best, item) => {
+                  const matches =
+                    pathname === item.href ||
+                    pathname?.startsWith(`${item.href}/`);
+                  if (!matches) return best;
+                  if (!best || item.href.length > best.href.length) return item;
+                  return best;
+                }, null);
+
                 return children.map((item, index) => {
-                  const isChildActive = item.href === bestMatch;
+                  const isChildActive = item.href === activeChild?.href;
                   return (
-                    <div
-                      key={index}
-                      className="flex items-center gap-2 w-full"
-                    >
+                    <div key={index} className="flex items-center gap-2 w-full">
                       <div
                         className={cn(
                           "w-1.5 h-1.5 rounded-full shrink-0",
