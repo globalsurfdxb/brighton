@@ -103,6 +103,7 @@ type ConfigOption = {
 type Spec = {
   _id: string;
   label: string;
+  order: number;
 };
 
 type Icon = {
@@ -307,6 +308,65 @@ function SortableConfigCategoryCard({
           }}
         >
           <RiDeleteBinLine className="text-red-400 hover:text-red-600" size={16} />
+        </button>
+      </div>
+    </div>
+  );
+}
+
+/* -------------------------------------------------------------------------- */
+/* SORTABLE SPEC CARD                                                        */
+/* -------------------------------------------------------------------------- */
+
+function SortableSpecCard({
+  spec,
+  onEdit,
+  onDelete,
+}: {
+  spec: Spec;
+  onEdit: () => void;
+  onDelete: () => void;
+}) {
+  const { attributes, listeners, setNodeRef, transform, transition } =
+    useSortable({ id: spec._id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+  };
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={style}
+      className="flex items-center justify-between border border-secondary/60 rounded-md px-4 py-2"
+    >
+      <div className="flex items-center gap-3">
+        <button
+          type="button"
+          {...attributes}
+          {...listeners}
+          className="cursor-grab active:cursor-grabbing touch-none"
+          aria-label="Drag to reorder"
+        >
+          <RiDraggable size={18} />
+        </button>
+        <span className="text-md font-itc-medium">{spec.label}</span>
+      </div>
+      <div className="flex items-center gap-3">
+        <button
+          type="button"
+          className="cursor-pointer hover:scale-110 transition-all"
+          onClick={onEdit}
+        >
+          <RiPencilLine className="text-gray-500 hover:text-primary" size={20} />
+        </button>
+        <button
+          type="button"
+          className="cursor-pointer hover:scale-110 transition-all"
+          onClick={onDelete}
+        >
+          <RiDeleteBinLine className="text-red-400 hover:text-red-600" size={20} />
         </button>
       </div>
     </div>
@@ -538,6 +598,30 @@ export default function ProductsMainPage() {
   const fetchSpecs = async () => {
     const res = await fetch("/api/admin/products/spec");
     setSpecs(await res.json());
+  };
+
+  const handleSpecDragEnd = async (event: DragEndEvent) => {
+    const { active, over } = event;
+    if (!over || active.id === over.id) return;
+
+    const oldIndex = specs.findIndex((s) => s._id === active.id);
+    const newIndex = specs.findIndex((s) => s._id === over.id);
+    if (oldIndex === -1 || newIndex === -1) return;
+
+    const reordered = arrayMove(specs, oldIndex, newIndex);
+    setSpecs(reordered);
+
+    const res = await fetch("/api/admin/products/spec/reorder", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ ids: reordered.map((s) => s._id) }),
+    });
+    if (res.ok) {
+      toast.success("Spec order updated");
+    } else {
+      toast.error("Failed to save order");
+      fetchSpecs();
+    }
   };
 
   const fetchIcons = async () => {
@@ -841,49 +925,37 @@ export default function ProductsMainPage() {
                   onClick={() => setSpecDialog("new")}
                 />
               </div>
-              <div className="grid grid-cols-2 xl:grid-cols-4 gap-2">
-                {specs.length === 0 && (
-                  <p className="text-sm text-black/40">No specs added yet.</p>
-                )}
-                {specs.map((spec) => (
-                  <div
-                    key={spec._id}
-                    className="flex items-center justify-between border border-secondary/60 rounded-md px-4 py-2"
+              {specs.length === 0 ? (
+                <p className="text-sm text-black/40">No specs added yet.</p>
+              ) : (
+                <DndContext
+                  sensors={dndSensors}
+                  collisionDetection={closestCenter}
+                  onDragEnd={handleSpecDragEnd}
+                >
+                  <SortableContext
+                    items={specs.map((s) => s._id)}
+                    strategy={rectSortingStrategy}
                   >
-                    <span className="text-md font-itc-medium">
-                      {spec.label}
-                    </span>
-                    <div className="flex items-center gap-3">
-                      <button
-                        type="button"
-                        className="cursor-pointer hover:scale-110 transition-all"
-                        onClick={() => setSpecDialog(spec)}
-                      >
-                        <RiPencilLine
-                          className="text-gray-500 hover:text-primary"
-                          size={20}
+                    <div className="grid grid-cols-2 xl:grid-cols-4 gap-2">
+                      {specs.map((spec) => (
+                        <SortableSpecCard
+                          key={spec._id}
+                          spec={spec}
+                          onEdit={() => setSpecDialog(spec)}
+                          onDelete={() =>
+                            setDeleteTarget({
+                              type: "spec",
+                              id: spec._id,
+                              label: spec.label,
+                            })
+                          }
                         />
-                      </button>
-                      <button
-                        type="button"
-                        className="cursor-pointer hover:scale-110 transition-all"
-                        onClick={() =>
-                          setDeleteTarget({
-                            type: "spec",
-                            id: spec._id,
-                            label: spec.label,
-                          })
-                        }
-                      >
-                        <RiDeleteBinLine
-                          className="text-red-400 hover:text-red-600"
-                          size={20}
-                        />
-                      </button>
+                      ))}
                     </div>
-                  </div>
-                ))}
-              </div>
+                  </SortableContext>
+                </DndContext>
+              )}
             </div>
           )}
 

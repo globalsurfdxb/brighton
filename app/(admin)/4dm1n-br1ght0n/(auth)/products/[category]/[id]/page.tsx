@@ -109,7 +109,49 @@ const defaultValues: ProductForm = {
     configurations: [],
     commonConfigurations: [],
   },
-  thirdSection: { title: "", items: [] },
+  thirdSection: {
+    title: "",
+    items: [
+      {
+        title: "Electrical",
+        items: [
+          { key: "Wattage", value: "" },
+          { key: "Voltage", value: "" },
+          { key: "Current", value: "" },
+          { key: "Power Factor", value: "" },
+          { key: "THD", value: "" },
+          { key: "Dimming", value: "" },
+        ],
+      },
+      {
+        title: "Photometric",
+        items: [
+          { key: "Beam Angle", value: "" },
+          { key: "CCT", value: "" },
+          { key: "CRI", value: "" },
+          { key: "MacAdam", value: "" },
+          { key: "Lumens", value: "" },
+        ],
+      },
+      {
+        title: "Protection",
+        items: [
+          { key: "IP Rating", value: "" },
+          { key: "IK Rating", value: "" },
+          { key: "Ambient Temperature", value: "" },
+          { key: "Lifetime", value: "" },
+          { key: "Warranty", value: "" },
+        ],
+      },
+      {
+        title: "General",
+        items: [
+          { key: "Materials", value: "" },
+          { key: "Cutout", value: "" },
+        ],
+      },
+    ],
+  },
   fourthSection: [],
   datasheet: {
     image: "",
@@ -250,7 +292,10 @@ export default function ProductDetailPage() {
         },
         thirdSection: {
           title: data.thirdSection?.title ?? "",
-          items: data.thirdSection?.items ?? [],
+          items:
+            data.thirdSection?.items?.length > 0
+              ? data.thirdSection.items
+              : defaultValues.thirdSection.items,
         },
         fourthSection: (Array.isArray(data.fourthSection)
           ? data.fourthSection
