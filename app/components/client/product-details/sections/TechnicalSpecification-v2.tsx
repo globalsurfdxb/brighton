@@ -3,6 +3,10 @@ import AnimatedTitle from "../../animations/AnimatedTitle";
 import { Product, ProductSpecTableGroup } from "@/app/types/product";
 
 function SpecGroup({ group }: { group: ProductSpecTableGroup }) {
+  const visibleItems = group.items.filter((row) => row.value?.trim());
+
+  if (!visibleItems.length) return null;
+
   return (
     <div className="rounded-[10px]">
       {/* <div className="mb-[14px] rounded-full bg-white px-30 py-3 sm:py-5 flex items-center">
@@ -10,7 +14,7 @@ function SpecGroup({ group }: { group: ProductSpecTableGroup }) {
       </div> */}
 
       <div className="flex flex-col px-30">
-        {group.items.map((row, i) => (
+        {visibleItems.map((row, i) => (
           <div key={row.key}>
             <div className="flex items-center justify-between py-4 md:py-[26px]">
               <span className="text-description-color text-description text-trim">
