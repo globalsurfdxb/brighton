@@ -74,12 +74,17 @@ export default function CatalogueRequestDrawer({
                 </div>
 
                 <button
+                                style={
+                  {
+                    "--fill-color": "var(--color-primary, #0A0A0A)",
+                  } as React.CSSProperties
+                }
                   type="button"
                   onClick={onClose}
                   aria-label="Close"
-                  className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-secondary transition-colors duration-500 hover:text-primary cursor-pointer"
+                  className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-secondary transition-colors duration-500 hover:text-white cursor-pointer btn-fill-center"
                 >
-                  <X className="h-4 w-4" />
+                  <X className="h-5 w-5" />
                 </button>
               </div>
 
