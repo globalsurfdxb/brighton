@@ -21,7 +21,11 @@ export async function POST(request: NextRequest) {
     const uniqueFileName = `${Date.now()}-${file.name.replace(/\s+/g, "-")}`;
     // Not referenced by any document yet. If the admin never saves a form that
     // uses it, the blob garbage-collector reclaims it after the grace period.
-    const url = await uploadToBlob(buffer, uniqueFileName, file.type);
+    const url = await uploadToBlob(
+      buffer,
+      uniqueFileName,
+      file.type || "application/octet-stream",
+    );
 
     return NextResponse.json({ url }, { status: 200 });
   } catch (error) {

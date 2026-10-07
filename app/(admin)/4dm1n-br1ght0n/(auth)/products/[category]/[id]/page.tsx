@@ -23,7 +23,7 @@ import {
 } from "@/components/ui/select";
 import { ImageUploader } from "@/components/ui/image-uploader";
 import { MultiImageUploader } from "@/components/ui/multi-image-uploader";
-import { FileUploader } from "@/components/ui/file-uploader";
+import { DOCUMENT_ACCEPT, FileUploader } from "@/components/ui/file-uploader";
 import AdminItemContainer from "@/app/components/admin/common/AdminItemContainer";
 import CustomButton from "@/app/components/client/common/CustomButton";
 import { slugify } from "@/lib/utils/slugify";
@@ -1558,6 +1558,13 @@ function FourthSectionTile({
   );
 }
 
+// Resource tiles also carry photometric files (.lbx, .ies, .ldt), which browsers
+// report with no MIME type, so match them by extension.
+const RESOURCE_ACCEPT: Record<string, string[]> = {
+  ...DOCUMENT_ACCEPT,
+  "application/octet-stream": [".lbx", ".ies", ".ldt"],
+};
+
 function FourthSectionItem({
   control,
   register,
@@ -1603,6 +1610,7 @@ function FourthSectionItem({
         render={({ field }) => (
           <FileUploader
             value={field.value}
+            accept={RESOURCE_ACCEPT}
             onChange={(url, fileName, fileSize) => {
               field.onChange(url);
               setValue(`${path}.size`, fileSize);

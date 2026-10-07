@@ -13,6 +13,18 @@ interface FileUploaderProps {
   accept?: Record<string, string[]>;
 }
 
+export const DOCUMENT_ACCEPT: Record<string, string[]> = {
+  "application/pdf": [".pdf"],
+  "application/msword": [".doc"],
+  "application/vnd.openxmlformats-officedocument.wordprocessingml.document": [
+    ".docx",
+  ],
+  "application/vnd.ms-excel": [".xls"],
+  "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": [
+    ".xlsx",
+  ],
+};
+
 function formatBytes(bytes: number): string {
   if (bytes === 0) return "0 Bytes";
   const k = 1024;
@@ -31,16 +43,7 @@ export function FileUploader({
   value,
   onChange,
   className,
-  accept = {
-    "application/pdf": [".pdf"],
-    "application/msword": [".doc"],
-    "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
-      [".docx"],
-    "application/vnd.ms-excel": [".xls"],
-    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": [
-      ".xlsx",
-    ],
-  },
+  accept = DOCUMENT_ACCEPT,
 }: FileUploaderProps) {
   const [isUploading, setIsUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
