@@ -45,7 +45,7 @@ export function ResourceCard({
 }: CardProps) {
   return (
     <div
-      className={`flex justify-between border border-secondary p-3 sm:p-30 rounded-[10px] ${bgColor}`}
+      className={`flex h-full justify-between border border-secondary p-3 sm:p-30 rounded-[10px] ${bgColor}`}
     >
       <div className="flex gap-5">
         <FileTypeIcon iconSrc={iconSrc} fileType={item.fileType} />

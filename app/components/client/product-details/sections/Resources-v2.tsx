@@ -30,6 +30,7 @@ export default function SpecifierResources({ product }: { product: Product }) {
                     variants={moveUpV2}
                     delayRange={index * 0.01}
                     key={index}
+                    className="h-full"
                   >
                     <ResourceCard
                       item={{
