@@ -104,9 +104,6 @@ const styles = StyleSheet.create({
   iconBox: {
     width: 34,
     height: 34,
-    borderWidth: 0.75,
-    borderColor: COLORS.hairline,
-    borderRadius: 2,
     alignItems: "center",
     justifyContent: "center",
   },
