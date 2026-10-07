@@ -26,6 +26,34 @@ function proxiedImageUrl(url: string): string {
   return url ? `/api/proxy-image?url=${encodeURIComponent(url)}` : url;
 }
 
+/**
+ * @react-pdf/renderer doesn't render SVG <Image> sources reliably (icons come
+ * out cropped/zoomed). Rasterize each icon in the browser onto a square PNG,
+ * scaled to fit ("object-contain") and centered. Falls back to the original
+ * URL if the image can't be loaded.
+ */
+function rasterizeIcon(url: string, size = 128): Promise<string> {
+  return new Promise((resolve) => {
+    const img = new window.Image();
+    img.onload = () => {
+      const w = img.naturalWidth || size;
+      const h = img.naturalHeight || size;
+      const scale = Math.min(size / w, size / h);
+      const dw = w * scale;
+      const dh = h * scale;
+      const canvas = document.createElement("canvas");
+      canvas.width = size;
+      canvas.height = size;
+      const ctx = canvas.getContext("2d");
+      if (!ctx) return resolve(url);
+      ctx.drawImage(img, (size - dw) / 2, (size - dh) / 2, dw, dh);
+      resolve(canvas.toDataURL("image/png"));
+    };
+    img.onerror = () => resolve(url);
+    img.src = url;
+  });
+}
+
 function buildInitialSelections(
   product: Product,
   searchParams: URLSearchParams,
@@ -212,7 +240,9 @@ export default function ProductConfigurator({ product }: { product: Product }) {
         datasheetImage: proxiedImageUrl(product.datasheet.image),
         installationGuideLink: guideLink,
         qrCodeImage,
-        icons: icons.map(proxiedImageUrl),
+        icons: await Promise.all(
+          icons.map((icon) => rasterizeIcon(proxiedImageUrl(icon))),
+        ),
       });
       await downloadDatasheet(data);
       setDownloadState("idle");
