@@ -110,7 +110,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-  iconImage: { width: 18, height: 18, objectFit: "contain" },
+  iconImage: { width: "100%", height: "100%", objectFit: "contain" },
 
   descBlock: { flexDirection: "row", gap: 8, marginBottom: 12 },
   descLabel: { width: 78, color: COLORS.ink, fontSize: 7.5 },

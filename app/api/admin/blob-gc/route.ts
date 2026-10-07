@@ -51,4 +51,15 @@ async function run(request: NextRequest, dryRun: boolean) {
 }
 
 export const GET = (request: NextRequest) => run(request, true);
-export const POST = (request: NextRequest) => run(request, false);
+// Deleting is disabled unless BLOB_GC_ENABLED=true. The storage container may be
+// shared with other projects, and a sweep only sees this project's database, so
+// it would delete their files as "orphans".
+export const POST = (request: NextRequest) => {
+  if (process.env.BLOB_GC_ENABLED !== "true") {
+    return NextResponse.json(
+      { message: "Blob GC deletion is disabled" },
+      { status: 403 },
+    );
+  }
+  return run(request, false);
+};
