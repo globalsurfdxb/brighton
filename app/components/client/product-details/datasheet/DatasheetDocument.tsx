@@ -126,7 +126,7 @@ const styles = StyleSheet.create({
   disclaimerText: { fontSize: 6, color: COLORS.muted, textAlign: "justify" },
 
   productName: { fontFamily: FONT_FAMILY, fontSize: 11.5, color: COLORS.ink },
-  productCode: { fontSize: 9.2, color: COLORS.muted, marginTop: 2, marginBottom: 12 },
+  productCode: { fontSize: 9.2, color: COLORS.muted, marginTop: 5, marginBottom: 12 },
 
   visualRow: { flexDirection: "row", gap: 12, marginBottom: 12 },
   datasheetImage: { width: 200, height: 140, objectFit: "contain" },
@@ -154,6 +154,10 @@ const styles = StyleSheet.create({
   specColon: { width: 10, color: COLORS.muted, fontSize: 7.68 },
   specValue: { flex: 1, fontSize: 7.68 },
 
+  photometricBlock: { marginTop: 12 },
+  photometricHeading: { color: COLORS.ink, fontSize: 7.68, marginBottom: 4 },
+  photometricImage: { width: 90, height: 90, objectFit: "contain" },
+
   footer: {
     position: "absolute",
     bottom: 22,
@@ -161,6 +165,7 @@ const styles = StyleSheet.create({
     right: "20%",
     textAlign: "center",
     fontSize: 6,
+    lineHeight: 1.15,
     color: COLORS.muted,
   },
   installNote: { fontSize: 6.5, color: COLORS.muted, marginTop: 6 },
@@ -371,6 +376,16 @@ export function DatasheetDocument({ data }: { data: DatasheetData }) {
                 </View>
               ))}
             </View>
+
+            {data.photometricImage ? (
+              <View style={styles.photometricBlock} wrap={false}>
+                <Text style={styles.photometricHeading}>Photometric</Text>
+                <Image
+                  src={data.photometricImage}
+                  style={styles.photometricImage}
+                />
+              </View>
+            ) : null}
           </View>
 
           <ColumnDivider />

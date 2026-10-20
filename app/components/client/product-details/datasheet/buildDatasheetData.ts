@@ -42,6 +42,7 @@ export interface BuildDatasheetInput {
   productCode: string;
   summary: string;
   datasheetImage?: string;
+  photometricImage?: string;
   installationGuideLink?: string;
   qrCodeImage?: string;
   icons?: string[];
@@ -66,6 +67,7 @@ export function buildDatasheetData(input: BuildDatasheetInput): DatasheetData {
     productCode,
     summary,
     datasheetImage,
+    photometricImage,
     installationGuideLink,
     qrCodeImage,
     icons,
@@ -132,6 +134,7 @@ export function buildDatasheetData(input: BuildDatasheetInput): DatasheetData {
     dimensions,
     specs,
     datasheetImage: datasheetImage ?? "",
+    photometricImage: photometricImage ?? "",
     icons: icons ?? [],
     installationGuideLink: installationGuideLink ?? "",
     qrCodeImage: qrCodeImage ?? "",

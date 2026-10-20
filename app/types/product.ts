@@ -172,6 +172,8 @@ export interface Product {
 
   datasheet: {
     image: string;
+    // image URL of the photometrics entry shown on the datasheet ("" = none)
+    photometric?: string;
     installationGuide: {
       link: string;
       size: string;
