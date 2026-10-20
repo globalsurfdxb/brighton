@@ -31,7 +31,14 @@ const AdminNavbar = () => {
       .catch(() => {});
   }, []);
 
-  const navItems = [
+  const navItems: {
+    name: string;
+    href: string;
+    icon: typeof Home;
+    hasChild?: boolean;
+    activePrefix?: string;
+    children?: { name: string; href: string }[];
+  }[] = [
     { name: "Home", href: "/4dm1n-br1ght0n/home", icon: Home },
     { name: "About", href: "/4dm1n-br1ght0n/about", icon: Info },
     {
@@ -58,10 +65,41 @@ const AdminNavbar = () => {
       href: "/4dm1n-br1ght0n/design-philosophy",
       icon: Compass,
     },
-    { name: "Blogs", href: "/4dm1n-br1ght0n/blogs", icon: BookOpen },
-    { name: "News", href: "/4dm1n-br1ght0n/news", icon: Newspaper },
+    {
+      name: "Blogs",
+      href: "/4dm1n-br1ght0n/blogs/main",
+      icon: BookOpen,
+      hasChild: true,
+      activePrefix: "/4dm1n-br1ght0n/blogs",
+      children: [
+        { name: "Main Page", href: "/4dm1n-br1ght0n/blogs/main" },
+        { name: "Blog List", href: "/4dm1n-br1ght0n/blogs/list" },
+      ],
+    },
+    {
+      name: "News",
+      href: "/4dm1n-br1ght0n/news/main",
+      icon: Newspaper,
+      hasChild: true,
+      activePrefix: "/4dm1n-br1ght0n/news",
+      children: [
+        { name: "Main Page", href: "/4dm1n-br1ght0n/news/main" },
+        { name: "News List", href: "/4dm1n-br1ght0n/news/list" },
+      ],
+    },
     { name: "Services", href: "/4dm1n-br1ght0n/services", icon: Briefcase },
-    { name: "Projects", href: "/4dm1n-br1ght0n/projects", icon: FolderKanban },
+    {
+      name: "Projects",
+      href: "/4dm1n-br1ght0n/projects/main",
+      icon: FolderKanban,
+      hasChild: true,
+      // keeps the parent highlighted on /projects/[id] detail pages too
+      activePrefix: "/4dm1n-br1ght0n/projects",
+      children: [
+        { name: "Main Page", href: "/4dm1n-br1ght0n/projects/main" },
+        { name: "Project List", href: "/4dm1n-br1ght0n/projects/list" },
+      ],
+    },
     {
       name: "Digital Catalogue",
       href: "/4dm1n-br1ght0n/digital-catalogue",
@@ -95,7 +133,9 @@ const AdminNavbar = () => {
       (child) =>
         pathname === child.href || pathname?.startsWith(`${child.href}/`),
     );
-    return ownMatch || childMatch;
+    const prefixMatch =
+      !!item.activePrefix && !!pathname?.startsWith(`${item.activePrefix}/`);
+    return ownMatch || childMatch || prefixMatch;
   };
 
   const [openLink, setOpenLink] = useState<string | null>(null);

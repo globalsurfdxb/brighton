@@ -1,8 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useForm, Controller } from "react-hook-form";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { toast } from "sonner";
 import {
   RiDeleteBinLine,
@@ -12,6 +11,7 @@ import {
   RiPencilLine,
   RiCheckLine,
   RiCloseLine,
+  RiPriceTag3Line,
 } from "react-icons/ri";
 
 import {
@@ -21,37 +21,16 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import AdminItemContainer from "../common/AdminItemContainer";
-import AdminPageActions from "../common/AdminPageActions";
 import CustomButton from "../../client/common/CustomButton";
-import Link from "next/link";
+import ReorderableList from "../common/ReorderableList";
 
-type TopLevelForm = {
-  seo: { metaTitle: string; metaDescription: string; script: string };
-  bannerSection: { title: string };
-  ctaSection: {
-    isHidden: boolean;
-    title: string;
-    description: string;
-    buttonText: string;
-    buttonLink: string;
-  };
-};
-
-const defaultValues: TopLevelForm = {
-  seo: { metaTitle: "", metaDescription: "", script: "" },
-  bannerSection: { title: "" },
-  ctaSection: {
-    isHidden: false,
-    title: "",
-    description: "",
-    buttonText: "",
-    buttonLink: "",
-  },
-};
+const TABS = [
+  { key: "news", label: "News" },
+  { key: "topics", label: "Topics" },
+] as const;
+type TabKey = (typeof TABS)[number]["key"];
 
 type Topic = { _id: string; title: string };
 type NewsListItem = {
@@ -59,7 +38,9 @@ type NewsListItem = {
   title?: string;
   slug?: string;
   isHidden?: boolean;
+  topic?: string[];
 };
+
 
 type DeleteTarget = {
   type: "topic" | "news";
@@ -74,10 +55,18 @@ const deleteLabels: Record<DeleteTarget["type"], string> = {
 
 export default function NewsListingPage() {
   const router = useRouter();
-  const { register, control, reset, handleSubmit } = useForm<TopLevelForm>({
-    defaultValues,
-  });
-  const [isSaving, setIsSaving] = useState(false);
+  // active tab lives in the URL (?tab=topics) so it survives refreshes
+  // and can be linked to directly
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const tabParam = searchParams.get("tab");
+  const activeTab: TabKey =
+    TABS.find((t) => t.key === tabParam)?.key ?? "news";
+  const setActiveTab = (tab: TabKey) =>
+    router.replace(`${pathname}?${new URLSearchParams({ tab })}`, {
+      scroll: false,
+    });
+
 
   const [topics, setTopics] = useState<Topic[]>([]);
   const [news, setNews] = useState<NewsListItem[]>([]);
@@ -89,6 +78,8 @@ export default function NewsListingPage() {
 
   const [deleteTarget, setDeleteTarget] = useState<DeleteTarget | null>(null);
 
+  const topicTitles = new Map(topics.map((t) => [t._id, t.title]));
+
   const fetchAll = async () => {
     try {
       const res = await fetch("/api/admin/news");
@@ -98,15 +89,6 @@ export default function NewsListingPage() {
         return;
       }
       const { data } = await res.json();
-      reset({
-        ...defaultValues,
-        seo: { ...defaultValues.seo, ...data.seo },
-        bannerSection: {
-          ...defaultValues.bannerSection,
-          ...data.bannerSection,
-        },
-        ctaSection: { ...defaultValues.ctaSection, ...data.ctaSection },
-      });
       setTopics(data.topics || []);
       setNews(data.news || []);
     } catch (e) {
@@ -117,30 +99,7 @@ export default function NewsListingPage() {
 
   useEffect(() => {
     fetchAll();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  const onSubmit = async (formData: TopLevelForm) => {
-    setIsSaving(true);
-    try {
-      const res = await fetch("/api/admin/news", {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      });
-      const { message } = await res.json();
-      if (res.ok) {
-        toast.success(message || "Saved");
-      } else {
-        toast.error(message || "Failed to save");
-      }
-    } catch (e) {
-      console.error(e);
-      toast.error("Something went wrong");
-    } finally {
-      setIsSaving(false);
-    }
-  };
 
   // ---- Topics ----
   const addTopic = async () => {
@@ -241,211 +200,43 @@ export default function NewsListingPage() {
 
   return (
     <div className="flex flex-col gap-5">
-      <form className="flex flex-col gap-5" onSubmit={handleSubmit(onSubmit)}>
-        <AdminPageActions>
-          <Link href="/news" target="_blank">
-            <CustomButton variant="2" type="button" text="Visit Page" />
-          </Link>
-          <CustomButton
-            variant="3"
-            type="submit"
-            text={isSaving ? "Saving..." : "Page Submit"}
-            showIcon={false}
-          />
-        </AdminPageActions>
+      {/* Tabs */}
+      <div className="flex items-center gap-2 bg-white border border-secondary rounded-[10px] p-2 w-fit">
+        {TABS.map((tab) => (
+          <button
+            key={tab.key}
+            type="button"
+            onClick={() => setActiveTab(tab.key)}
+            className={`px-4 py-2 rounded-md text-sm font-itc-medium transition-all ${
+              activeTab === tab.key
+                ? "bg-primary text-white"
+                : "text-description-color hover:bg-secondary/10"
+            }`}
+          >
+            {tab.label}
+          </button>
+        ))}
+      </div>
 
-        <AdminItemContainer expansion={false}>
-          <div className="flex items-center justify-between border-b border-secondary">
-            <Label main>Banner Section</Label>
-          </div>
-          <div className="p-5 flex flex-col gap-2">
-            <Label className="font-bold">Title</Label>
-            <Input {...register("bannerSection.title")} placeholder="Title" />
-          </div>
-        </AdminItemContainer>
-
-        <AdminItemContainer>
-          <Controller
-            name="ctaSection.isHidden"
-            control={control}
-            render={({ field }) => (
-              <Label
-                main
-                isHidden={field.value}
-                onToggleHidden={() => field.onChange(!field.value)}
-              >
-                CTA Section
-              </Label>
-            )}
-          />
-          <div className="p-5 flex flex-col gap-4">
-            <div className="flex flex-col gap-2">
-              <Label className="font-bold">Title</Label>
-              <Input {...register("ctaSection.title")} placeholder="Title" />
-            </div>
-            <div className="flex flex-col gap-2">
-              <Label className="font-bold">Description</Label>
-              <Textarea
-                {...register("ctaSection.description")}
-                placeholder="Description"
-              />
-            </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="flex flex-col gap-2">
-                <Label className="font-bold">Button Text</Label>
-                <Input
-                  {...register("ctaSection.buttonText")}
-                  placeholder="Button Text"
-                />
-              </div>
-              <div className="flex flex-col gap-2">
-                <Label className="font-bold">Button Link</Label>
-                <Input
-                  {...register("ctaSection.buttonLink")}
-                  placeholder="Button Link"
-                />
-              </div>
-            </div>
-          </div>
-        </AdminItemContainer>
-
-        <AdminItemContainer>
-          <Label main>SEO</Label>
-          <div className="p-5 flex flex-col gap-4">
-            <div className="flex flex-col gap-2">
-              <Label className="font-bold">Meta Title</Label>
-              <Input {...register("seo.metaTitle")} placeholder="Meta Title" />
-            </div>
-            <div className="flex flex-col gap-2">
-              <Label className="font-bold">Meta Description</Label>
-              <Input
-                {...register("seo.metaDescription")}
-                placeholder="Meta Description"
-              />
-            </div>
-            <div className="flex flex-col gap-2">
-              <Label className="font-bold">Script</Label>
-              <Textarea {...register("seo.script")} placeholder="Script" />
-            </div>
-          </div>
-        </AdminItemContainer>
-
-      </form>
-
-      {/* Regions & Sectors */}
-      <div className="grid grid-cols-[33%_1fr] gap-5">
-        <div className="flex h-fit">
-          <div className="bg-white border border-secondary rounded-[10px] p-5 flex flex-col gap-4 w-full">
-            <div className="flex items-center justify-between border-b border-secondary pb-3">
-              <Label className="!text-xl !font-semibold">
-                Topics {`(${topics?.length})`}
-              </Label>
-            </div>
-            <div className="flex gap-2 items-center">
-              <Input
-                value={newTopic}
-                onChange={(e) => {
-                  setNewTopic(e.target.value);
-                  setTopicError(false);
-                }}
-                placeholder={topicError ? "Add name for topic" : "New topic"}
-                className={topicError ? "placeholder:text-red-500" : ""}
-              />
-              <CustomButton
-                variant="3"
-                type="button"
-                text="Add Topic"
-                showIcon={false}
-                onClick={() => {
-                  if (!newTopic.trim()) {
-                    setTopicError(true);
-                    return;
-                  }
-                  addTopic();
-                }}
-              />
-            </div>
-            <div className="flex flex-col gap-2">
-              {topics?.length === 0 && (
-                <p className="text-sm text-black/40">No topics added yet.</p>
-              )}
-              {topics?.map((topic) => (
-                <div
-                  key={topic._id}
-                  className="flex items-center justify-between border border-secondary/60 rounded-md px-4 py-2"
-                >
-                  {editingTopicId === topic._id ? (
-                    <Input
-                      value={editingTopicTitle}
-                      onChange={(e) => setEditingTopicTitle(e.target.value)}
-                      className="mr-2"
-                    />
-                  ) : (
-                    <span className="text-md font-itc-medium">
-                      {topic.title}
-                    </span>
-                  )}
-                  <div className="flex items-center gap-3">
-                    {editingTopicId === topic._id ? (
-                      <>
-                        <button
-                          type="button"
-                          className="cursor-pointer hover:scale-110 transition-all"
-                          onClick={() => saveTopic(topic._id)}
-                        >
-                          <RiCheckLine className="text-green-600" size={20} />
-                        </button>
-                        <button
-                          type="button"
-                          className="cursor-pointer hover:scale-110 transition-all"
-                          onClick={() => setEditingTopicId(null)}
-                        >
-                          <RiCloseLine className="text-gray-500" size={20} />
-                        </button>
-                      </>
-                    ) : (
-                      <button
-                        type="button"
-                        className="cursor-pointer hover:scale-110 transition-all"
-                        onClick={() => {
-                          setEditingTopicId(topic._id);
-                          setEditingTopicTitle(topic.title);
-                        }}
-                      >
-                        <RiPencilLine
-                          className="text-gray-500 hover:text-primary"
-                          size={20}
-                        />
-                      </button>
-                    )}
-                    <button
-                      type="button"
-                      className="cursor-pointer hover:scale-110 transition-all"
-                      onClick={() =>
-                        setDeleteTarget({
-                          type: "topic",
-                          id: topic._id,
-                          label: topic.title,
-                        })
-                      }
-                    >
-                      <RiDeleteBinLine
-                        className="text-red-400 hover:text-red-600"
-                        size={20}
-                      />
-                    </button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-        {/* News list */}
-        <div className="bg-white border border-secondary rounded-[10px] p-5 flex flex-col gap-4 h-fit">
-          <div className="flex items-center justify-between border-b border-secondary pb-3">
-            <Label className="!text-xl !font-semibold">
-              News {`(${news?.length})`}
-            </Label>
+      {/* News */}
+      {activeTab === "news" && (
+        <ReorderableList
+          title="News"
+          noun="news"
+          items={news}
+          onItemsChange={setNews}
+          searchPlaceholder="Search title, slug or topic"
+          getSearchValues={(news) => [
+            news.title,
+            news.slug,
+            ...(news.topic ?? []).map((id) => topicTitles.get(id)),
+          ]}
+          reorderEndpoint="/api/admin/news/reorder"
+          onReorderFailed={fetchAll}
+          onRowClick={(news) =>
+            router.push(`/4dm1n-br1ght0n/news/${news._id}`)
+          }
+          headerActions={
             <CustomButton
               variant="3"
               type="button"
@@ -453,80 +244,196 @@ export default function NewsListingPage() {
               showIcon={false}
               onClick={() => router.push("/4dm1n-br1ght0n/news/new")}
             />
-          </div>
-          <div className="grid grid-cols-1 gap-5">
-            {news?.length === 0 && (
-              <p className="text-sm text-black/40">No news added yet.</p>
-            )}
-            {news?.map((news) => (
-              <div
-                key={news._id}
-                className="flex items-center justify-between border border-secondary/60 rounded-md px-4 py-3 hover:shadow-sm transition-all cursor-pointer"
-                onClick={() => router.push(`/4dm1n-br1ght0n/news/${news._id}`)}
-              >
-                <span className="text-md font-itc-medium flex flex-col items-start gap-2">
-                  {news.title || "Untitled News"}
-                  <span className="text-sm text-description-color font-itc-book">
-                    {news.slug}
-                  </span>
-                  {news.isHidden && (
-                    <span className="text-[10px] uppercase font-semibold text-red-500 border border-red-300 rounded px-1.5 py-0.5">
-                      Hidden
+          }
+          renderContent={(news) => (
+            <div className="flex flex-col items-start">
+              <span className="text-md font-itc-medium leading-tight">
+                {news.title || "Untitled News"}
+              </span>
+              <span className="text-[12px] text-description-color font-itc-book leading-tight mt-0.5">
+                {news.slug}
+              </span>
+              <div className="flex flex-wrap items-center gap-1.5 mt-2 empty:hidden">
+                {(news.topic ?? [])
+                  .map((id) => topicTitles.get(id))
+                  .filter(Boolean)
+                  .map((title) => (
+                    <span
+                      key={title}
+                      title="Topic"
+                      className="inline-flex items-center gap-1 rounded-full border border-secondary bg-secondary/10 px-2.5 py-1 text-[11px] font-itc-medium text-description-color"
+                    >
+                      <RiPriceTag3Line size={12} />
+                      <span className="text-trim">{title}</span>
                     </span>
-                  )}
+                  ))}
+                {news.isHidden && (
+                  <span className="inline-flex items-center rounded-full border border-red-300 bg-red-50 px-2.5 py-1 text-[10px] uppercase font-semibold text-red-500">
+                    <span className="text-trim">Hidden</span>
+                  </span>
+                )}
+              </div>
+            </div>
+          )}
+          renderActions={(news) => (
+            <>
+              <div className="relative group mt-2">
+                <button
+                  type="button"
+                  className="cursor-pointer hover:scale-110 transition-all"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    window.open(`/news/${news.slug}`, "_blank");
+                  }}
+                >
+                  <RiExternalLinkLine
+                    className="text-gray-500 hover:text-primary"
+                    size={22}
+                  />
+                </button>
+                <span
+                  className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1
+          whitespace-nowrap rounded-md bg-primary px-2 py-2 text-[11px] text-white font-itc-medium
+          opacity-0 invisible group-hover:opacity-100 group-hover:visible
+          transition-opacity duration-400"
+                >
+                  Visit page
                 </span>
-                <div className="flex items-center justify-center gap-4">
-                  <div className="relative group mt-2">
+              </div>
+              <button
+                onClick={(e) => toggleHidden(e, news)}
+                type="button"
+                className="cursor-pointer hover:scale-110 transition-all"
+                title={news.isHidden ? "Show news" : "Hide news"}
+              >
+                {news.isHidden ? (
+                  <RiEyeOffLine className="text-gray-500" size={22} />
+                ) : (
+                  <RiEyeLine className="text-green-600" size={22} />
+                )}
+              </button>
+              <button
+                type="button"
+                className="cursor-pointer hover:scale-110 transition-all"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setDeleteTarget({
+                    type: "news",
+                    id: news._id,
+                    label: news.title || "Untitled News",
+                  });
+                }}
+                title="Delete news"
+              >
+                <RiDeleteBinLine
+                  className="text-red-400 hover:text-red-600"
+                  size={22}
+                />
+              </button>
+            </>
+          )}
+        />
+      )}
+
+      {/* Topics */}
+      {activeTab === "topics" && (
+        <div className="bg-white border border-secondary rounded-[10px] p-5 flex flex-col gap-4 w-full">
+          <div className="flex items-center justify-between border-b border-secondary pb-3">
+            <Label className="!text-xl !font-semibold">
+              Topics {`(${topics?.length})`}
+            </Label>
+          </div>
+          <div className="flex gap-2 items-center">
+            <Input
+              value={newTopic}
+              onChange={(e) => {
+                setNewTopic(e.target.value);
+                setTopicError(false);
+              }}
+              placeholder={topicError ? "Add name for topic" : "New topic"}
+              className={topicError ? "placeholder:text-red-500" : ""}
+            />
+            <CustomButton
+              variant="3"
+              type="button"
+              text="Add Topic"
+              showIcon={false}
+              onClick={() => {
+                if (!newTopic.trim()) {
+                  setTopicError(true);
+                  return;
+                }
+                addTopic();
+              }}
+            />
+          </div>
+          <div className="flex flex-col gap-2">
+            {topics?.length === 0 && (
+              <p className="text-sm text-black/40">No topics added yet.</p>
+            )}
+            {topics?.map((topic) => (
+              <div
+                key={topic._id}
+                className="flex items-center justify-between border border-secondary/60 rounded-md px-4 py-2"
+              >
+                {editingTopicId === topic._id ? (
+                  <Input
+                    value={editingTopicTitle}
+                    onChange={(e) => setEditingTopicTitle(e.target.value)}
+                    className="mr-2"
+                  />
+                ) : (
+                  <span className="text-md font-itc-medium">
+                    {topic.title}
+                  </span>
+                )}
+                <div className="flex items-center gap-3">
+                  {editingTopicId === topic._id ? (
+                    <>
+                      <button
+                        type="button"
+                        className="cursor-pointer hover:scale-110 transition-all"
+                        onClick={() => saveTopic(topic._id)}
+                      >
+                        <RiCheckLine className="text-green-600" size={20} />
+                      </button>
+                      <button
+                        type="button"
+                        className="cursor-pointer hover:scale-110 transition-all"
+                        onClick={() => setEditingTopicId(null)}
+                      >
+                        <RiCloseLine className="text-gray-500" size={20} />
+                      </button>
+                    </>
+                  ) : (
                     <button
                       type="button"
                       className="cursor-pointer hover:scale-110 transition-all"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        window.open(`/news/${news.slug}`, "_blank");
+                      onClick={() => {
+                        setEditingTopicId(topic._id);
+                        setEditingTopicTitle(topic.title);
                       }}
                     >
-                      <RiExternalLinkLine
+                      <RiPencilLine
                         className="text-gray-500 hover:text-primary"
-                        size={22}
+                        size={20}
                       />
                     </button>
-                    <span
-                      className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1
-              whitespace-nowrap rounded-md bg-primary px-2 py-2 text-[11px] text-white font-itc-medium
-              opacity-0 invisible group-hover:opacity-100 group-hover:visible
-              transition-opacity duration-400"
-                    >
-                      Visit page
-                    </span>
-                  </div>
-                  <button
-                    onClick={(e) => toggleHidden(e, news)}
-                    type="button"
-                    className="cursor-pointer hover:scale-110 transition-all"
-                    title={news.isHidden ? "Show news" : "Hide news"}
-                  >
-                    {news.isHidden ? (
-                      <RiEyeOffLine className="text-gray-500" size={22} />
-                    ) : (
-                      <RiEyeLine className="text-green-600" size={22} />
-                    )}
-                  </button>
+                  )}
                   <button
                     type="button"
                     className="cursor-pointer hover:scale-110 transition-all"
-                    onClick={(e) => {
-                      e.stopPropagation();
+                    onClick={() =>
                       setDeleteTarget({
-                        type: "news",
-                        id: news._id,
-                        label: news.title || "Untitled News",
-                      });
-                    }}
-                    title="Delete news"
+                        type: "topic",
+                        id: topic._id,
+                        label: topic.title,
+                      })
+                    }
                   >
                     <RiDeleteBinLine
                       className="text-red-400 hover:text-red-600"
-                      size={22}
+                      size={20}
                     />
                   </button>
                 </div>
@@ -534,7 +441,7 @@ export default function NewsListingPage() {
             ))}
           </div>
         </div>
-      </div>
+      )}
 
       <Dialog
         open={!!deleteTarget}

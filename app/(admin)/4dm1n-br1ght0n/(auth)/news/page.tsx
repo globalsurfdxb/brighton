@@ -1,7 +1,7 @@
-import NewsListingPage from "@/app/components/admin/AdminNews/NewsListingPage";
+import { redirect } from "next/navigation";
 
 const page = () => {
-  return <NewsListingPage />;
+  redirect("/4dm1n-br1ght0n/news/main");
 };
 
 export default page;

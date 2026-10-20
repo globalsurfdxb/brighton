@@ -4,17 +4,24 @@ import { usePathname } from "next/navigation";
 
 const BASE = "/4dm1n-br1ght0n";
 
-const SECTIONS: Record<string, { label: string; singular?: string }> = {
+const SECTIONS: Record<
+  string,
+  { label: string; singular?: string; listLabel?: string }
+> = {
   home: { label: "Home" },
   about: { label: "About" },
   products: { label: "Products", singular: "Product" },
   sustainability: { label: "Sustainability" },
   technology: { label: "Technology" },
   "design-philosophy": { label: "Design Philosophy" },
-  blogs: { label: "Blogs", singular: "Blog" },
-  news: { label: "News", singular: "Article" },
+  blogs: { label: "Blogs", singular: "Blog", listLabel: "Blog List" },
+  news: { label: "News", singular: "Article", listLabel: "News List" },
   services: { label: "Services", singular: "Service" },
-  projects: { label: "Projects", singular: "Project" },
+  projects: {
+    label: "Projects",
+    singular: "Project",
+    listLabel: "Project List",
+  },
   "digital-catalogue": { label: "Digital Catalogue" },
   contact: { label: "Contact" },
   settings: { label: "Settings" },
@@ -42,6 +49,8 @@ const getCrumbs = (pathname: string): string[] => {
 
   if (second === "main") {
     crumbs.push("Main Page");
+  } else if (second === "list" && section.listLabel) {
+    crumbs.push(section.listLabel);
   } else if (second === "enquiries") {
     crumbs.push("Enquiries");
   } else if (ID_PATTERN.test(second)) {
