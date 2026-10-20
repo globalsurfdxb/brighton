@@ -1,7 +1,7 @@
-import BlogListingPage from "@/app/components/admin/AdminBlogs/BlogListingPage";
+import { redirect } from "next/navigation";
 
 const page = () => {
-  return <BlogListingPage />;
+  redirect("/4dm1n-br1ght0n/blogs/main");
 };
 
 export default page;

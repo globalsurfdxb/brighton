@@ -11,6 +11,7 @@ import { Input } from "@/components/ui/input";
 import AdminItemContainer from "../common/AdminItemContainer";
 import AdminPageActions from "../common/AdminPageActions";
 import CustomButton from "../../client/common/CustomButton";
+import Link from "next/link";
 import TinyEditor from "../common/TinyMceEditor";
 import { ImageUploader } from "@/components/ui/image-uploader";
 import {
@@ -76,6 +77,8 @@ export default function BlogDetail() {
     formState: { errors },
   } = useForm<BlogForm>({ defaultValues });
   const [isSaving, setIsSaving] = useState(false);
+  // public link uses the last saved slug, not unsaved edits
+  const [savedSlug, setSavedSlug] = useState("");
   const [topics, setTopics] = useState<Option[]>([]);
 
   const fetchOptions = async () => {
@@ -97,6 +100,7 @@ export default function BlogDetail() {
         return;
       }
       const { data } = await res.json();
+      setSavedSlug(data.slug || "");
       reset({
         ...defaultValues,
         ...data,
@@ -125,6 +129,7 @@ export default function BlogDetail() {
       const { message, data } = await res.json();
       if (res.ok) {
         toast.success(message || "Blog saved");
+        setSavedSlug(data?.slug || formData.slug);
         if (isNew && data?._id) {
           router.replace(`/4dm1n-br1ght0n/blogs/${data._id}`);
         }
@@ -157,6 +162,11 @@ export default function BlogDetail() {
             text="Back to Blogs"
             onClick={() => router.back()}
           />
+          {savedSlug && (
+            <Link href={`/blog/${savedSlug}`} target="_blank">
+              <CustomButton variant="2" type="button" text="Visit page" />
+            </Link>
+          )}
           <CustomButton
             variant="3"
             type="submit"

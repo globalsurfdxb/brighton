@@ -13,6 +13,7 @@ import AdminItemContainer from "../common/AdminItemContainer";
 import AdminPageActions from "../common/AdminPageActions";
 import { Button } from "@/components/ui/button";
 import CustomButton from "../../client/common/CustomButton";
+import Link from "next/link";
 import { ImageUploader } from "@/components/ui/image-uploader";
 import TinyEditor from "../common/TinyMceEditor";
 import {
@@ -86,6 +87,8 @@ export default function ProjectDetail() {
     formState: { errors },
   } = useForm<ProjectForm>({ defaultValues });
   const [isSaving, setIsSaving] = useState(false);
+  // public link uses the last saved slug, not unsaved edits
+  const [savedSlug, setSavedSlug] = useState("");
   const [regions, setRegions] = useState<Option[]>([]);
   const [sectors, setSectors] = useState<Option[]>([]);
 
@@ -120,6 +123,7 @@ export default function ProjectDetail() {
         return;
       }
       const { data } = await res.json();
+      setSavedSlug(data.slug || "");
       reset({
         ...defaultValues,
         ...data,
@@ -150,6 +154,7 @@ export default function ProjectDetail() {
       const { message, data } = await res.json();
       if (res.ok) {
         toast.success(message || "Project saved");
+        setSavedSlug(data?.slug || formData.slug);
         if (isNew && data?._id) {
           router.replace(`/4dm1n-br1ght0n/projects/${data._id}`);
         }
@@ -182,6 +187,11 @@ export default function ProjectDetail() {
             text="Back to Projects"
             onClick={() => router.back()}
           />
+          {savedSlug && (
+            <Link href={`/projects/${savedSlug}`} target="_blank">
+              <CustomButton variant="2" type="button" text="Visit page" />
+            </Link>
+          )}
           <CustomButton
             variant="3"
             type="submit"
