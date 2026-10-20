@@ -59,6 +59,9 @@ export interface DatasheetData {
   /** The product's uploaded datasheet image, shown alongside the dimension drawing. */
   datasheetImage: string;
 
+  /** Photometric diagram picked in the CMS, shown under the specs ("" = none). */
+  photometricImage: string;
+
   /** Feature icon images (enabled common + product-specific). */
   icons: string[];
 

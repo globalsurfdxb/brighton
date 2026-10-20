@@ -101,6 +101,7 @@ type ProductForm = {
   }[];
   datasheet: {
     image: string;
+    photometric: string;
     installationGuide: { link: string; size: string };
     icons: {
       common: { icon: string; enabled: boolean }[];
@@ -181,6 +182,7 @@ const defaultValues: ProductForm = {
   fourthSection: [],
   datasheet: {
     image: "",
+    photometric: "",
     installationGuide: { link: "", size: "" },
     icons: { common: [], specific: [] },
   },
@@ -442,6 +444,7 @@ export default function ProductDetailPage() {
         })),
         datasheet: {
           image: data.datasheet?.image ?? "",
+          photometric: data.datasheet?.photometric ?? "",
           installationGuide: {
             link: data.datasheet?.installationGuide?.link ?? "",
             size: data.datasheet?.installationGuide?.size ?? "",
@@ -512,6 +515,12 @@ export default function ProductDetailPage() {
         },
         datasheet: {
           image: formData.datasheet.image,
+          // drop a pick whose photometric image was since removed
+          photometric: formData.photometrics.some(
+            (p) => p.image && p.image === formData.datasheet.photometric,
+          )
+            ? formData.datasheet.photometric
+            : "",
           installationGuide: formData.datasheet.installationGuide,
           icons: {
             // resolve against the live common-icon list so newly marked
@@ -563,6 +572,10 @@ export default function ProductDetailPage() {
   const watchedConfigurations = watch("secondSection.configurations");
   const watchedCommonSpecs = watch("specs.common");
   const watchedCommonIcons = watch("datasheet.icons.common");
+  const watchedPhotometrics = watch("photometrics");
+  const datasheetPhotometricOptions = (watchedPhotometrics ?? []).filter(
+    (p) => p.image,
+  );
   const watchedSpecificIcons = watch("datasheet.icons.specific");
   const watchedCommonConfigurations = watch(
     "secondSection.commonConfigurations",
@@ -1466,6 +1479,66 @@ export default function ProductDetailPage() {
                 render={({ field }) => (
                   <ImageUploader value={field.value} onChange={field.onChange} />
                 )}
+              />
+            </div>
+
+            <Divider />
+
+            <div className="flex flex-col gap-2">
+              <Label className="font-bold">Photometric</Label>
+              <span className="text-xs text-description-color">
+                Shown under the specifications on the generated datasheet PDF.
+                Choose from this product&apos;s Photometric Images above.
+              </span>
+              <Controller
+                name="datasheet.photometric"
+                control={control}
+                render={({ field }) => {
+                  const selected = datasheetPhotometricOptions.find(
+                    (p) => p.image === field.value,
+                  );
+                  return (
+                    <div className="flex items-start gap-4">
+                      <Select
+                        value={selected ? field.value : NO_DEFAULT_OPTION}
+                        onValueChange={(val) =>
+                          field.onChange(val === NO_DEFAULT_OPTION ? "" : val)
+                        }
+                      >
+                        <SelectTrigger className="cursor-pointer w-full max-w-sm">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem
+                            className="cursor-pointer"
+                            value={NO_DEFAULT_OPTION}
+                          >
+                            No photometric on datasheet
+                          </SelectItem>
+                          {datasheetPhotometricOptions.map((p, i) => (
+                            <SelectItem
+                              className="cursor-pointer"
+                              key={`${p.image}-${i}`}
+                              value={p.image}
+                            >
+                              {p.name || `Photometric ${i + 1}`}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      {selected ? (
+                        <div className="relative h-24 w-24 shrink-0 overflow-hidden rounded-md border border-secondary/20 bg-white">
+                          <Image
+                            src={selected.image}
+                            alt={selected.imageAlt || selected.name || ""}
+                            fill
+                            className="object-contain"
+                          />
+                        </div>
+                      ) : null}
+                    </div>
+                  );
+                }}
               />
             </div>
 

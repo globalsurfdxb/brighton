@@ -255,6 +255,8 @@ const productSchema = new mongoose.Schema({
   // Datasheet
   datasheet: {
     image: { type: String },
+    // image URL of the photometrics entry shown on the datasheet ("" = none)
+    photometric: { type: String, default: "" },
     installationGuide: {
       link: { type: String },
       size: { type: String },

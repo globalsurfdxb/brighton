@@ -217,6 +217,11 @@ export default function ProductConfigurator({ product }: { product: Product }) {
         ...product.datasheet.icons.specific.map((i) => i.image),
       ].filter(Boolean);
 
+      // only if the picked image is still one of the product's photometrics
+      const photometric = product.photometrics.find(
+        (p) => p.image && p.image === product.datasheet.photometric,
+      );
+
       const guideLink = product.datasheet.installationGuide?.link;
       const qrCodeImage = guideLink
         ? await QRCode.toDataURL(guideLink, { margin: 1, width: 300 })
@@ -245,6 +250,9 @@ export default function ProductConfigurator({ product }: { product: Product }) {
         productCode,
         summary,
         datasheetImage: proxiedImageUrl(product.datasheet.image),
+        photometricImage: photometric
+          ? await rasterizeIcon(proxiedImageUrl(photometric.image), 600)
+          : undefined,
         installationGuideLink: guideLink,
         qrCodeImage,
         icons: await Promise.all(
