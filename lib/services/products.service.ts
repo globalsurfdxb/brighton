@@ -40,7 +40,7 @@ async function getProducts(filter: Record<string, string> = {}): Promise<Product
   const products = await ProductModel.find(filter)
     .populate("category")
     .populate("subCategory")
-    .sort({ _id: -1 });
+    .sort({ order: 1, _id: -1 });
   return serialize(products);
 }
 

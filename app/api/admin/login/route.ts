@@ -4,6 +4,7 @@ import * as jose from "jose";
 import connectDB from "@/lib/mongodb";
 import { cookies } from "next/headers";
 import Admin from "@/app/models/Admin";
+import { jwtSecret } from "@/lib/jwtSecret";
 
 export async function POST(request: Request) {
   try {
@@ -34,9 +35,7 @@ export async function POST(request: Request) {
     }
 
     // Create JWT token
-    const secret = new TextEncoder().encode(
-      process.env.JWT_SECRET || "your-secret-key",
-    );
+    const secret = jwtSecret();
     const token = await new jose.SignJWT({ userId: admin._id })
       .setProtectedHeader({ alg: "HS256" })
       .setIssuedAt()

@@ -11,6 +11,7 @@ import {
 } from "react";
 import { Editor } from "@tinymce/tinymce-react";
 import { Editor as TinyMCEEditor } from "tinymce";
+import { uploadFile } from "@/lib/uploadFile";
 import "./tinymce-admin-theme.css";
 
 const DEFAULT_CONTENT_CSS =
@@ -116,23 +117,7 @@ export default function TinyEditor({
   }, [newsContent]);
 
   const uploadToBlobStorage = useCallback(
-    async (file: File | Blob, filename = "image.png") => {
-      const formData = new FormData();
-      formData.append("file", file, filename);
-
-      const response = await fetch("/api/admin/upload", {
-        method: "POST",
-        body: formData,
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data?.message || "Upload failed");
-      }
-
-      return data.url as string;
-    },
+    (file: File | Blob, filename = "image.png") => uploadFile(file, filename),
     [],
   );
 

@@ -5,17 +5,20 @@ import { AnimatePresence, motion } from "framer-motion";
 import { X } from "lucide-react";
 import SectionDescription from "../animations/SectionDescription";
 import CatalogueRequestForm from "./CatalogueRequestForm";
+import type { CatalogueAccess } from "@/app/types/catalogueRequest";
 
 const ease = [0.65, 0, 0.35, 1] as [number, number, number, number];
 
 interface CatalogueRequestDrawerProps {
   isOpen: boolean;
   onClose: () => void;
+  onSuccess: (access: CatalogueAccess) => void;
 }
 
 export default function CatalogueRequestDrawer({
   isOpen,
   onClose,
+  onSuccess,
 }: CatalogueRequestDrawerProps) {
   useEffect(() => {
     document.body.style.overflow = isOpen ? "hidden" : "";
@@ -88,7 +91,12 @@ export default function CatalogueRequestDrawer({
                 </button>
               </div>
 
-              <CatalogueRequestForm onSuccess={onClose} />
+              <CatalogueRequestForm
+                onSuccess={(access) => {
+                  onClose();
+                  onSuccess(access);
+                }}
+              />
             </div>
           </motion.div>
         </>

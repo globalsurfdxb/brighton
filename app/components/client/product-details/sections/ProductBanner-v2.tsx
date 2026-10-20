@@ -96,12 +96,30 @@ export default function ProductBanner({ product }: { product: Product }) {
   const subCategoryTitle = product.subCategory?.title ?? "";
   const categoryTitle = product.category?.title ?? "";
   const description = product.description;
-  const images = product.images.length
-    ? product.images.map((img) => ({
-        src: img.image,
-        alt: img.imageAlt || name,
-      }))
-    : [{ src: product.thumbImage, alt: product.thumbImageAlt || name }];
+  const sourceImages = {
+    thumb:
+      product.thumbImage && product.showThumbInGallery !== false
+        ? { src: product.thumbImage, alt: product.thumbImageAlt || name }
+        : null,
+    hover:
+      product.hoverImage && product.showHoverInGallery !== false
+        ? { src: product.hoverImage, alt: product.hoverImageAlt || name }
+        : null,
+  };
+  // products not re-saved since gallery ordering was added have no
+  // thumb/hover slots yet — those images lead the gallery
+  const orderedImages = product.images.some((img) => img.source)
+    ? product.images
+    : [
+        { source: "thumb" as const, image: "", imageAlt: "" },
+        { source: "hover" as const, image: "", imageAlt: "" },
+        ...product.images,
+      ];
+  const images = orderedImages.flatMap((img) => {
+    if (!img.source) return [{ src: img.image, alt: img.imageAlt || name }];
+    const sourceImage = sourceImages[img.source];
+    return sourceImage ? [sourceImage] : [];
+  });
   const photometrics = product.photometrics.map((p) => ({
     src: p.image,
     alt: p.imageAlt || p.name || name,
@@ -115,6 +133,7 @@ export default function ProductBanner({ product }: { product: Product }) {
       .map((c) => c.spec.label),
   ];
   const [activeIndex, setActiveIndex] = useState(0);
+  const activeImage = images[activeIndex] ?? { src: "", alt: name };
   const [isZooming, setIsZooming] = useState(false);
   const [isGalleryHovered, setIsGalleryHovered] = useState(false);
   const [zoomOrigin, setZoomOrigin] = useState({ x: 50, y: 50 });
@@ -151,10 +170,8 @@ export default function ProductBanner({ product }: { product: Product }) {
                 transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
               >
                 <Image
-                  src={
-                    images[activeIndex].src || "/assets/images/placeholder.png"
-                  }
-                  alt={images[activeIndex].alt}
+                  src={activeImage.src || "/assets/images/placeholder.png"}
+                  alt={activeImage.alt}
                   fill
                   className="pointer-events-none object-cover transition-transform duration-400 ease-in-out"
                   style={{

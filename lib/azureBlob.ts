@@ -1,4 +1,4 @@
-import { BlobServiceClient } from "@azure/storage-blob";
+import { BlobSASPermissions, BlobServiceClient } from "@azure/storage-blob";
 
 const containerName = process.env.AZURE_STORAGE_CONTAINER_NAME || "uploads";
 
@@ -30,6 +30,58 @@ export async function uploadToBlob(
     blobHTTPHeaders: { blobContentType: contentType },
   });
   return blockBlobClient.url;
+}
+
+/**
+ * Upload unless a blob with this name already exists (names are expected to be
+ * content-addressed). A reused blob gets its last-modified time refreshed so
+ * the orphan sweep's grace period restarts before the import references it.
+ */
+export async function uploadToBlobOnce(
+  file: Buffer,
+  fileName: string,
+  contentType: string,
+) {
+  const blockBlobClient = getContainerClient().getBlockBlobClient(fileName);
+  if (await blockBlobClient.exists()) {
+    await blockBlobClient.setMetadata({ reused: new Date().toISOString() });
+    return blockBlobClient.url;
+  }
+  await blockBlobClient.uploadData(file, {
+    blobHTTPHeaders: { blobContentType: contentType },
+  });
+  return blockBlobClient.url;
+}
+
+/**
+ * A short-lived URL the browser can PUT one file to, so uploads go straight
+ * to storage instead of through our server (no request-size limits). It can
+ * only create / write that one blob.
+ */
+export async function createUploadUrl(blobName: string) {
+  const blob = getContainerClient().getBlockBlobClient(blobName);
+  try {
+    const uploadUrl = await blob.generateSasUrl({
+      permissions: BlobSASPermissions.parse("cw"),
+      // allow for clock skew between us and Azure
+      startsOn: new Date(Date.now() - 5 * 60_000),
+      expiresOn: new Date(Date.now() + 15 * 60_000),
+    });
+    return { uploadUrl, url: blob.url };
+  } catch (e) {
+    throw new Error(
+      "Can't create an upload link: AZURE_STORAGE_CONNECTION_STRING must include the AccountKey",
+      { cause: e },
+    );
+  }
+}
+
+/** Read one blob, refusing anything over `maxBytes`. */
+export async function downloadFromBlob(blobName: string, maxBytes: number) {
+  const blob = getContainerClient().getBlockBlobClient(blobName);
+  const { contentLength = 0 } = await blob.getProperties();
+  if (contentLength > maxBytes) return null;
+  return blob.downloadToBuffer();
 }
 
 export async function deleteFromBlob(fileName: string) {

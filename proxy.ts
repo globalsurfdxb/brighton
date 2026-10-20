@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { NextRequest } from "next/server";
 import * as jose from "jose";
+import { jwtSecret } from "@/lib/jwtSecret";
 
 export async function proxy(request: NextRequest) {
   const response = NextResponse.next();
@@ -25,14 +26,11 @@ export async function proxy(request: NextRequest) {
   const isProtectedRoute = path.startsWith("/4dm1n-br1ght0n") && !isLoginPage;
 
   const token = request.cookies.get("adminToken")?.value || "";
-  const secret = new TextEncoder().encode(
-    process.env.JWT_SECRET || "your-secret-key",
-  );
 
   // 🔹 1. If user is on login page and already has a valid token → redirect to /admin
   if (isLoginPage && token) {
     try {
-      await jose.jwtVerify(token, secret);
+      await jose.jwtVerify(token, jwtSecret());
       return NextResponse.redirect(new URL("/4dm1n-br1ght0n", request.url));
     } catch {
       // invalid token — let them stay on login
@@ -46,7 +44,7 @@ export async function proxy(request: NextRequest) {
     }
 
     try {
-      await jose.jwtVerify(token, secret);
+      await jose.jwtVerify(token, jwtSecret());
       return NextResponse.next();
     } catch {
       return NextResponse.redirect(new URL("/4dm1n-br1ght0n/login", request.url));

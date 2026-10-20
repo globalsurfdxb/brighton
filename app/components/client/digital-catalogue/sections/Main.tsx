@@ -1,13 +1,18 @@
 "use client";
 
 import Image from "next/image";
+import { useState } from "react";
 import AnimatedTitle from "../../animations/AnimatedTitle";
 import { motion } from "framer-motion";
 import { moveRight } from "../../animations/motionVariants";
 import SectionDescription from "../../animations/SectionDescription";
 import CatalogueRequestForm from "../CatalogueRequestForm";
+import CatalogueFlipbook from "../CatalogueFlipbook";
+import type { CatalogueAccess } from "@/app/types/catalogueRequest";
 
 export default function Main() {
+  const [catalogue, setCatalogue] = useState<CatalogueAccess | null>(null);
+
   return (
     <section className="w-full pb-100 top-spacing">
       <div className="container">
@@ -63,10 +68,15 @@ export default function Main() {
               direction="y"
             />
 
-            <CatalogueRequestForm />
+            <CatalogueRequestForm onSuccess={setCatalogue} />
           </div>
         </div>
       </div>
+
+      <CatalogueFlipbook
+        access={catalogue}
+        onClose={() => setCatalogue(null)}
+      />
     </section>
   );
 }
