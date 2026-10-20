@@ -34,7 +34,6 @@ const CONTENT_TYPES: Record<string, string> = {
   docx: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
   xls: "application/vnd.ms-excel",
   xlsx: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-  // photometric data files; browsers report these with no MIME type
   lbx: "application/octet-stream",
   ies: "application/octet-stream",
   ldt: "application/octet-stream",
