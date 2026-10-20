@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { verifyAdmin } from "@/lib/verifyAdmin";
 import { SubCategory } from "@/app/models/product";
 import connectDB from "@/lib/mongodb";
 
@@ -18,6 +19,11 @@ export async function PATCH(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> },
 ) {
+  const isAdmin = await verifyAdmin(req);
+  if (!isAdmin) {
+    return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+  }
+
   const { id } = await params;
   await connectDB();
   const body = await req.json();
@@ -33,6 +39,11 @@ export async function DELETE(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> },
 ) {
+  const isAdmin = await verifyAdmin(req);
+  if (!isAdmin) {
+    return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+  }
+
   const { id } = await params;
   await connectDB();
   const subCategory = await SubCategory.findByIdAndDelete(id);

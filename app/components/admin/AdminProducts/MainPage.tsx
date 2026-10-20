@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useForm, Controller } from "react-hook-form";
 import { toast } from "sonner";
 import { RiDeleteBinLine, RiPencilLine, RiDraggable } from "react-icons/ri";
@@ -41,6 +42,8 @@ import { VideoUploader } from "@/components/ui/video-uploader";
 import { ImageUploader } from "@/components/ui/image-uploader";
 import { Textarea } from "@/components/ui/textarea";
 import AdminItemContainer from "../common/AdminItemContainer";
+import ProductExport from "./ProductExport";
+import ProductImport from "./ProductImport";
 import TooltipPreview from "../../client/product-details/sections/ProductConfiguration/ToolTip";
 import { Home } from "lucide-react";
 
@@ -49,6 +52,8 @@ const TABS = [
   { key: "configuration", label: "Configuration" },
   { key: "masterData", label: "Master Data" },
   { key: "qrGenerated", label: "QR Generated" },
+  { key: "export", label: "Manage / Export" },
+  { key: "import", label: "Import" },
 ] as const;
 type TabKey = (typeof TABS)[number]["key"];
 
@@ -504,9 +509,25 @@ export default function ProductsMainPage() {
   const [iconDialog, setIconDialog] = useState<Icon | null | "new">(null);
 
   const [deleteTarget, setDeleteTarget] = useState<DeleteTarget | null>(null);
-  const [activeTab, setActiveTab] = useState<TabKey>("category");
-  const [activeCommonDataSubTab, setActiveCommonDataSubTab] =
-    useState<CommonDataSubTabKey>("product");
+  // active tab lives in the URL (?tab=import&sub=icons) so it survives
+  // refreshes and can be linked to directly
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const tabParam = searchParams.get("tab");
+  const subParam = searchParams.get("sub");
+  const activeTab: TabKey =
+    TABS.find((t) => t.key === tabParam)?.key ?? "category";
+  const activeCommonDataSubTab: CommonDataSubTabKey =
+    COMMON_DATA_SUB_TABS.find((t) => t.key === subParam)?.key ?? "product";
+  const setTabParams = (params: { tab: TabKey; sub?: CommonDataSubTabKey }) => {
+    const query = new URLSearchParams({ tab: params.tab });
+    if (params.sub) query.set("sub", params.sub);
+    router.replace(`${pathname}?${query}`, { scroll: false });
+  };
+  const setActiveTab = (tab: TabKey) => setTabParams({ tab });
+  const setActiveCommonDataSubTab = (sub: CommonDataSubTabKey) =>
+    setTabParams({ tab: "masterData", sub });
   const [configCategoryHasOptions, setConfigCategoryHasOptions] =
     useState(false);
 
@@ -1114,6 +1135,12 @@ export default function ProductsMainPage() {
           </div>
         </div>
       )}
+
+      {/* Export */}
+      {activeTab === "export" && <ProductExport categories={categories} />}
+
+      {/* Import */}
+      {activeTab === "import" && <ProductImport onImported={fetchCategories} />}
 
       {/* ---- Dialogs ---- */}
       {categoryDialog !== null && (

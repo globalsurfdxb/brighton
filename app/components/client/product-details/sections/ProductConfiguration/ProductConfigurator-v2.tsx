@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { useRouter, usePathname, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { QRCodeCanvas } from "qrcode.react";
 import OptionButton from "./OptionButton-v2";
 import AnimatedTitle from "../../../animations/AnimatedTitle";
@@ -70,8 +70,6 @@ function buildInitialSelections(
 
 export default function ProductConfigurator({ product }: { product: Product }) {
   const configurations = product.secondSection.configurations;
-  const router = useRouter();
-  const pathname = usePathname();
   const searchParams = useSearchParams();
 
   const [selections, setSelections] = useState(() =>
@@ -134,7 +132,11 @@ export default function ProductConfigurator({ product }: { product: Product }) {
       return next;
     });
 
-    const params = new URLSearchParams(searchParams.toString());
+    // Read the live URL, not `searchParams`: on rapid clicks the hook value
+    // lags behind and earlier selections would be overwritten. The native
+    // History API updates the URL instantly without a server round trip
+    // (router.replace re-renders this force-dynamic page on the server).
+    const params = new URLSearchParams(window.location.search);
     if (isDeselecting) {
       params.delete(configKey(cfg));
     } else {
@@ -142,7 +144,12 @@ export default function ProductConfigurator({ product }: { product: Product }) {
       if (!option) return;
       params.set(configKey(cfg), option.code);
     }
-    router.replace(`${pathname}?${params.toString()}`, { scroll: false });
+    const query = params.toString();
+    window.history.replaceState(
+      null,
+      "",
+      `${window.location.pathname}${query ? `?${query}` : ""}`,
+    );
   };
 
   const handleCopy = async () => {

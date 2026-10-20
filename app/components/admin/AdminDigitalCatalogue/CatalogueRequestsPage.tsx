@@ -21,13 +21,14 @@ const formatDate = (value?: string) => {
     day: "2-digit",
     month: "short",
     year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
   });
 };
 
 export default function CatalogueRequestsPage() {
   const [requests, setRequests] = useState<CatalogueRequestDoc[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [approvingId, setApprovingId] = useState<string | null>(null);
   const [search, setSearch] = useState("");
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [deleteTarget, setDeleteTarget] = useState<CatalogueRequestDoc | null>(
@@ -66,30 +67,6 @@ export default function CatalogueRequestsPage() {
         .some((field) => field!.toLowerCase().includes(query)),
     );
   }, [requests, search]);
-
-  const approve = async (id: string) => {
-    setApprovingId(id);
-    try {
-      const res = await fetch(
-        `/api/admin/digital-catalogue/requests/${id}/approve`,
-        { method: "POST" },
-      );
-      const { data, message } = await res.json();
-      if (!res.ok) {
-        toast.error(message || "Failed to approve request");
-        return;
-      }
-      setRequests((prev) =>
-        prev.map((r) => (r._id === id ? { ...r, ...data } : r)),
-      );
-      toast.success(message || "Catalogue emailed successfully");
-    } catch (e) {
-      console.error(e);
-      toast.error("Failed to approve request");
-    } finally {
-      setApprovingId(null);
-    }
-  };
 
   const toggleSelect = (id: string) => {
     setSelectedIds((prev) =>
@@ -224,8 +201,7 @@ export default function CatalogueRequestsPage() {
                   <th className="py-3 pr-4 font-semibold">Company</th>
                   <th className="py-3 pr-4 font-semibold">Email</th>
                   <th className="py-3 pr-4 font-semibold">Role</th>
-                  <th className="py-3 pr-4 font-semibold">Requested</th>
-                  <th className="py-3 pr-4 font-semibold">Status</th>
+                  <th className="py-3 pr-4 font-semibold">Submitted</th>
                   <th className="py-3 pr-4 font-semibold text-right">Action</th>
                 </tr>
               </thead>
@@ -258,34 +234,7 @@ export default function CatalogueRequestsPage() {
                       {formatDate(r.createdAt)}
                     </td>
                     <td className="py-3 pr-4">
-                      {r.status === "approved" ? (
-                        <span className="text-[11px] uppercase font-semibold text-green-600 border border-green-300 rounded px-1.5 py-0.5">
-                          Approved
-                        </span>
-                      ) : (
-                        <span className="text-[11px] uppercase font-semibold text-yellow-600 border border-yellow-300 rounded px-1.5 py-0.5">
-                          Pending
-                        </span>
-                      )}
-                    </td>
-                    <td className="py-3 pr-4">
                       <div className="flex items-center justify-end gap-4">
-                        <CustomButton
-                          variant="3"
-                          type="button"
-                          text={
-                            approvingId === r._id
-                              ? "Sending..."
-                              : r.status === "approved"
-                                ? "Approved"
-                                : "Approve"
-                          }
-                          showIcon={false}
-                          disabled={
-                            r.status === "approved" || approvingId === r._id
-                          }
-                          onClick={() => approve(r._id)}
-                        />
                         <button
                           type="button"
                           onClick={() => setDeleteTarget(r)}

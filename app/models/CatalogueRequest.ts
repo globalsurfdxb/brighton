@@ -6,12 +6,6 @@ const catalogueRequestSchema = new mongoose.Schema(
     company: { type: String },
     email: { type: String, required: true },
     role: { type: String },
-    status: {
-      type: String,
-      enum: ["pending", "approved"],
-      default: "pending",
-    },
-    approvedAt: { type: Date },
   },
   { timestamps: true },
 );

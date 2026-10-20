@@ -5,6 +5,7 @@ import { useDropzone } from "react-dropzone";
 import { Upload, X, Loader2 } from "lucide-react";
 import Image from "next/image";
 import { cn } from "@/lib/utils/cn";
+import { uploadFile } from "@/lib/uploadFile";
 import { Button } from "./button";
 
 interface ImageUploaderProps {
@@ -39,24 +40,10 @@ export function ImageUploader({
         setIsUploading(true);
         setError(null);
 
-        const formData = new FormData();
-        formData.append("file", file);
-
-        const response = await fetch("/api/admin/upload", {
-          method: "POST",
-          body: formData,
-        });
-
-        if (response.status !== 200) {
-          setLocalImageUrl(null);
-          setError("Upload failed");
-          return;
-        }
-
-        const data = await response.json();
-        onChange(data.url, file);
+        const url = await uploadFile(file, file.name);
+        onChange(url, file);
         if (!deleteAfterUpload) {
-          setLocalImageUrl(data.url);
+          setLocalImageUrl(url);
         }
       } catch (err) {
         setLocalImageUrl(null);

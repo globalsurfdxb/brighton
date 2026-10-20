@@ -11,6 +11,7 @@ import {
   RiEyeLine,
   RiEyeOffLine,
   RiDraggable,
+  RiSearchLine,
 } from "react-icons/ri";
 import {
   DndContext,
@@ -24,6 +25,7 @@ import {
   SortableContext,
   arrayMove,
   rectSortingStrategy,
+  verticalListSortingStrategy,
   useSortable,
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
@@ -58,6 +60,7 @@ type ProductListItem = {
   _id: string;
   title: string;
   slug: string;
+  productCode?: string;
   isHidden?: boolean;
   subCategory?: { _id: string; title: string };
 };
@@ -135,6 +138,60 @@ function SortableSubCategoryCard({
   );
 }
 
+/** Sortable product row; `children` receives the drag handle. */
+function SortableProductRow({
+  id,
+  dragDisabled,
+  children,
+}: {
+  id: string;
+  dragDisabled: boolean;
+  children: (handle: React.ReactNode) => React.ReactNode;
+}) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id, disabled: dragDisabled });
+
+  const handle = (
+    <button
+      type="button"
+      {...attributes}
+      {...listeners}
+      // the row itself navigates on click
+      onClick={(e) => e.stopPropagation()}
+      disabled={dragDisabled}
+      title={dragDisabled ? "Clear the search to reorder" : "Drag to reorder"}
+      aria-label="Drag to reorder"
+      className={`touch-none ${
+        dragDisabled
+          ? "cursor-not-allowed text-gray-300"
+          : "cursor-grab active:cursor-grabbing text-description-color"
+      }`}
+    >
+      <RiDraggable size={18} />
+    </button>
+  );
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={{
+        transform: CSS.Transform.toString(transform),
+        transition,
+        position: "relative",
+        zIndex: isDragging ? 10 : undefined,
+      }}
+    >
+      {children(handle)}
+    </div>
+  );
+}
+
 export default function CategoryProductsPage() {
   const router = useRouter();
   const params = useParams<{ category: string }>();
@@ -142,6 +199,15 @@ export default function CategoryProductsPage() {
   const [category, setCategory] = useState<Category | null>(null);
   const [subCategories, setSubCategories] = useState<SubCategory[]>([]);
   const [products, setProducts] = useState<ProductListItem[]>([]);
+  const [productSearch, setProductSearch] = useState("");
+  const searchTerm = productSearch.trim().toLowerCase();
+  const filteredProducts = searchTerm
+    ? products.filter((p) =>
+        [p.title, p.productCode, p.subCategory?.title].some((v) =>
+          v?.toLowerCase().includes(searchTerm),
+        ),
+      )
+    : products;
 
   const [subCategoryDialog, setSubCategoryDialog] = useState<
     SubCategory | null | "new"
@@ -171,6 +237,30 @@ export default function CategoryProductsPage() {
     } else {
       toast.error("Failed to save order");
       if (category) fetchSubCategories(category._id);
+    }
+  };
+
+  const handleProductDragEnd = async (event: DragEndEvent) => {
+    const { active, over } = event;
+    if (!over || active.id === over.id) return;
+
+    const oldIndex = products.findIndex((p) => p._id === active.id);
+    const newIndex = products.findIndex((p) => p._id === over.id);
+    if (oldIndex === -1 || newIndex === -1) return;
+
+    const reordered = arrayMove(products, oldIndex, newIndex);
+    setProducts(reordered);
+
+    const res = await fetch("/api/admin/products/reorder", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ ids: reordered.map((p) => p._id) }),
+    });
+    if (res.ok) {
+      toast.success("Product order updated");
+    } else {
+      toast.error("Failed to save order");
+      if (category) fetchProducts(category._id);
     }
   };
 
@@ -317,107 +407,152 @@ export default function CategoryProductsPage() {
 
       {/* Products */}
       <div className="bg-white border border-secondary rounded-[10px] p-5 flex flex-col gap-4">
-        <div className="flex items-center justify-between border-b border-secondary pb-3">
+        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-secondary pb-3">
           <Label className="!text-xl !font-semibold">
-            Products {`(${products.length})`}
+            Products{" "}
+            {productSearch.trim()
+              ? `(${filteredProducts.length} of ${products.length})`
+              : `(${products.length})`}
           </Label>
-          <CustomButton
-            variant="3"
-            type="button"
-            text="Add Product"
-            showIcon={false}
-            onClick={() =>
-              router.push(`/4dm1n-br1ght0n/products/${params.category}/new`)
-            }
-          />
+          <div className="flex items-center gap-3 ml-auto">
+            <div className="relative w-64">
+              <RiSearchLine
+                size={16}
+                className="absolute left-3 top-1/2 -translate-y-1/2 text-description-color"
+              />
+              <Input
+                value={productSearch}
+                onChange={(e) => setProductSearch(e.target.value)}
+                placeholder="Search name, code or sub category"
+                className="pl-9"
+              />
+            </div>
+            <CustomButton
+              variant="3"
+              type="button"
+              text="Add Product"
+              showIcon={false}
+              onClick={() =>
+                router.push(`/4dm1n-br1ght0n/products/${params.category}/new`)
+              }
+            />
+          </div>
         </div>
         <div className="grid grid-cols-1 gap-5">
           {products.length === 0 && (
             <p className="text-sm text-black/40">No products added yet.</p>
           )}
-          {products.map((product) => (
-            <div
-              key={product._id}
-              className="flex items-center justify-between border border-secondary/60 rounded-md px-4 py-3 hover:shadow-sm transition-all cursor-pointer"
-              onClick={() =>
-                router.push(
-                  `/4dm1n-br1ght0n/products/${params.category}/${product._id}`,
-                )
-              }
+          {products.length > 0 && filteredProducts.length === 0 && (
+            <p className="text-sm text-black/40">
+              No products match &quot;{productSearch.trim()}&quot;.
+            </p>
+          )}
+          <DndContext
+            sensors={dndSensors}
+            collisionDetection={closestCenter}
+            onDragEnd={handleProductDragEnd}
+          >
+            <SortableContext
+              items={filteredProducts.map((p) => p._id)}
+              strategy={verticalListSortingStrategy}
             >
-              <span className="text-md font-itc-medium flex flex-col items-start gap-2">
-                {product.title || "Untitled Product"}
-                {product.subCategory && (
-                  <span className="text-sm text-description-color font-itc-book">
-                    {product.subCategory.title}
-                  </span>
-                )}
-                {product.isHidden && (
-                  <span className="text-[10px] uppercase font-semibold text-red-500 border border-red-300 rounded px-1.5 py-0.5">
-                    Hidden
-                  </span>
-                )}
-              </span>
-              <div className="flex items-center justify-center gap-4">
-                <div className="relative group mt-2">
-                  <button
-                    type="button"
-                    className="cursor-pointer hover:scale-110 transition-all"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      window.open(
-                        `/lighting/${product.slug || slugify(product.title)}`,
-                        "_blank",
-                      );
-                    }}
-                  >
-                    <RiExternalLinkLine
-                      className="text-gray-500 hover:text-primary"
-                      size={22}
-                    />
-                  </button>
-                  <span
-                    className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1
+              {filteredProducts.map((product) => (
+                <SortableProductRow
+                  key={product._id}
+                  id={product._id}
+                  dragDisabled={!!searchTerm}
+                >
+                  {(handle) => (
+                    <div
+                      className="flex items-center justify-between border border-secondary/60 rounded-md bg-white px-4 py-3 hover:shadow-sm transition-all cursor-pointer"
+                      onClick={() =>
+                        router.push(
+                          `/4dm1n-br1ght0n/products/${params.category}/${product._id}`,
+                        )
+                      }
+                    >
+                      <div className="flex items-center gap-4">
+                        {handle}
+                        <span className="text-md font-itc-medium flex flex-col items-start gap-2">
+                          {product.title || "Untitled Product"}
+                          {product.subCategory && (
+                            <span className="text-sm text-description-color font-itc-book">
+                              {product.subCategory.title}
+                            </span>
+                          )}
+                          {product.isHidden && (
+                            <span className="text-[10px] uppercase font-semibold text-red-500 border border-red-300 rounded px-1.5 py-0.5">
+                              Hidden
+                            </span>
+                          )}
+                        </span>
+                      </div>
+                      <div className="flex items-center justify-center gap-4">
+                        <div className="relative group mt-2">
+                          <button
+                            type="button"
+                            className="cursor-pointer hover:scale-110 transition-all"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              window.open(
+                                `/lighting/${product.slug || slugify(product.title)}`,
+                                "_blank",
+                              );
+                            }}
+                          >
+                            <RiExternalLinkLine
+                              className="text-gray-500 hover:text-primary"
+                              size={22}
+                            />
+                          </button>
+                          <span
+                            className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1
                     whitespace-nowrap rounded-md bg-primary px-2 py-2 text-[11px] text-white font-itc-medium
                     opacity-0 invisible group-hover:opacity-100 group-hover:visible
                     transition-opacity duration-400"
-                  >
-                    Visit page
-                  </span>
-                </div>
-                <button
-                  onClick={(e) => toggleHidden(e, product)}
-                  type="button"
-                  className="cursor-pointer hover:scale-110 transition-all"
-                  title={product.isHidden ? "Show product" : "Hide product"}
-                >
-                  {product.isHidden ? (
-                    <RiEyeOffLine className="text-gray-500" size={22} />
-                  ) : (
-                    <RiEyeLine className="text-green-600" size={22} />
+                          >
+                            Visit page
+                          </span>
+                        </div>
+                        <button
+                          onClick={(e) => toggleHidden(e, product)}
+                          type="button"
+                          className="cursor-pointer hover:scale-110 transition-all"
+                          title={
+                            product.isHidden ? "Show product" : "Hide product"
+                          }
+                        >
+                          {product.isHidden ? (
+                            <RiEyeOffLine className="text-gray-500" size={22} />
+                          ) : (
+                            <RiEyeLine className="text-green-600" size={22} />
+                          )}
+                        </button>
+                        <button
+                          type="button"
+                          className="cursor-pointer hover:scale-110 transition-all"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setDeleteTarget({
+                              type: "product",
+                              id: product._id,
+                              label: product.title || "Untitled Product",
+                            });
+                          }}
+                          title="Delete product"
+                        >
+                          <RiDeleteBinLine
+                            className="text-red-400 hover:text-red-600"
+                            size={22}
+                          />
+                        </button>
+                      </div>
+                    </div>
                   )}
-                </button>
-                <button
-                  type="button"
-                  className="cursor-pointer hover:scale-110 transition-all"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setDeleteTarget({
-                      type: "product",
-                      id: product._id,
-                      label: product.title || "Untitled Product",
-                    });
-                  }}
-                  title="Delete product"
-                >
-                  <RiDeleteBinLine
-                    className="text-red-400 hover:text-red-600"
-                    size={22}
-                  />
-                </button>
-              </div>
-            </div>
-          ))}
+                </SortableProductRow>
+              ))}
+            </SortableContext>
+          </DndContext>
         </div>
       </div>
 

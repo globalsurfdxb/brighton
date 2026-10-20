@@ -95,6 +95,8 @@ export interface ProductPhotometric {
 export interface ProductImage {
   image: string;
   imageAlt: string;
+  /** Slot for the thumb / hover image; `image` is unused when set. */
+  source?: "thumb" | "hover";
 }
 
 export interface ProductConfiguration {
@@ -134,6 +136,7 @@ export interface Product {
   title: string;
   slug: string;
   isHidden: boolean;
+  order?: number;
   category: Category;
   subCategory: SubCategory;
 
@@ -141,6 +144,8 @@ export interface Product {
   thumbImageAlt: string;
   hoverImage: string;
   hoverImageAlt: string;
+  showThumbInGallery?: boolean;
+  showHoverInGallery?: boolean;
   productCode: string;
   featured: boolean;
 

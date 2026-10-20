@@ -12,9 +12,14 @@
  */
 
 import {
+  Defs,
   Document,
+  Font,
+  LinearGradient,
   Page,
   Path,
+  Rect,
+  Stop,
   StyleSheet,
   Svg,
   Text,
@@ -23,6 +28,18 @@ import {
   Line,
 } from "@react-pdf/renderer";
 import type { DatasheetData } from "./types";
+
+// Brand typeface: ITC Avant Garde Gothic Book for all text.
+// This module is only ever loaded in the browser (see generateDatasheet.tsx),
+// so `window.location.origin` is safe and gives fontkit an absolute URL.
+const FONT_FAMILY = "ITC Avant Garde";
+const fontUrl = (file: string) => `${window.location.origin}/assets/fonts/${file}`;
+
+Font.register({
+  family: FONT_FAMILY,
+  // TTF, not WOFF2: react-pdf mangles glyph outlines when subsetting WOFF2.
+  src: fontUrl("ITC-Avant-Book.ttf"),
+});
 
 const COLORS = {
   ink: "#1a1a1a",
@@ -33,13 +50,18 @@ const COLORS = {
   panel: "#f4f2ee",
 };
 
+const BODY_HEIGHT = 700;
+const RAIL_WIDTH = 150;
+const COLUMN_GAP = 18;
+const DIVIDER_WIDTH = 0.75;
+
 const styles = StyleSheet.create({
   page: {
     paddingTop: 34,
     paddingBottom: 44,
     paddingHorizontal: 34,
     fontSize: 8,
-    fontFamily: "Helvetica",
+    fontFamily: FONT_FAMILY,
     color: COLORS.body,
     lineHeight: 1.45,
   },
@@ -57,12 +79,23 @@ const styles = StyleSheet.create({
     letterSpacing: 0.5,
   },
 
-  body: { flexDirection: "row", gap: 18, height: 700, overflow: "hidden" },
-  rail: { width: 150, marginTop: 40 },
+  body: {
+    flexDirection: "row",
+    gap: COLUMN_GAP,
+    height: BODY_HEIGHT,
+    overflow: "hidden",
+  },
+  rail: { width: RAIL_WIDTH, marginTop: 40 },
   main: { flex: 1 },
+  // Sits in the middle of the column gap, out of the flex flow.
+  columnDivider: {
+    position: "absolute",
+    top: 0,
+    left: RAIL_WIDTH + COLUMN_GAP / 2,
+  },
 
   fieldGroup: { marginBottom: 18 },
-  fieldLabel: { color: COLORS.muted, fontSize: 7.5, marginBottom: 10 },
+  fieldLabel: { color: COLORS.muted, fontSize: 7.68, marginBottom: 10 },
   fieldLine: { borderBottomWidth: 0.75, borderBottomColor: COLORS.ink },
 
   qrBox: {
@@ -74,23 +107,26 @@ const styles = StyleSheet.create({
   },
   qrCaption: {
     backgroundColor: COLORS.ink,
-    color: "#fff",
-    fontSize: 6.5,
-    paddingVertical: 2,
+    height: 12,
     paddingHorizontal: 4,
+    // Avant Garde has a deep descender and "Installation" uses none of it, so a
+    // line-box centre sits high; this inset centres the visible letters.
+    paddingTop: 1.5,
+    justifyContent: "center",
     alignSelf: "flex-start",
   },
+  qrCaptionText: { color: "#fff", fontSize: 6.5, lineHeight: 1 },
 
   sectionHeading: {
-    fontFamily: "Helvetica-Bold",
-    fontSize: 8,
+    fontFamily: FONT_FAMILY,
+    fontSize: 6,
     color: COLORS.ink,
     marginBottom: 5,
   },
-  disclaimerText: { fontSize: 6.5, color: COLORS.muted, textAlign: "justify" },
+  disclaimerText: { fontSize: 6, color: COLORS.muted, textAlign: "justify" },
 
-  productName: { fontFamily: "Helvetica-Bold", fontSize: 13, color: COLORS.ink },
-  productCode: { fontSize: 8, color: COLORS.muted, marginTop: 2, marginBottom: 12 },
+  productName: { fontFamily: FONT_FAMILY, fontSize: 11.5, color: COLORS.ink },
+  productCode: { fontSize: 9.2, color: COLORS.muted, marginTop: 2, marginBottom: 12 },
 
   visualRow: { flexDirection: "row", gap: 12, marginBottom: 12 },
   datasheetImage: { width: 200, height: 140, objectFit: "contain" },
@@ -98,20 +134,15 @@ const styles = StyleSheet.create({
   iconRow: {
     flexDirection: "row",
     flexWrap: "wrap",
-    gap: 6,
+    gap: 3,
     marginBottom: 14,
   },
-  iconBox: {
-    width: 34,
-    height: 34,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  iconImage: { width: "100%", height: "100%", objectFit: "contain" },
+  // Fixed height only; react-pdf derives each width from the image's aspect ratio.
+  iconImage: { height: 29 },
 
   descBlock: { flexDirection: "row", gap: 8, marginBottom: 12 },
-  descLabel: { width: 78, color: COLORS.ink, fontSize: 7.5 },
-  descText: { flex: 1, fontSize: 7.5, textAlign: "justify" },
+  descLabel: { width: 78, color: COLORS.ink, fontSize: 7.68 },
+  descText: { flex: 1, fontSize: 7.68, textAlign: "justify" },
 
   specRow: {
     flexDirection: "row",
@@ -119,9 +150,9 @@ const styles = StyleSheet.create({
     borderBottomWidth: 0.5,
     borderBottomColor: COLORS.hairline,
   },
-  specLabel: { width: 96, color: COLORS.ink, fontSize: 7.5 },
-  specColon: { width: 10, color: COLORS.muted },
-  specValue: { flex: 1, fontSize: 7.5 },
+  specLabel: { width: 96, color: COLORS.ink, fontSize: 7.68 },
+  specColon: { width: 10, color: COLORS.muted, fontSize: 7.68 },
+  specValue: { flex: 1, fontSize: 7.68 },
 
   footer: {
     position: "absolute",
@@ -136,6 +167,31 @@ const styles = StyleSheet.create({
 });
 
 /* ----------------------------- sub-components ----------------------------- */
+
+/** Vertical rule between the columns: solid at the top, fading out by the bottom. */
+function ColumnDivider() {
+  return (
+    <Svg
+      width={DIVIDER_WIDTH}
+      height={BODY_HEIGHT}
+      style={styles.columnDivider}
+    >
+      <Defs>
+        <LinearGradient id="columnDividerFade" x1="0" y1="0" x2="0" y2="1">
+          <Stop offset="0" stopColor={COLORS.muted} stopOpacity={1} />
+          <Stop offset="1" stopColor={COLORS.muted} stopOpacity={0} />
+        </LinearGradient>
+      </Defs>
+      <Rect
+        x={0}
+        y={0}
+        width={DIVIDER_WIDTH}
+        height={BODY_HEIGHT}
+        fill="url('#columnDividerFade')"
+      />
+    </Svg>
+  );
+}
 
 /** Simple recessed-downlight cross-section with dimension callouts. */
 function DimensionDrawing({
@@ -263,7 +319,9 @@ export function DatasheetDocument({ data }: { data: DatasheetData }) {
             {data.installationGuideLink && data.qrCodeImage ? (
               <>
                 <Image src={data.qrCodeImage} style={styles.qrBox} />
-                <Text style={styles.qrCaption}>Installation</Text>
+                <View style={styles.qrCaption}>
+                  <Text style={styles.qrCaptionText}>Installation</Text>
+                </View>
                 <Text style={styles.installNote}>{data.installationNote}</Text>
               </>
             ) : null}
@@ -294,9 +352,7 @@ export function DatasheetDocument({ data }: { data: DatasheetData }) {
             {data.icons.length > 0 ? (
               <View style={styles.iconRow}>
                 {data.icons.map((icon, i) => (
-                  <View key={i} style={styles.iconBox}>
-                    <Image src={icon} style={styles.iconImage} />
-                  </View>
+                  <Image key={i} src={icon} style={styles.iconImage} />
                 ))}
               </View>
             ) : null}
@@ -316,6 +372,8 @@ export function DatasheetDocument({ data }: { data: DatasheetData }) {
               ))}
             </View>
           </View>
+
+          <ColumnDivider />
         </View>
 
         <Text style={styles.footer} fixed>

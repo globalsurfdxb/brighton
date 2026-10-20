@@ -4,6 +4,7 @@ import { useState, useCallback } from "react";
 import { useDropzone } from "react-dropzone";
 import { File as FileIcon, X, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
+import { uploadFile } from "@/lib/uploadFile";
 import { Button } from "./button";
 
 interface FileUploaderProps {
@@ -62,22 +63,9 @@ export function FileUploader({
         setIsUploading(true);
         setError(null);
 
-        const formData = new FormData();
-        formData.append("file", file);
-
-        const response = await fetch("/api/admin/upload", {
-          method: "POST",
-          body: formData,
-        });
-
-        if (response.status !== 200) {
-          setError("Upload failed");
-          return;
-        }
-
-        const data = await response.json();
+        const url = await uploadFile(file, file.name);
         setLocalFileName(file.name);
-        onChange(data.url, file.name, formatBytes(file.size));
+        onChange(url, file.name, formatBytes(file.size));
       } catch (err) {
         setError(err instanceof Error ? err.message : "Failed to upload file");
       } finally {

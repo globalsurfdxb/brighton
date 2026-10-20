@@ -11,9 +11,10 @@ import {
   catalogueFormSchema,
   CatalogueFormValues,
 } from "@/lib/validations/catalogueFormSchema";
+import type { CatalogueAccess } from "@/app/types/catalogueRequest";
 
 interface CatalogueRequestFormProps {
-  onSuccess?: () => void;
+  onSuccess: (access: CatalogueAccess) => void;
 }
 
 export default function CatalogueRequestForm({
@@ -28,25 +29,22 @@ export default function CatalogueRequestForm({
     resolver: zodResolver(catalogueFormSchema),
   });
 
-  const onSubmit = async (data: CatalogueFormValues) => {
+  const onSubmit = async (values: CatalogueFormValues) => {
     try {
       const res = await fetch("/api/digital-catalogue/request", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
+        body: JSON.stringify(values),
       });
-      const { message } = await res.json();
+      const { data, message } = await res.json();
 
       if (!res.ok) {
         toast.error(message || "Something went wrong. Please try again.");
         return;
       }
 
-      toast.success(
-        "Thanks! Your catalogue will be emailed to you once our admin approves your request.",
-      );
       reset();
-      onSuccess?.();
+      onSuccess(data);
     } catch (error) {
       console.error(error);
       toast.error("Something went wrong. Please try again.");

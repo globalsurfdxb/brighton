@@ -113,6 +113,8 @@ const productSchema = new mongoose.Schema({
   title: { type: String },
   slug: { type: String },
   isHidden: { type: Boolean, default: false },
+  // admin drag order; ties (e.g. never reordered) fall back to newest first
+  order: { type: Number, default: 0 },
   category: { type: mongoose.Schema.Types.ObjectId, ref: "category" },
   subCategory: { type: mongoose.Schema.Types.ObjectId, ref: "subcategory" },
 
@@ -121,6 +123,9 @@ const productSchema = new mongoose.Schema({
   thumbImageAlt: { type: String },
   hoverImage: { type: String },
   hoverImageAlt: { type: String },
+  // include thumb / hover image in the detail-page gallery
+  showThumbInGallery: { type: Boolean, default: true },
+  showHoverInGallery: { type: Boolean, default: true },
   productCode: { type: String },
   featured: { type: Boolean, default: false },
 
@@ -147,6 +152,8 @@ const productSchema = new mongoose.Schema({
       {
         image: { type: String },
         imageAlt: { type: String },
+        // set on the slot that places the thumb / hover image in the gallery
+        source: { type: String, enum: ["thumb", "hover"] },
       },
     ],
     default: [],

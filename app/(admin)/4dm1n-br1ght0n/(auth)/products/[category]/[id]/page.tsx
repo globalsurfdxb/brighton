@@ -9,7 +9,23 @@ import {
   RiAddLine,
   RiSearchLine,
   RiCheckLine,
+  RiDraggable,
 } from "react-icons/ri";
+import Image from "next/image";
+import {
+  DndContext,
+  closestCenter,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  type DragEndEvent,
+} from "@dnd-kit/core";
+import {
+  SortableContext,
+  rectSortingStrategy,
+  useSortable,
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
@@ -39,6 +55,9 @@ type SubCategoryOption = { _id: string; title: string };
 type SpecOption = { _id: string; label: string };
 type IconOption = { _id: string; image: string; isCommon?: boolean };
 
+type GallerySource = "thumb" | "hover";
+type GalleryImage = { image: string; imageAlt: string; source?: GallerySource };
+
 type ProductForm = {
   title: string;
   slug: string;
@@ -48,6 +67,8 @@ type ProductForm = {
   thumbImageAlt: string;
   hoverImage: string;
   hoverImageAlt: string;
+  showThumbInGallery: boolean;
+  showHoverInGallery: boolean;
   productCode: string;
   featured: boolean;
   description: string;
@@ -55,7 +76,7 @@ type ProductForm = {
     common: { spec: string; enabled: boolean }[];
     custom: { value: string }[];
   };
-  images: { image: string; imageAlt: string }[];
+  images: GalleryImage[];
   photometrics: { image: string; imageAlt: string; name: string }[];
   secondSection: {
     title: string;
@@ -97,11 +118,16 @@ const defaultValues: ProductForm = {
   thumbImageAlt: "",
   hoverImage: "",
   hoverImageAlt: "",
+  showThumbInGallery: true,
+  showHoverInGallery: true,
   productCode: "",
   featured: false,
   description: "",
   specs: { common: [], custom: [] },
-  images: [],
+  images: [
+    { image: "", imageAlt: "", source: "thumb" },
+    { image: "", imageAlt: "", source: "hover" },
+  ],
   photometrics: [],
   secondSection: {
     title: "",
@@ -174,6 +200,91 @@ function Divider({ className = "" }: { className?: string }) {
   return <div className={`h-px w-full bg-secondary ${className}`} />;
 }
 
+/** Keep a thumb/hover slot in the gallery exactly when its checkbox is ticked. */
+function withGallerySlots(
+  images: GalleryImage[],
+  showThumb: boolean,
+  showHover: boolean,
+): GalleryImage[] {
+  const show = { thumb: showThumb, hover: showHover };
+  const kept = images.filter((img) => !img.source || show[img.source]);
+  const missing = (["thumb", "hover"] as const).filter(
+    (source) => show[source] && !kept.some((img) => img.source === source),
+  );
+  return [
+    ...missing.map((source) => ({ image: "", imageAlt: "", source })),
+    ...kept,
+  ];
+}
+
+function SortableList({
+  ids,
+  onMove,
+  className,
+  children,
+}: {
+  ids: string[];
+  onMove: (from: number, to: number) => void;
+  className?: string;
+  children: React.ReactNode;
+}) {
+  const sensors = useSensors(useSensor(PointerSensor));
+  const handleDragEnd = ({ active, over }: DragEndEvent) => {
+    if (!over || active.id === over.id) return;
+    const from = ids.indexOf(String(active.id));
+    const to = ids.indexOf(String(over.id));
+    if (from !== -1 && to !== -1) onMove(from, to);
+  };
+
+  return (
+    <DndContext
+      sensors={sensors}
+      collisionDetection={closestCenter}
+      onDragEnd={handleDragEnd}
+    >
+      <SortableContext items={ids} strategy={rectSortingStrategy}>
+        <div className={className}>{children}</div>
+      </SortableContext>
+    </DndContext>
+  );
+}
+
+/** Sortable card; `children` receives the drag handle to place in the card. */
+function SortableCard({
+  id,
+  className,
+  children,
+}: {
+  id: string;
+  className?: string;
+  children: (handle: React.ReactNode) => React.ReactNode;
+}) {
+  const { attributes, listeners, setNodeRef, transform, transition } =
+    useSortable({ id });
+
+  const handle = (
+    <button
+      type="button"
+      {...attributes}
+      {...listeners}
+      className="flex items-center justify-center h-8 w-8 shrink-0 rounded-md text-description-color hover:bg-secondary/20 cursor-grab active:cursor-grabbing touch-none"
+      aria-label="Drag to reorder"
+    >
+      <RiDraggable size={18} />
+    </button>
+  );
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={{ transform: CSS.Transform.toString(transform), transition }}
+      className={className}
+    >
+      {children(handle)}
+    </div>
+  );
+}
+
 export default function ProductDetailPage() {
   const router = useRouter();
   const params = useParams<{ category: string; id: string }>();
@@ -212,6 +323,21 @@ export default function ProductDetailPage() {
     control,
     name: "fourthSection",
   });
+
+  const showThumbInGallery = watch("showThumbInGallery");
+  const showHoverInGallery = watch("showHoverInGallery");
+  const thumbImage = watch("thumbImage");
+  const hoverImage = watch("hoverImage");
+  useEffect(() => {
+    const current = getValues("images");
+    const next = withGallerySlots(
+      current,
+      showThumbInGallery,
+      showHoverInGallery,
+    );
+    if (next.length !== current.length) imagesArray.replace(next);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [showThumbInGallery, showHoverInGallery]);
   const resolveCategory = async () => {
     const res = await fetch("/api/admin/products/category");
     const all = await res.json();
@@ -260,6 +386,8 @@ export default function ProductDetailPage() {
         ...data,
         category: data.category?._id ?? data.category,
         subCategory: data.subCategory?._id ?? data.subCategory,
+        showThumbInGallery: data.showThumbInGallery ?? true,
+        showHoverInGallery: data.showHoverInGallery ?? true,
         specs: {
           common: (data.specs?.common ?? []).map((c: any) => ({
             spec: c.spec?._id ?? c.spec,
@@ -267,10 +395,18 @@ export default function ProductDetailPage() {
           })),
           custom: (data.specs?.custom ?? []).map((v: string) => ({ value: v })),
         },
-        images: (data.images ?? []).map((img: any) =>
-          typeof img === "string"
-            ? { image: img, imageAlt: "" }
-            : { image: img.image ?? "", imageAlt: img.imageAlt ?? "" },
+        images: withGallerySlots(
+          (data.images ?? []).map((img: any) =>
+            typeof img === "string"
+              ? { image: img, imageAlt: "" }
+              : {
+                  image: img.image ?? "",
+                  imageAlt: img.imageAlt ?? "",
+                  ...(img.source ? { source: img.source } : {}),
+                },
+          ),
+          data.showThumbInGallery ?? true,
+          data.showHoverInGallery ?? true,
         ),
         photometrics: data.photometrics ?? [],
         secondSection: {
@@ -565,6 +701,21 @@ export default function ProductDetailPage() {
                   {...register("thumbImageAlt")}
                   placeholder="Thumb Image Alt"
                 />
+                <div className="flex items-center gap-2">
+                  <Controller
+                    name="showThumbInGallery"
+                    control={control}
+                    render={({ field }) => (
+                      <input
+                        type="checkbox"
+                        className="size-4"
+                        checked={field.value}
+                        onChange={(e) => field.onChange(e.target.checked)}
+                      />
+                    )}
+                  />
+                  <Label className="text-trim">Show in product images</Label>
+                </div>
               </div>
               <div className="flex flex-col gap-2">
                 <Label className="font-bold">Hover Image</Label>
@@ -582,6 +733,21 @@ export default function ProductDetailPage() {
                   {...register("hoverImageAlt")}
                   placeholder="Hover Image Alt"
                 />
+                <div className="flex items-center gap-2">
+                  <Controller
+                    name="showHoverInGallery"
+                    control={control}
+                    render={({ field }) => (
+                      <input
+                        type="checkbox"
+                        className="size-4"
+                        checked={field.value}
+                        onChange={(e) => field.onChange(e.target.checked)}
+                      />
+                    )}
+                  />
+                  <Label className="text-trim">Show in product images</Label>
+                </div>
               </div>
             </div>
 
@@ -737,37 +903,85 @@ export default function ProductDetailPage() {
                   )
                 }
               />
-              <div className="grid grid-cols-4 gap-4">
-                {imagesArray.fields.map((field, i) => (
-                  <div
-                    key={field.id}
-                    className="flex flex-col gap-2 p-2 rounded-lg border border-secondary/20"
-                  >
-                    <Controller
-                      name={`images.${i}.image`}
-                      control={control}
-                      render={({ field }) => (
-                        <ImageUploader
-                          value={field.value}
-                          onChange={field.onChange}
-                        />
-                      )}
-                    />
-                    <Input
-                      {...register(`images.${i}.imageAlt`)}
-                      placeholder="Image Alt"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => imagesArray.remove(i)}
-                      className="flex items-center justify-center gap-1 text-xs rounded-md py-1.5 text-red-400 hover:text-red-600 hover:bg-red-50 transition-colors cursor-pointer"
+              <SortableList
+                ids={imagesArray.fields.map((f) => f.id)}
+                onMove={imagesArray.move}
+                className="grid grid-cols-4 gap-4"
+              >
+                {imagesArray.fields.map((field, i) =>
+                  field.source ? (
+                    <SortableCard
+                      key={field.id}
+                      id={field.id}
+                      className="flex flex-col gap-2 p-2 rounded-lg border border-dashed border-secondary/60 bg-secondary/5"
                     >
-                      <RiDeleteBinLine size={14} />
-                      Remove
-                    </button>
-                  </div>
-                ))}
-              </div>
+                      {(handle) => (
+                        <>
+                          <div className="flex items-center gap-2">
+                            {handle}
+                            <span className="text-sm font-bold">
+                              {field.source === "thumb"
+                                ? "Thumb Image"
+                                : "Hover Image"}
+                            </span>
+                          </div>
+                          <div className="relative aspect-square w-full overflow-hidden rounded-md bg-white">
+                            <Image
+                              src={
+                                (field.source === "thumb"
+                                  ? thumbImage
+                                  : hoverImage) ||
+                                "/assets/images/placeholder.png"
+                              }
+                              alt=""
+                              fill
+                              className="object-contain"
+                            />
+                          </div>
+                          <p className="text-xs text-description-color">
+                            Untick &quot;Show in product images&quot; above to
+                            remove.
+                          </p>
+                        </>
+                      )}
+                    </SortableCard>
+                  ) : (
+                    <SortableCard
+                      key={field.id}
+                      id={field.id}
+                      className="flex flex-col gap-2 p-2 rounded-lg border border-secondary/20"
+                    >
+                      {(handle) => (
+                        <>
+                          {handle}
+                          <Controller
+                            name={`images.${i}.image`}
+                            control={control}
+                            render={({ field }) => (
+                              <ImageUploader
+                                value={field.value}
+                                onChange={field.onChange}
+                              />
+                            )}
+                          />
+                          <Input
+                            {...register(`images.${i}.imageAlt`)}
+                            placeholder="Image Alt"
+                          />
+                          <button
+                            type="button"
+                            onClick={() => imagesArray.remove(i)}
+                            className="flex items-center justify-center gap-1 text-xs rounded-md py-1.5 text-red-400 hover:text-red-600 hover:bg-red-50 transition-colors cursor-pointer"
+                          >
+                            <RiDeleteBinLine size={14} />
+                            Remove
+                          </button>
+                        </>
+                      )}
+                    </SortableCard>
+                  ),
+                )}
+              </SortableList>
             </div>
 
             <Divider />
@@ -791,41 +1005,51 @@ export default function ProductDetailPage() {
                 </button>
               </div>
               {photometricsArray.fields.length > 0 ? (
-                <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                <SortableList
+                  ids={photometricsArray.fields.map((f) => f.id)}
+                  onMove={photometricsArray.move}
+                  className="grid grid-cols-2 lg:grid-cols-4 gap-4"
+                >
                   {photometricsArray.fields.map((field, i) => (
-                    <div
+                    <SortableCard
                       key={field.id}
+                      id={field.id}
                       className="flex flex-col gap-2 p-2 rounded-lg border border-secondary/20"
                     >
-                      <Controller
-                        name={`photometrics.${i}.image`}
-                        control={control}
-                        render={({ field }) => (
-                          <ImageUploader
-                            value={field.value}
-                            onChange={field.onChange}
+                      {(handle) => (
+                        <>
+                          {handle}
+                          <Controller
+                            name={`photometrics.${i}.image`}
+                            control={control}
+                            render={({ field }) => (
+                              <ImageUploader
+                                value={field.value}
+                                onChange={field.onChange}
+                              />
+                            )}
                           />
-                        )}
-                      />
-                      <Input
-                        {...register(`photometrics.${i}.name`)}
-                        placeholder="Name"
-                      />
-                      <Input
-                        {...register(`photometrics.${i}.imageAlt`)}
-                        placeholder="Image Alt"
-                      />
-                      <button
-                        type="button"
-                        onClick={() => photometricsArray.remove(i)}
-                        className="flex items-center justify-center gap-1 text-xs rounded-md py-1.5 text-red-400 hover:text-red-600 hover:bg-red-50 transition-colors cursor-pointer"
-                      >
-                        <RiDeleteBinLine size={14} />
-                        Remove
-                      </button>
-                    </div>
+                          <Input
+                            {...register(`photometrics.${i}.name`)}
+                            placeholder="Name"
+                          />
+                          <Input
+                            {...register(`photometrics.${i}.imageAlt`)}
+                            placeholder="Image Alt"
+                          />
+                          <button
+                            type="button"
+                            onClick={() => photometricsArray.remove(i)}
+                            className="flex items-center justify-center gap-1 text-xs rounded-md py-1.5 text-red-400 hover:text-red-600 hover:bg-red-50 transition-colors cursor-pointer"
+                          >
+                            <RiDeleteBinLine size={14} />
+                            Remove
+                          </button>
+                        </>
+                      )}
+                    </SortableCard>
                   ))}
-                </div>
+                </SortableList>
               ) : (
                 <p className="text-sm text-description-color">
                   No photometric images added yet.
@@ -1534,21 +1758,29 @@ function FourthSectionTile({
         </button>
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
+      <SortableList
+        ids={itemsArray.fields.map((f) => f.id)}
+        onMove={itemsArray.move}
+        className="grid grid-cols-2 gap-4"
+      >
         {itemsArray.fields.map((field, j) => (
-          <FourthSectionItem
-            key={field.id}
-            control={control}
-            register={register}
-            setValue={setValue}
-            getValues={getValues}
-            watch={watch}
-            tileIndex={index}
-            itemIndex={j}
-            onRemove={() => itemsArray.remove(j)}
-          />
+          <SortableCard key={field.id} id={field.id}>
+            {(handle) => (
+              <FourthSectionItem
+                dragHandle={handle}
+                control={control}
+                register={register}
+                setValue={setValue}
+                getValues={getValues}
+                watch={watch}
+                tileIndex={index}
+                itemIndex={j}
+                onRemove={() => itemsArray.remove(j)}
+              />
+            )}
+          </SortableCard>
         ))}
-      </div>
+      </SortableList>
       {itemsArray.fields.length === 0 && (
         <p className="text-sm text-description-color">
           No items added yet.
@@ -1566,6 +1798,7 @@ const RESOURCE_ACCEPT: Record<string, string[]> = {
 };
 
 function FourthSectionItem({
+  dragHandle,
   control,
   register,
   setValue,
@@ -1575,6 +1808,7 @@ function FourthSectionItem({
   itemIndex,
   onRemove,
 }: {
+  dragHandle: React.ReactNode;
   control: any;
   register: any;
   setValue: any;
@@ -1588,8 +1822,9 @@ function FourthSectionItem({
   const size = watch(`${path}.size`);
 
   return (
-    <div className="border border-secondary/30 rounded-lg p-4 flex flex-col gap-3">
+    <div className="border border-secondary/30 rounded-lg p-4 flex flex-col gap-3 h-full">
       <div className="flex items-center justify-between gap-3">
+        {dragHandle}
         <Input
           {...register(`${path}.title`)}
           placeholder="Item Title"

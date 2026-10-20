@@ -4,6 +4,7 @@ import { useState, useCallback } from "react";
 import { useDropzone } from "react-dropzone";
 import { Upload, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
+import { uploadFile } from "@/lib/uploadFile";
 
 interface MultiImageUploaderProps {
   onUpload: (urls: string[]) => void;
@@ -28,17 +29,7 @@ export function MultiImageUploader({
         setError(null);
 
         const urls = await Promise.all(
-          acceptedFiles.map(async (file) => {
-            const formData = new FormData();
-            formData.append("file", file);
-            const response = await fetch("/api/admin/upload", {
-              method: "POST",
-              body: formData,
-            });
-            if (response.status !== 200) throw new Error("Upload failed");
-            const data = await response.json();
-            return data.url as string;
-          }),
+          acceptedFiles.map((file) => uploadFile(file, file.name)),
         );
 
         onUpload(urls);

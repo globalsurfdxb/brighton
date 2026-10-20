@@ -4,6 +4,7 @@ import { useState, useCallback } from "react";
 import { useDropzone } from "react-dropzone";
 import { Upload, X, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
+import { uploadFile } from "@/lib/uploadFile";
 import { Button } from "./button";
 
 interface VideoUploaderProps {
@@ -20,6 +21,7 @@ export function VideoUploader({
   deleteAfterUpload = false,
 }: VideoUploaderProps) {
   const [isUploading, setIsUploading] = useState(false);
+  const [progress, setProgress] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const [localVideoUrl, setLocalVideoUrl] = useState<string | null>(null);
 
@@ -32,24 +34,11 @@ export function VideoUploader({
         setIsUploading(true);
         setError(null);
 
-        const formData = new FormData();
-        formData.append("file", file);
-
-        const response = await fetch("/api/admin/upload", {
-          method: "POST",
-          body: formData,
-        });
-
-        if (response.status !== 200) {
-          setLocalVideoUrl(null);
-          setError("Upload failed");
-          return;
-        }
-
-        const data = await response.json();
-        onChange(data.url, file);
+        setProgress(0);
+        const url = await uploadFile(file, file.name, { onProgress: setProgress });
+        onChange(url, file);
         if (!deleteAfterUpload) {
-          setLocalVideoUrl(data.url);
+          setLocalVideoUrl(url);
         }
       } catch (err) {
         setLocalVideoUrl(null);
@@ -113,7 +102,9 @@ export function VideoUploader({
           {isUploading ? (
             <>
               <Loader2 className="h-10 w-10 animate-spin text-gray-400" />
-              <p className="text-sm text-gray-600">Uploading...</p>
+              <p className="text-sm text-gray-600">
+                Uploading... {Math.round(progress * 100)}%
+              </p>
             </>
           ) : (
             <>

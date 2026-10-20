@@ -15,15 +15,21 @@ policy. Three moving parts:
 
 | Piece | File |
 | --- | --- |
-| Upload (auth-guarded) | `app/api/admin/upload/route.ts` |
+| Upload (auth-guarded, browser → storage direct) | `app/api/admin/upload/route.ts` + `lib/uploadFile.ts` |
 | The sweep | `lib/blob/sweepOrphanBlobs.ts` (+ helpers in `lib/azureBlob.ts`, `lib/blob/collectBlobUrls.ts`) |
 | Trigger endpoint | `app/api/admin/blob-gc/route.ts` |
 | Schedule | `.github/workflows/blob-gc.yml` |
 
 ## Flow
 
-1. **Upload** (`POST /api/admin/upload`, on file drop) → blob written, URL
-   returned, held in form state only.
+1. **Upload** (on file drop) → `POST /api/admin/upload` returns a 15-minute
+   write-only SAS URL for a new blob; the browser PUTs the file straight to
+   storage (no server or host body-size limit), and the blob URL is held in
+   form state only. Needs a storage CORS rule for the site's origins — run
+   `npm run blob-cors -- https://your-site.com http://localhost:3000` once.
+   Product-import files are staged under `import-staging/`, checked and
+   re-stored by `/api/admin/products/import/file`, then the staged copy is
+   deleted (the sweep catches any left behind).
 2. **Remove** (✕) → clears the form field client-side. Nothing else.
 3. **Save** → the page's existing `PATCH` route writes the document. **No
    changes to page routes.**

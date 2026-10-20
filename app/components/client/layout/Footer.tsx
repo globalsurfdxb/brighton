@@ -17,6 +17,8 @@ import { moveUp, moveUpV2 } from "../animations/motionVariants";
 import SectionDescription from "../animations/SectionDescription";
 import { useLenis } from "./LenisProvider";
 import CatalogueRequestDrawer from "../digital-catalogue/CatalogueRequestDrawer";
+import CatalogueFlipbook from "../digital-catalogue/CatalogueFlipbook";
+import type { CatalogueAccess } from "@/app/types/catalogueRequest";
 
 function AccordionToggleIcon({ isOpen }: { isOpen: boolean }) {
   return (
@@ -47,6 +49,7 @@ function AccordionToggleIcon({ isOpen }: { isOpen: boolean }) {
 export default function Footer() {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
   const [isCatalogueDrawerOpen, setIsCatalogueDrawerOpen] = useState(false);
+  const [catalogue, setCatalogue] = useState<CatalogueAccess | null>(null);
   const containerRefs = useRef<(HTMLDivElement | null)[]>([]);
   const { scrollTo } = useLenis();
 
@@ -275,6 +278,12 @@ export default function Footer() {
       <CatalogueRequestDrawer
         isOpen={isCatalogueDrawerOpen}
         onClose={() => setIsCatalogueDrawerOpen(false)}
+        onSuccess={setCatalogue}
+      />
+
+      <CatalogueFlipbook
+        access={catalogue}
+        onClose={() => setCatalogue(null)}
       />
     </footer>
   );
