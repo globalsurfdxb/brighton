@@ -39,17 +39,30 @@ const Label = React.forwardRef<
       {children}
       {main && onToggleHidden !== undefined && (
         <span
+          role="switch"
+          tabIndex={0}
+          aria-checked={!isHidden}
+          aria-label={isHidden ? "Hidden on the website" : "Visible on the website"}
+          title={isHidden ? "Hidden on the website - click to show" : "Visible on the website - click to hide"}
           onClick={(e) => {
             e.preventDefault();
+            e.stopPropagation();
             onToggleHidden();
           }}
-          className="cursor-pointer p-1 rounded-full hover:bg-cream-background hover:scale-110 transition-all duration-300 ease-in-out"
-        >
-          {isHidden ? (
-            <RiEyeOffLine className="text-gray-500" size={20} />
-          ) : (
-            <RiEyeLine className="text-green-600" size={20} />
+          onKeyDown={(e) => {
+            if (e.key !== "Enter" && e.key !== " ") return;
+            e.preventDefault();
+            e.stopPropagation();
+            onToggleHidden();
+          }}
+          className={cn(
+            "inline-flex h-8 w-8 shrink-0 cursor-pointer items-center justify-center rounded-full border transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/20",
+            isHidden
+              ? "border-secondary/70 bg-cream-background text-description-color hover:border-description-color/50"
+              : "border-emerald-200 bg-emerald-50 text-emerald-700 hover:border-emerald-300",
           )}
+        >
+          {isHidden ? <RiEyeOffLine size={16} /> : <RiEyeLine size={16} />}
         </span>
       )}
     </LabelPrimitive.Root>

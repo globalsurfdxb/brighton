@@ -7,7 +7,8 @@ import "swiper/css";
 import AnimatedTitle from "../animations/AnimatedTitle";
 
 export interface RecentContentItem {
-  id: number;
+  id: number | string;
+  slug?: string;
   title: string;
   date: string;
   category: string;
@@ -40,11 +41,11 @@ const RecentContent = ({ title, items, hrefPrefix }: RecentContentProps) => {
             },
             1280: { slidesPerView: 3, spaceBetween: 30 },
           }}
-          className="!overflow-visible"
+          className="!overflow-visible min-xl:!overflow-hidden"
         >
           {items.map((item) => (
             <SwiperSlide key={item.id}>
-              <Link href={`/${hrefPrefix}/${item.id}`}>
+              <Link href={`/${hrefPrefix}/${item.slug ?? item.id}`}>
                 <div className="flex flex-col gap-30 relative group">
                   <div
                     className={`relative rounded-[10px] overflow-hidden bg-secondary ${

@@ -1,13 +1,17 @@
 "use client";
 
 import Image from "next/image";
-import { certifiedCompliantData } from "../data";
+import type { CertifiedCompliantData } from "../types";
 import AnimatedTitle from "../../animations/AnimatedTitle";
 import SectionDescription from "../../animations/SectionDescription";
 import { moveRight } from "../../animations/motionVariants";
 import { motion } from "framer-motion";
 
-export default function CertifiedCompliant() {
+export default function CertifiedCompliant({
+  data: certifiedCompliantData,
+}: {
+  data: CertifiedCompliantData;
+}) {
   return (
     <section className="w-full py-100">
       <div className="container">

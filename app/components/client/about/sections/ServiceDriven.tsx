@@ -1,13 +1,17 @@
 "use client";
 
 import Image from "next/image";
-import { serviceDrivenData } from "../data";
+import type { ServiceDrivenData } from "../types";
 import AnimatedTitle from "../../animations/AnimatedTitle";
 import SectionDescription from "../../animations/SectionDescription";
 import { motion } from "framer-motion";
 import { moveLeft } from "../../animations/motionVariants";
 
-export default function ServiceDriven() {
+export default function ServiceDriven({
+  data: serviceDrivenData,
+}: {
+  data: ServiceDrivenData;
+}) {
   return (
     <section className="w-full py-100 overflow-hidden">
       <div className="container">

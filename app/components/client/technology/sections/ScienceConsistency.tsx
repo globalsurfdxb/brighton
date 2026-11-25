@@ -3,17 +3,22 @@
 import { useState } from "react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
-import { scienceConsistencyData } from "../data";
+import type { ScienceConsistencyData } from "../types";
 import AnimatedTitle from "../../animations/AnimatedTitle";
 import PlusMinusIcon from "./PlusMinusIcon";
 import { useLenis } from "../../layout/LenisProvider";
 import { moveRight, moveUpV2 } from "../../animations/motionVariants";
 import Reveal from "../../animations/RevealItemsOneByOneAnimation";
 
-export default function ScienceConsistency() {
-  const [activeIndex, setActiveIndex] = useState(1);
+export default function ScienceConsistency({
+  data: scienceConsistencyData,
+}: {
+  data: ScienceConsistencyData;
+}) {
+  const initialIndex = Math.min(1, scienceConsistencyData.items.length - 1);
+  const [activeIndex, setActiveIndex] = useState(initialIndex);
   const [baseImage, setBaseImage] = useState(
-    scienceConsistencyData.items[1].image,
+    scienceConsistencyData.items[initialIndex]?.image ?? "",
   );
   const { scrollTo } = useLenis();
 

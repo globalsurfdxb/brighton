@@ -13,7 +13,7 @@ const technologySchema = new mongoose.Schema({
   },
   firstSection: {
     isHidden: { type: Boolean, default: false },
-    title: { type: String },
+    description: { type: String },
   },
   secondSection: {
     isHidden: { type: Boolean, default: false },
@@ -80,6 +80,8 @@ const technologySchema = new mongoose.Schema({
     buttonLink: { type: String },
   },
 });
+
+if (process.env.NODE_ENV !== "production") delete mongoose.models.technology;
 
 export default mongoose.models.technology ||
   mongoose.model("technology", technologySchema);

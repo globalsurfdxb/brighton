@@ -1,13 +1,17 @@
 "use client";
 
 import Image from "next/image";
-import { corporateStrategyData } from "../data";
+import type { CorporateStrategyData } from "../types";
 import AnimatedTitle from "../../animations/AnimatedTitle";
 import SectionDescription from "../../animations/SectionDescription";
 import { moveLeft, moveUp } from "../../animations/motionVariants";
 import { motion } from "framer-motion";
 
-export default function CorporateStrategy() {
+export default function CorporateStrategy({
+  data: corporateStrategyData,
+}: {
+  data: CorporateStrategyData;
+}) {
   const { title, description, image, imageAlt } = corporateStrategyData;
 
   return (

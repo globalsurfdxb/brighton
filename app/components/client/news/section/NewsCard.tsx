@@ -4,17 +4,18 @@ import Link from "next/link";
 import AnimatedDividerTwo from "../../animations/AnimatedDividerTwo";
 
 interface NewsCardProps {
+  slug: string;
   title: string;
   date: string;
   category: string;
   image: string;
 }
 
-const NewsCard = ({ title, date, category, image }: NewsCardProps) => {
+const NewsCard = ({ slug, title, date, category, image }: NewsCardProps) => {
   return (
     <Link
       className="group"
-      href={`/news/${title.toLowerCase().replace(" ", "-")}`}
+      href={`/news/${slug}`}
     >
       <div className="flex flex-col relative">
         <div className="relative rounded-[10px] overflow-hidden h-[260px] xl:h-[320px] 2xl:h-[360px] 3xl:h-[420px] bg-secondary mb-30">

@@ -3,12 +3,16 @@
 import Image from "next/image";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
-import { whyChooseData } from "../data";
+import type { WhyChooseData } from "../types";
 import AnimatedTitle from "../../animations/AnimatedTitle";
 import Reveal from "../../animations/RevealItemsOneByOneAnimation";
 import { moveUpV2 } from "../../animations/motionVariants";
 
-export default function WhyChoose() {
+export default function WhyChoose({
+  data: whyChooseData,
+}: {
+  data: WhyChooseData;
+}) {
   return (
     <section className="w-full py-100 bg-cream-background overflow-hidden">
       <div className="container">
@@ -45,7 +49,7 @@ export default function WhyChoose() {
                     <div className="3xl:w-17.5 3xl:h-17.5 2xl:w-15 2xl:h-15 w-12 h-12 rounded-[5px] bg-primary flex items-center justify-center shrink-0">
                       <Image
                         src={item.icon || "/assets/images/placeholder.png"}
-                        alt={item.title}
+                        alt={item.iconAlt || item.title}
                         width={48}
                         height={48}
                         className="h-6 2xl:h-9 3xl:h-12 w-auto 3xl:w-12 pointer-events-none"

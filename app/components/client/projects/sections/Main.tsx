@@ -6,7 +6,7 @@ import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import ProjectCard from "./ProjectCard";
 import PillBtn from "../../common/PillBtn";
 import FilterSelectDropDown from "../../common/FilterDropdown";
-import { categoryOptions, regionOptions, projects } from "../data";
+import type { ProjectCardItem } from "@/lib/services/project.service";
 import AnimatedTitle from "../../animations/AnimatedTitle";
 import CommonCategoryTabs from "../../common/CommonCategoryTabs";
 import { useMediaQuery } from "@/app/hooks/useMediaQuery";
@@ -44,7 +44,17 @@ function withRowMeta(items: any[]) {
   return result;
 }
 
-export default function ProjectsSection() {
+export default function ProjectsSection({
+  data,
+}: {
+  data: {
+    title: string;
+    categories: { id: string; label: string }[];
+    regions: string[];
+    projects: ProjectCardItem[];
+  };
+}) {
+  const { categories: categoryOptions, regions: regionOptions, projects } = data;
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -97,7 +107,7 @@ export default function ProjectsSection() {
       const matchesRegion = region === null || p.region === region;
       return matchesCategory && matchesRegion;
     });
-  }, [category, region]);
+  }, [category, region, projects]);
 
   const visibleCount =
     initialVisibleCount + (currentPage - 1) * LOAD_MORE_COUNT;
@@ -121,7 +131,7 @@ export default function ProjectsSection() {
 
   return (
     <section className="bg-white top-spacing pb-100 container overflow-hidden">
-      <AnimatedTitle className="hero-title mb-100" text="Projects" tag="h1" />
+      <AnimatedTitle className="hero-title mb-100" text={data.title} tag="h1" />
 
       <div className="mb-40 gap-3 sm:gap-5 flex flex-col sm:flex-row items-start sm:items-center md:flex-wrap justify-between">
         <CommonCategoryTabs

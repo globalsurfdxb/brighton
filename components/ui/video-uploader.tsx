@@ -2,10 +2,13 @@
 
 import { useState, useCallback } from "react";
 import { useDropzone } from "react-dropzone";
-import { Upload, X, Loader2 } from "lucide-react";
+import { Film, X } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
 import { uploadFile } from "@/lib/uploadFile";
 import { Button } from "./button";
+import { DropzoneArea, UploaderError, rejectionMessage } from "./dropzone-area";
+
+const VIDEO_FORMATS = "MP4, WEBM, MOV, AVI or MKV";
 
 interface VideoUploaderProps {
   value?: string;
@@ -57,6 +60,8 @@ export function VideoUploader({
     },
     maxFiles: 1,
     multiple: false,
+    onDropRejected: (rejections) =>
+      setError(rejectionMessage(rejections, VIDEO_FORMATS)),
   });
 
   const displayUrl = localVideoUrl || value;
@@ -70,55 +75,39 @@ export function VideoUploader({
   };
 
   return (
-    <div className={cn("space-y-4 w-full", className)}>
+    <div className={cn("w-full space-y-3", className)}>
       {showPreview ? (
-        <div className="relative w-full max-w-[400px] aspect-video overflow-hidden rounded-lg border border-black/20">
+        <div className="relative aspect-video w-full max-w-[400px] overflow-hidden rounded-xl border border-secondary/60 bg-black shadow-sm">
           <video
             src={displayUrl as string}
             controls
-            className="object-cover w-full h-full"
+            className="h-full w-full object-cover"
           />
           <Button
             type="button"
             variant="destructive"
             size="icon"
-            className="absolute right-2 top-2 bg-red-500"
+            title="Remove video"
+            aria-label="Remove video"
+            className="absolute right-2 top-2 h-8 w-8 rounded-full shadow-md"
             onClick={removeVideo}
           >
             <X className="h-4 w-4" />
           </Button>
         </div>
       ) : (
-        <div
-          {...getRootProps()}
-          className={cn(
-            "border-2 border-dashed rounded-lg p-8 transition-colors hover:border-gray-400",
-            "flex flex-col items-center justify-center gap-2 cursor-pointer",
-            isDragActive && "border-blue-500 bg-blue-50",
-            isUploading && "pointer-events-none opacity-60",
-          )}
-        >
-          <input {...getInputProps()} />
-          {isUploading ? (
-            <>
-              <Loader2 className="h-10 w-10 animate-spin text-gray-400" />
-              <p className="text-sm text-gray-600">
-                Uploading... {Math.round(progress * 100)}%
-              </p>
-            </>
-          ) : (
-            <>
-              <Upload className="h-10 w-10 text-gray-400" />
-              <p className="text-sm text-gray-600">
-                {isDragActive
-                  ? "Drop the video here"
-                  : "Drag & drop a video here, or click to select"}
-              </p>
-            </>
-          )}
-        </div>
+        <DropzoneArea
+          rootProps={getRootProps()}
+          inputProps={getInputProps()}
+          icon={Film}
+          isDragActive={isDragActive}
+          isUploading={isUploading}
+          noun="a video"
+          formats={VIDEO_FORMATS}
+          progress={isUploading ? progress : undefined}
+        />
       )}
-      {error && <p className="text-sm text-red-500">{error}</p>}
+      <UploaderError message={error} />
     </div>
   );
 }

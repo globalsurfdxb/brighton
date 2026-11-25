@@ -1,14 +1,18 @@
 "use client";
 
 import Image from "next/image";
-import { lightBeyondData } from "../data";
+import type { LightBeyondData } from "../types";
 import AnimatedTitle from "../../animations/AnimatedTitle";
 import AnimatedDivider from "../../animations/AnimatedDivider";
 import SectionDescription from "../../animations/SectionDescription";
 import { moveLeft } from "../../animations/motionVariants";
 import { motion } from "framer-motion";
 
-export default function LightBeyond() {
+export default function LightBeyond({
+  data: lightBeyondData,
+}: {
+  data: LightBeyondData;
+}) {
   return (
     <section className="w-full py-100">
       <div className="container overflow-hidden">

@@ -52,7 +52,7 @@ interface ReorderableListProps<T extends Item> {
 }
 
 const iconButton =
-  "cursor-pointer hover:scale-110 transition-all text-description-color hover:text-primary disabled:cursor-not-allowed disabled:text-gray-300 disabled:hover:scale-100";
+  "flex h-7 w-7 cursor-pointer items-center justify-center rounded-md text-description-color transition-colors hover:bg-cream-background hover:text-primary disabled:cursor-not-allowed disabled:text-gray-300 disabled:hover:bg-transparent";
 
 function SortableRow({
   id,
@@ -237,8 +237,8 @@ export default function ReorderableList<T extends Item>({
       : `(${items.length})`;
 
   return (
-    <div className="bg-white border border-secondary rounded-[10px] p-5 flex flex-col gap-4">
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-secondary pb-3">
+    <div className="flex min-h-0 flex-1 flex-col gap-4 rounded-xl border border-secondary/60 bg-white p-5 shadow-[0_1px_2px_rgba(10,10,10,0.04)]">
+      <div className="flex shrink-0 flex-wrap items-center justify-between gap-3 border-b border-secondary/60 pb-3">
         <Label className="!text-xl !font-semibold">
           {title} {count}
         </Label>
@@ -322,7 +322,7 @@ export default function ReorderableList<T extends Item>({
       </div>
 
       {reordering && (
-        <p className="text-[13px] text-description-color -mt-1">
+        <p className="-mt-1 shrink-0 text-[13px] text-description-color">
           Drag rows or use the arrows to change the order, then press Done.
           {isDirty && (
             <span className="ml-2 text-primary font-itc-medium">
@@ -332,9 +332,11 @@ export default function ReorderableList<T extends Item>({
         </p>
       )}
 
-      <div className="grid grid-cols-1 gap-5">
+      <div className="admin-list-scroll -mr-3 grid min-h-0 flex-1 grid-cols-1 content-start gap-5 overflow-y-auto pb-1 pr-3">
         {items.length === 0 && (
-          <p className="text-sm text-black/40">No {noun} added yet.</p>
+          <p className="rounded-lg border border-dashed border-secondary/70 py-8 text-center text-sm text-description-color">
+            No {noun} added yet.
+          </p>
         )}
         {!reordering && items.length > 0 && searchTerm && !matches.length && (
           <p className="text-sm text-black/40">
@@ -365,13 +367,13 @@ export default function ReorderableList<T extends Item>({
                 >
                   {(handle) => (
                     <div
-                      className={`flex items-center justify-between border rounded-md px-4 py-3 transition-all ${
+                      className={`flex items-center justify-between rounded-lg border px-4 py-3 transition-all ${
                         active
                           ? "border-primary bg-secondary/10 ring-2 ring-primary/20"
                           : matched
                             ? "border-primary/50 bg-white"
                             : "border-secondary/60 bg-white"
-                      } ${reordering ? "" : "hover:shadow-sm cursor-pointer"}`}
+                      } ${reordering ? "" : "cursor-pointer hover:border-secondary hover:shadow-[0_6px_16px_-10px_rgba(10,10,10,0.25)]"}`}
                       onClick={() => !reordering && onRowClick(item)}
                     >
                       <div className="flex items-center gap-4">

@@ -1,9 +1,13 @@
-import { researchData } from "../data";
+import type { ResearchData } from "../types";
 import AnimatedTitle from "../../animations/AnimatedTitle";
 import Tilt3DImage from "../../common/Tilt3DImage";
 import SectionDescription from "../../animations/SectionDescription";
 
-export default function Research() {
+export default function Research({
+  data: researchData,
+}: {
+  data: ResearchData;
+}) {
   return (
     <section className="relative w-full overflow-hidden">
       {/* Background image */}

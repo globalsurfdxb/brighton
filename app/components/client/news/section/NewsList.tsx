@@ -16,7 +16,8 @@ interface NewsListProps {
     title: string;
     categories: string[];
     items: {
-      id: number;
+      id: string;
+      slug: string;
       title: string;
       date: string;
       category: string;

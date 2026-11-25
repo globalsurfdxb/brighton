@@ -9,8 +9,9 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import AdminItemContainer from "../common/AdminItemContainer";
 import AdminPageActions from "../common/AdminPageActions";
-import CustomButton from "../../client/common/CustomButton";
-import Link from "next/link";
+import AdminSubmitButton from "@/app/components/admin/common/AdminSubmitButton";
+import { useUnsavedChanges } from "@/app/components/admin/common/useUnsavedChanges";
+import AdminVisitLink from "@/app/components/admin/common/AdminVisitLink";
 
 type TopLevelForm = {
   seo: { metaTitle: string; metaDescription: string; script: string };
@@ -37,9 +38,10 @@ const defaultValues: TopLevelForm = {
 };
 
 export default function ProjectMainPage() {
-  const { register, control, reset, handleSubmit } = useForm<TopLevelForm>({
+  const { register, control, reset, handleSubmit, getValues } = useForm<TopLevelForm>({
     defaultValues,
   });
+  const { isDirty, markClean, changes } = useUnsavedChanges(control, getValues);
   const [isSaving, setIsSaving] = useState(false);
 
   const fetchPage = async () => {
@@ -60,6 +62,7 @@ export default function ProjectMainPage() {
         },
         ctaSection: { ...defaultValues.ctaSection, ...data.ctaSection },
       });
+      markClean();
     } catch (e) {
       console.error(e);
       toast.error("Failed to load page");
@@ -82,6 +85,7 @@ export default function ProjectMainPage() {
       const { message } = await res.json();
       if (res.ok) {
         toast.success(message || "Saved");
+        markClean();
       } else {
         toast.error(message || "Failed to save");
       }
@@ -95,16 +99,9 @@ export default function ProjectMainPage() {
 
   return (
     <form className="flex flex-col gap-5" onSubmit={handleSubmit(onSubmit)}>
-      <AdminPageActions>
-        <Link href={`/projects`} target="_blank">
-          <CustomButton variant="2" type="button" text="Visit page" />
-        </Link>
-        <CustomButton
-          variant="3"
-          type="submit"
-          text={isSaving ? "Saving..." : "Page Submit"}
-          showIcon={false}
-        />
+      <AdminPageActions isDirty={isDirty} changes={changes}>
+        <AdminVisitLink href={`/projects`} />
+        <AdminSubmitButton saving={isSaving} />
       </AdminPageActions>
 
       <AdminItemContainer expansion={false}>

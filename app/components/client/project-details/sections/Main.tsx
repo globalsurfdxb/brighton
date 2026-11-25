@@ -6,7 +6,13 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import type { Swiper as SwiperType } from "swiper";
 import "swiper/css";
 
-import { projectDetailsData } from "../data";
+export type ProjectDetailsData = {
+  location: string;
+  sector: string;
+  overviewTitle: string;
+  overviewParagraphs: string;
+  slides: { id: string; image: string; alt: string }[];
+};
 import SliderNavBtn from "../../common/Slidernavbtn";
 import { useContainerInset } from "@/app/hooks/useContainerInset";
 import { useMediaQuery } from "@/app/hooks/useMediaQuery";
@@ -16,7 +22,11 @@ import { motion } from "framer-motion";
 import { moveRight, moveUp, moveUpV2 } from "../../animations/motionVariants";
 import Reveal from "../../animations/RevealItemsOneByOneAnimation";
 
-export default function Main() {
+export default function Main({
+  data: projectDetailsData,
+}: {
+  data: ProjectDetailsData;
+}) {
   const swiperRef = useRef<SwiperType | null>(null);
   const [isBeginning, setIsBeginning] = useState(true);
   const [isEnd, setIsEnd] = useState(false);

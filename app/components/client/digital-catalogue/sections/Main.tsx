@@ -10,14 +10,22 @@ import CatalogueRequestForm from "../CatalogueRequestForm";
 import CatalogueFlipbook from "../CatalogueFlipbook";
 import type { CatalogueAccess } from "@/app/types/catalogueRequest";
 
-export default function Main() {
+type MainData = {
+  title: string;
+  subTitle: string;
+  catalogueText: string;
+  image: string;
+  imageAlt: string;
+};
+
+export default function Main({ data }: { data: MainData }) {
   const [catalogue, setCatalogue] = useState<CatalogueAccess | null>(null);
 
   return (
     <section className="w-full pb-100 top-spacing">
       <div className="container">
         <AnimatedTitle
-          text="Digital Catalogue"
+          text={data.title}
           className="hero-title mb-30 md:mb-80 min-[1900px]:mb-[83px]"
         />
 
@@ -31,8 +39,8 @@ export default function Main() {
             className="relative w-full md:w-[38%] lg:w-[35%] max-[639px]:max-h-[400px] max-[767px]:max-h-[450px] aspect-[587/747] 3xl:w-[587px] 3xl:h-[747px] shrink-0 rounded-[10px] overflow-hidden select-none"
           >
             <Image
-              src="/assets/images/resources/catalogue.png"
-              alt="Brighton Catalogue 2026"
+              src={data.image || "/assets/images/placeholder.png"}
+              alt={data.imageAlt}
               fill
               className="object-cover object-center pointer-events-none"
             />
@@ -54,7 +62,7 @@ export default function Main() {
                     "linear-gradient(180deg, #FFFFFF 25.38%, #999999 60%)",
                 }}
               >
-                CATALOGUE 2026
+                {data.catalogueText}
               </p>
             </div>
           </motion.div>
@@ -62,8 +70,7 @@ export default function Main() {
           {/* Right - form */}
           <div className="w-full flex-1 lg:mt-80">
             <SectionDescription
-              text="Please fill out the form below to access our latest product
-              catalogue."
+              text={data.subTitle}
               className="text-subtitle text-description-color max-w-[37ch] mb-80"
               direction="y"
             />

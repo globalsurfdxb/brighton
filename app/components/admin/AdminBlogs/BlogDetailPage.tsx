@@ -10,8 +10,10 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import AdminItemContainer from "../common/AdminItemContainer";
 import AdminPageActions from "../common/AdminPageActions";
+import AdminSubmitButton from "@/app/components/admin/common/AdminSubmitButton";
+import { useUnsavedChanges } from "@/app/components/admin/common/useUnsavedChanges";
+import AdminVisitLink from "@/app/components/admin/common/AdminVisitLink";
 import CustomButton from "../../client/common/CustomButton";
-import Link from "next/link";
 import TinyEditor from "../common/TinyMceEditor";
 import { ImageUploader } from "@/components/ui/image-uploader";
 import {
@@ -75,7 +77,9 @@ export default function BlogDetail() {
     watch,
     setValue,
     formState: { errors },
+    getValues,
   } = useForm<BlogForm>({ defaultValues });
+  const { isDirty, markClean, changes } = useUnsavedChanges(control, getValues);
   const [isSaving, setIsSaving] = useState(false);
   // public link uses the last saved slug, not unsaved edits
   const [savedSlug, setSavedSlug] = useState("");
@@ -107,6 +111,7 @@ export default function BlogDetail() {
         topic: data.topic || "",
         ctaSection: { ...defaultValues.ctaSection, ...data.ctaSection },
       });
+      markClean();
     } catch (e) {
       console.error(e);
       toast.error("Failed to load blog");
@@ -129,6 +134,7 @@ export default function BlogDetail() {
       const { message, data } = await res.json();
       if (res.ok) {
         toast.success(message || "Blog saved");
+        markClean();
         setSavedSlug(data?.slug || formData.slug);
         if (isNew && data?._id) {
           router.replace(`/4dm1n-br1ght0n/blogs/${data._id}`);
@@ -147,13 +153,14 @@ export default function BlogDetail() {
   useEffect(() => {
     fetchOptions();
     if (!isNew) fetchBlog();
+    else markClean();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
     <div className="flex flex-col gap-5">
       <form className="flex flex-col gap-5" onSubmit={handleSubmit(onSubmit)}>
-        <AdminPageActions>
+        <AdminPageActions isDirty={isDirty} changes={changes}>
           <CustomButton
             iconDirection="down"
             imageClass="!-rotate-135"
@@ -163,16 +170,9 @@ export default function BlogDetail() {
             onClick={() => router.back()}
           />
           {savedSlug && (
-            <Link href={`/blog/${savedSlug}`} target="_blank">
-              <CustomButton variant="2" type="button" text="Visit page" />
-            </Link>
+            <AdminVisitLink href={`/blog/${savedSlug}`} />
           )}
-          <CustomButton
-            variant="3"
-            type="submit"
-            text="Page Submit"
-            showIcon={false}
-          />
+          <AdminSubmitButton saving={isSaving} />
         </AdminPageActions>
 
         <AdminItemContainer expansion={false}>

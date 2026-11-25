@@ -1,14 +1,18 @@
 "use client";
 
 import Image from "next/image";
-import { qualityAssuranceData } from "../data";
+import type { QualityAssuranceData } from "../types";
 import AnimatedTitle from "../../animations/AnimatedTitle";
 import { motion } from "framer-motion";
 import { moveRight, moveUpV2 } from "../../animations/motionVariants";
 import SectionDescription from "../../animations/SectionDescription";
 import Reveal from "../../animations/RevealItemsOneByOneAnimation";
 
-export default function QualityAssurance() {
+export default function QualityAssurance({
+  data: qualityAssuranceData,
+}: {
+  data: QualityAssuranceData;
+}) {
   return (
     <section className="w-full py-100 bg-cream-background overflow-hidden">
       <div className="container mx-auto">
@@ -55,7 +59,7 @@ export default function QualityAssurance() {
                     <div className="w-10 h-10 md:w-12 md:h-12 3xl:w-15 3xl:h-15 shrink-0 rounded-[5px] bg-primary flex items-center justify-center">
                       <Image
                         src={item.icon || "/assets/images/placeholder.png"}
-                        alt={item.title}
+                        alt={item.iconAlt || item.title}
                         width={40}
                         height={40}
                         className="w-auto h-5.5 md:h-7 3xl:h-9 pointer-events-none"

@@ -3,12 +3,16 @@
 import { useState } from "react";
 import Image from "next/image";
 import { motion } from "framer-motion";
-import { performanceSpecifyData } from "../data";
+import type { PerformanceSpecifyData } from "../types";
 import AnimatedTitle from "../../animations/AnimatedTitle";
 import { moveUp } from "../../animations/motionVariants";
 import { useLenis } from "../../layout/LenisProvider";
 
-export default function PerformanceSpecify() {
+export default function PerformanceSpecify({
+  data: performanceSpecifyData,
+}: {
+  data: PerformanceSpecifyData;
+}) {
   const [activeIndex, setActiveIndex] = useState(1);
   const [openIndex, setOpenIndex] = useState(0);
 
@@ -47,7 +51,7 @@ export default function PerformanceSpecify() {
                   <div className="rounded-[10px] bg-primary flex items-center justify-center shrink-0 w-10 h-10 md:w-12.5 md:h-12.5">
                     <Image
                       src={item.icon || "/assets/images/placeholder.png"}
-                      alt={item.title}
+                      alt={item.iconAlt || item.title}
                       width={50}
                       height={50}
                       className="h-6 md:h-[28.57px] object-contain w-auto pointer-events-none"
@@ -112,7 +116,7 @@ export default function PerformanceSpecify() {
                 >
                   <Image
                     src={item.icon || "/assets/images/placeholder.png"}
-                    alt={item.title}
+                    alt={item.iconAlt || item.title}
                     width={50}
                     height={50}
                     className={`${isActive ? "h-10" : "h-[28.57px]"} object-contain w-auto transition-[height] duration-500 ease-in-out pointer-events-none`}
