@@ -199,9 +199,9 @@ export default function BlogsListingPage() {
   };
 
   return (
-    <div className="flex flex-col gap-5">
+    <div className="flex h-full min-h-0 flex-col gap-5">
       {/* Tabs */}
-      <div className="flex items-center gap-2 bg-white border border-secondary rounded-[10px] p-2 w-fit">
+      <div className="flex shrink-0 items-center gap-2 bg-white border border-secondary rounded-[10px] p-2 w-fit">
         {TABS.map((tab) => (
           <button
             key={tab.key}

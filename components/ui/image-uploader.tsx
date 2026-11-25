@@ -2,11 +2,14 @@
 
 import { useState, useCallback } from "react";
 import { useDropzone } from "react-dropzone";
-import { Upload, X, Loader2 } from "lucide-react";
+import { ImageIcon, X } from "lucide-react";
 import Image from "next/image";
 import { cn } from "@/lib/utils/cn";
 import { uploadFile } from "@/lib/uploadFile";
 import { Button } from "./button";
+import { DropzoneArea, UploaderError, rejectionMessage } from "./dropzone-area";
+
+const IMAGE_FORMATS = "PNG, JPG, WEBP, GIF or SVG";
 
 interface ImageUploaderProps {
   value?: string;
@@ -58,10 +61,12 @@ export function ImageUploader({
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
     accept: {
-      "image/*": [".png", ".jpg", ".jpeg", ".gif", ".svg"],
+      "image/*": [".png", ".jpg", ".jpeg", ".webp", ".gif", ".svg"],
     },
     maxFiles: multiple ? undefined : 1,
     multiple: multiple,
+    onDropRejected: (rejections) =>
+      setError(rejectionMessage(rejections, IMAGE_FORMATS)),
   });
 
   const displayUrl = localImageUrl || value;
@@ -79,61 +84,47 @@ export function ImageUploader({
   };
 
   return (
-    <div className={cn("space-y-4 w-full", className)}>
+    <div className={cn("w-full space-y-3", className)}>
       {showPreview ? (
         <div
-          className={`relative w-full max-w-[300px] aspect-[4/3] overflow-hidden rounded-lg border border-black/20 ${isLogo ? "max-w-[100px] h-[100px] bg-black" : "max-w-[300px]"}`}
+          className={cn(
+            "group relative overflow-hidden rounded-xl border border-secondary/60 shadow-sm",
+            isLogo
+              ? "h-[100px] w-[100px] bg-black"
+              : "aspect-[4/3] w-full max-w-[300px] bg-cream-background",
+          )}
         >
           <Image
             src={displayUrl as string}
             alt="Uploaded image"
-            className={isLogo ? "object-contain p-2 bg-black" : "object-cover"}
+            className={isLogo ? "object-contain p-2" : "object-cover"}
             fill
           />
           <Button
             type="button"
             variant="destructive"
             size="icon"
-            className="absolute right-2 top-2 bg-red-500"
+            title="Remove image"
+            aria-label="Remove image"
+            className="absolute right-2 top-2 h-8 w-8 rounded-full shadow-md"
             onClick={removeImage}
           >
             <X className="h-4 w-4" />
           </Button>
         </div>
       ) : (
-        <div
-          {...getRootProps()}
-          className={cn(
-            "border-2 border-dashed rounded-lg p-8 transition-colors hover:border-gray-400",
-            "flex flex-col items-center justify-center gap-2 cursor-pointer",
-            isDragActive && "border-blue-500 bg-blue-50",
-            isUploading && "pointer-events-none opacity-60",
-          )}
-        >
-          <input {...getInputProps()} />
-          {isUploading ? (
-            <>
-              <Loader2 className="h-10 w-10 animate-spin text-gray-400" />
-              <p className=" text-gray-600">Uploading...</p>
-            </>
-          ) : (
-            <>
-              <Upload className="h-10 w-10 text-gray-400" />
-              <p className="text-gray-600">
-                {isDragActive
-                  ? "Drop the image here"
-                  : "Drag & drop an image here, or click to select"}
-              </p>
-              {recommendedDimension && (
-                <p className="text-center text-xs text-gray-500">
-                  {recommendedDimension}
-                </p>
-              )}
-            </>
-          )}
-        </div>
+        <DropzoneArea
+          rootProps={getRootProps()}
+          inputProps={getInputProps()}
+          icon={ImageIcon}
+          isDragActive={isDragActive}
+          isUploading={isUploading}
+          noun={multiple ? "images" : "an image"}
+          formats={IMAGE_FORMATS}
+          hint={recommendedDimension}
+        />
       )}
-      {error && <p className="text-sm text-red-500">{error}</p>}
+      <UploaderError message={error} />
     </div>
   );
 }

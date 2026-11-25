@@ -2,9 +2,12 @@
 
 import { useState, useCallback } from "react";
 import { useDropzone } from "react-dropzone";
-import { Upload, Loader2 } from "lucide-react";
+import { Images } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
 import { uploadFile } from "@/lib/uploadFile";
+import { DropzoneArea, UploaderError, rejectionMessage } from "./dropzone-area";
+
+const IMAGE_FORMATS = "PNG, JPG, WEBP, GIF or SVG";
 
 interface MultiImageUploaderProps {
   onUpload: (urls: string[]) => void;
@@ -47,45 +50,26 @@ export function MultiImageUploader({
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
     accept: {
-      "image/*": [".png", ".jpg", ".jpeg", ".gif", ".svg"],
+      "image/*": [".png", ".jpg", ".jpeg", ".webp", ".gif", ".svg"],
     },
     multiple: true,
+    onDropRejected: (rejections) =>
+      setError(rejectionMessage(rejections, IMAGE_FORMATS)),
   });
 
   return (
-    <div className={cn("space-y-2 w-full", className)}>
-      <div
-        {...getRootProps()}
-        className={cn(
-          "border-2 border-dashed rounded-lg p-8 transition-colors hover:border-gray-400",
-          "flex flex-col items-center justify-center gap-2 cursor-pointer",
-          isDragActive && "border-blue-500 bg-blue-50",
-          isUploading && "pointer-events-none opacity-60",
-        )}
-      >
-        <input {...getInputProps()} />
-        {isUploading ? (
-          <>
-            <Loader2 className="h-10 w-10 animate-spin text-gray-400" />
-            <p className="text-gray-600">Uploading...</p>
-          </>
-        ) : (
-          <>
-            <Upload className="h-10 w-10 text-gray-400" />
-            <p className="text-gray-600">
-              {isDragActive
-                ? "Drop the images here"
-                : "Drag & drop images here, or click to select multiple"}
-            </p>
-            {recommendedDimension && (
-              <p className="text-center text-xs text-gray-500">
-                {recommendedDimension}
-              </p>
-            )}
-          </>
-        )}
-      </div>
-      {error && <p className="text-sm text-red-500">{error}</p>}
+    <div className={cn("w-full space-y-3", className)}>
+      <DropzoneArea
+        rootProps={getRootProps()}
+        inputProps={getInputProps()}
+        icon={Images}
+        isDragActive={isDragActive}
+        isUploading={isUploading}
+        noun="images"
+        formats={`${IMAGE_FORMATS} · select several at once`}
+        hint={recommendedDimension}
+      />
+      <UploaderError message={error} />
     </div>
   );
 }

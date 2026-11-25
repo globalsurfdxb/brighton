@@ -2,10 +2,11 @@
 
 import { useState, useCallback } from "react";
 import { useDropzone } from "react-dropzone";
-import { File as FileIcon, X, Loader2 } from "lucide-react";
+import { FileText, FileUp, X } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
 import { uploadFile } from "@/lib/uploadFile";
 import { Button } from "./button";
+import { DropzoneArea, UploaderError, rejectionMessage } from "./dropzone-area";
 
 interface FileUploaderProps {
   value?: string;
@@ -53,6 +54,10 @@ export function FileUploader({
   // (e.g. after an async form reset) still displays correctly.
   const [localFileName, setLocalFileName] = useState<string | null>(null);
   const fileName = localFileName ?? fileNameFromUrl(value);
+  const formats = Object.values(accept)
+    .flat()
+    .map((ext) => ext.replace(".", "").toUpperCase())
+    .join(", ");
 
   const onDrop = useCallback(
     async (acceptedFiles: File[]) => {
@@ -80,6 +85,8 @@ export function FileUploader({
     accept,
     maxFiles: 1,
     multiple: false,
+    onDropRejected: (rejections) =>
+      setError(rejectionMessage(rejections, formats)),
   });
 
   const removeFile = () => {
@@ -90,51 +97,47 @@ export function FileUploader({
   };
 
   return (
-    <div className={cn("space-y-4 w-full", className)}>
+    <div className={cn("w-full space-y-3", className)}>
       {value && fileName ? (
-        <div className="flex items-center justify-between p-4 border rounded-lg border-black/20">
-          <div className="flex items-center gap-2 break-word min-w-0">
-            <FileIcon className="h-5 w-5 shrink-0 text-blue-500" />
-            <span className="text-sm truncate">{fileName}</span>
+        <div className="flex items-center justify-between gap-3 rounded-xl border border-secondary/60 bg-white p-3 shadow-sm">
+          <div className="flex min-w-0 items-center gap-3">
+            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary text-white">
+              <FileText className="h-5 w-5" />
+            </span>
+            <a
+              href={value}
+              target="_blank"
+              rel="noopener noreferrer"
+              title="Open file in a new tab"
+              className="truncate text-sm font-medium text-primary hover:underline"
+            >
+              {fileName}
+            </a>
           </div>
           <Button
             type="button"
             variant="ghost"
             size="icon"
+            title="Remove file"
+            aria-label="Remove file"
+            className="shrink-0 rounded-full text-description-color hover:bg-red-50 hover:text-red-600"
             onClick={removeFile}
           >
             <X className="h-4 w-4" />
           </Button>
         </div>
       ) : (
-        <div
-          {...getRootProps()}
-          className={cn(
-            "border-2 border-dashed rounded-lg p-8 transition-colors hover:border-gray-400",
-            "flex flex-col items-center justify-center gap-2 cursor-pointer",
-            isDragActive && "border-blue-500 bg-blue-50",
-            isUploading && "pointer-events-none opacity-60",
-          )}
-        >
-          <input {...getInputProps()} />
-          {isUploading ? (
-            <>
-              <Loader2 className="h-10 w-10 animate-spin text-gray-400" />
-              <p className="text-sm text-gray-600">Uploading...</p>
-            </>
-          ) : (
-            <>
-              <FileIcon className="h-10 w-10 text-gray-400" />
-              <p className="text-sm text-gray-600">
-                {isDragActive
-                  ? "Drop the file here"
-                  : "Drag & drop a file here, or click to select"}
-              </p>
-            </>
-          )}
-        </div>
+        <DropzoneArea
+          rootProps={getRootProps()}
+          inputProps={getInputProps()}
+          icon={FileUp}
+          isDragActive={isDragActive}
+          isUploading={isUploading}
+          noun="a file"
+          formats={formats}
+        />
       )}
-      {error && <p className="text-sm text-red-500">{error}</p>}
+      <UploaderError message={error} />
     </div>
   );
 }

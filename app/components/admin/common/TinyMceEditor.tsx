@@ -8,11 +8,15 @@ import {
   useMemo,
   useRef,
   useState,
+  useSyncExternalStore,
 } from "react";
 import { Editor } from "@tinymce/tinymce-react";
 import { Editor as TinyMCEEditor } from "tinymce";
 import { uploadFile } from "@/lib/uploadFile";
+import { Loader2 } from "lucide-react";
 import "./tinymce-admin-theme.css";
+
+const noopSubscribe = () => () => {};
 
 const DEFAULT_CONTENT_CSS =
   "https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css";
@@ -104,10 +108,15 @@ export default function TinyEditor({
 }) {
   const editorRef = useRef<TinyMCEEditor | null>(null);
   const [isUploadingImage, setIsUploadingImage] = useState(false);
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => setMounted(true), []);
+  const mounted = useSyncExternalStore(
+    noopSubscribe,
+    () => true,
+    () => false,
+  );
 
-  const hasSetInitialContent = useRef(false);
+  const [initialContent] = useState(() => newsContent ?? "");
+  const hasSetInitialContent = useRef(!!newsContent);
+  const userEdited = useRef(false);
 
   useEffect(() => {
     if (!hasSetInitialContent.current && newsContent && editorRef.current) {
@@ -247,8 +256,9 @@ export default function TinyEditor({
 
   if (!mounted || isLoading) {
     return (
-      <div className="h-[500px] w-full flex items-center justify-center border border-black/10 rounded-md">
-        <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-gray-900" />
+      <div className="flex h-[500px] w-full flex-col items-center justify-center gap-3 rounded-xl border border-secondary/60 bg-cream-background/40">
+        <Loader2 className="h-7 w-7 animate-spin text-description-color" />
+        <p className="text-sm text-description-color">Loading editor…</p>
       </div>
     );
   }
@@ -259,18 +269,28 @@ export default function TinyEditor({
         apiKey={process.env.NEXT_PUBLIC_TINY_MCE_KEY}
         onInit={(_evt, editor) => {
           editorRef.current = editor;
+          editor.on("dirty", () => {
+            userEdited.current = true;
+            setNewsContent(editor.getContent());
+          });
           if (!hasSetInitialContent.current && newsContent) {
             editor.setContent(newsContent);
             hasSetInitialContent.current = true;
           }
         }}
-        initialValue="<p></p>"
-        onEditorChange={(content) => setNewsContent(content)}
+        initialValue={initialContent}
+        onEditorChange={(content, editor) => {
+          if (editor.isDirty()) userEdited.current = true;
+          if (userEdited.current) setNewsContent(content);
+        }}
         init={editorInit}
       />
       {isUploadingImage && (
-        <div className="fixed top-0 left-0 w-full h-full flex items-center justify-center z-50 bg-black/20">
-          <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-gray-900"></div>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-[2px]">
+          <div className="flex items-center gap-3 rounded-xl bg-white px-5 py-4 shadow-xl">
+            <Loader2 className="h-5 w-5 animate-spin text-primary" />
+            <p className="text-sm font-medium text-primary">Uploading file…</p>
+          </div>
         </div>
       )}
     </>
