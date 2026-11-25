@@ -1,0 +1,44 @@
+name: Blob cleanup (orphan files)
+
+# Deletes uploaded files that no database record references and that are older
+# than the grace period (default 48h). See lib/blob/README.md.
+#   - Weekly schedule: deletes (requires BLOB_GC_ENABLED=true in App Service settings)
+#   - Manual run: choose "dry-run" (report only) or "delete"
+on:
+  schedule:
+    - cron: "0 2 * * 0" # Sundays 02:00 UTC
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "dry-run = report only, delete = remove orphan files"
+        type: choice
+        options: [dry-run, delete]
+        default: dry-run
+
+concurrency:
+  group: blob-gc
+  cancel-in-progress: false
+
+jobs:
+  sweep:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Run sweep
+        env:
+          BLOB_GC_URL: ${{ secrets.BLOB_GC_URL }}
+          BLOB_GC_SECRET: ${{ secrets.BLOB_GC_SECRET }}
+          MODE: ${{ github.event_name == 'schedule' && 'delete' || inputs.mode }}
+        run: |
+          if [ -z "$BLOB_GC_URL" ] || [ -z "$BLOB_GC_SECRET" ]; then
+            echo "::error::BLOB_GC_URL and BLOB_GC_SECRET repository secrets are required"
+            exit 1
+          fi
+          METHOD=GET; [ "$MODE" = "delete" ] && METHOD=POST
+          echo "Mode: $MODE ($METHOD)"
+          curl --silent --show-error --fail-with-body --max-time 180 \
+            -X "$METHOD" \
+            -H "Authorization: Bearer $BLOB_GC_SECRET" \
+            "$BLOB_GC_URL" -o report.json || { cat report.json 2>/dev/null; echo; exit 1; }
+          jq . report.json
+          jq -r '"Scanned: \(.blobsScanned)  Orphans: \(.orphansFound)  Deleted: \(.deleted | length)  Errors: \(.errors | length)  Done: \(.done) \(.reason)"' report.json >> "$GITHUB_STEP_SUMMARY"
+          [ "$(jq '.errors | length' report.json)" = "0" ]
