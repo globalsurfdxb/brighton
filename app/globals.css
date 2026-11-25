@@ -461,3 +461,33 @@ body {
 .news-content ul li::marker {
   @apply text-[18px] md:text-[24px];
 }
+/* ---------- Admin sidebar ---------- */
+.admin-sidebar {
+  background-color: #0d0d0d;
+  background-image:
+    radial-gradient(380px 240px at 50% -60px, rgba(255, 255, 255, 0.08), transparent 70%),
+    radial-gradient(420px 320px at 0% 100%, rgba(255, 255, 255, 0.04), transparent 70%),
+    linear-gradient(180deg, #1a1a1a 0%, #121212 45%, #0d0d0d 100%);
+}
+.admin-sidebar::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 220px;
+  pointer-events: none;
+  background-image: radial-gradient(rgba(255, 255, 255, 0.06) 1px, transparent 1px);
+  background-size: 16px 16px;
+  -webkit-mask-image: linear-gradient(180deg, #000, transparent);
+  mask-image: linear-gradient(180deg, #000, transparent);
+}
+.admin-sidebar-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: transparent transparent;
+}
+.admin-sidebar-scroll:hover {
+  scrollbar-color: rgba(255, 255, 255, 0.22) transparent;
+}
+.admin-list-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in srgb, var(--secondary) 80%, transparent) transparent;
+}
