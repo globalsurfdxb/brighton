@@ -1,13 +1,28 @@
 import Cta from "../common/Cta";
-import { ctaData } from "./data";
 import NewsList from "./section/NewsList";
-import { newsSection } from "./data";
+import type { NewsDoc } from "@/app/types/news";
+import { toNewsCards } from "@/lib/services/news.service";
 
-const Index = () => {
+const Index = ({ data }: { data: NewsDoc }) => {
+  const cta = data.ctaSection;
   return (
     <>
-      <NewsList data={newsSection} />
-      <Cta data={ctaData} />
+      <NewsList
+        data={{
+          title: data.bannerSection?.title || "News & Stories",
+          categories: (data.topics ?? []).map((t) => t.title),
+          items: toNewsCards(data),
+        }}
+      />
+      {cta && !cta.isHidden && (
+        <Cta
+          data={{
+            title: cta.title ?? "",
+            description: cta.description ?? "",
+            button: { text: cta.buttonText ?? "", href: cta.buttonLink || "#" },
+          }}
+        />
+      )}
     </>
   );
 };
