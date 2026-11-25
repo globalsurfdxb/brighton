@@ -1,9 +1,13 @@
-import { visionMissionData } from "../data";
+import type { VisionMissionData } from "../types";
 import AnimatedTitle from "../../animations/AnimatedTitle";
 import SectionDescription from "../../animations/SectionDescription";
 import Tilt3DImage from "../../common/Tilt3DImage";
 
-export default function VisionMission() {
+export default function VisionMission({
+  data: visionMissionData,
+}: {
+  data: VisionMissionData;
+}) {
   return (
     <section className="container max-h-[620px]">
       <div className="relative w-full max-w-[1920px] mx-auto p-0 rounded-[10px] overflow-hidden">

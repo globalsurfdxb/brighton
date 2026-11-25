@@ -1,9 +1,13 @@
 import AnimatedCounter from "../../animations/AnimatedCounter";
 import AnimatedTitle from "../../animations/AnimatedTitle";
 import SectionDescription from "../../animations/SectionDescription";
-import { aboutIntroData } from "../data";
+import type { AboutIntroData } from "../types";
 
-export default function AboutIntro() {
+export default function AboutIntro({
+  data: aboutIntroData,
+}: {
+  data: AboutIntroData;
+}) {
   return (
     <section className="w-full border-t border-black pt-100 md:pt-140 pb-100 min-[1920px]:pt-[168px]">
       <div className="container">

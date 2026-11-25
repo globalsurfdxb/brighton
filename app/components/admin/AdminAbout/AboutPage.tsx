@@ -8,12 +8,13 @@ import { ImageUploader } from "@/components/ui/image-uploader";
 import { Textarea } from "@/components/ui/textarea";
 import AdminItemContainer from "@/app/components/admin/common/AdminItemContainer";
 import AdminPageActions from "@/app/components/admin/common/AdminPageActions";
+import AdminSubmitButton from "@/app/components/admin/common/AdminSubmitButton";
+import { useUnsavedChanges } from "@/app/components/admin/common/useUnsavedChanges";
+import AdminVisitLink from "@/app/components/admin/common/AdminVisitLink";
 import { toast } from "sonner";
 import { useEffect } from "react";
 import { RiDeleteBinLine } from "react-icons/ri";
 import TinyEditor from "../common/TinyMceEditor";
-import CustomButton from "../../client/common/CustomButton";
-import Link from "next/link";
 
 interface AboutForm {
   seo: { metaTitle: string; metaDescription: string; script: string };
@@ -71,8 +72,9 @@ interface AboutForm {
 }
 
 export default function AboutPage() {
-  const { register, handleSubmit, setValue, control, watch } =
+  const { register, handleSubmit, setValue, control, watch, getValues, formState } =
     useForm<AboutForm>();
+  const { isDirty, markClean, changes } = useUnsavedChanges(control, getValues);
 
   const {
     fields: firstItems,
@@ -116,6 +118,7 @@ export default function AboutPage() {
         replaceFirst(data.firstSection?.items || []);
         replaceSecond(data.secondSection?.items || []);
         replaceFourth(data.fourthSection?.items || []);
+        markClean();
       } else {
         const { message } = await res.json();
         toast.error(message);
@@ -135,6 +138,7 @@ export default function AboutPage() {
       if (res.ok) {
         const { message } = await res.json();
         toast.success(message);
+        markClean();
       } else {
         const { message } = await res.json();
         toast.error(message);
@@ -151,16 +155,9 @@ export default function AboutPage() {
   return (
     <div className="flex flex-col gap-5">
       <form className="flex flex-col gap-5" onSubmit={handleSubmit(onSubmit)}>
-        <AdminPageActions>
-          <Link href="/about" target="_blank">
-            <CustomButton variant="2" type="button" text="Visit Page" />
-          </Link>
-          <CustomButton
-            variant="3"
-            type="submit"
-            text="Page Submit"
-            showIcon={false}
-          />
+        <AdminPageActions isDirty={isDirty} changes={changes}>
+          <AdminVisitLink href="/about" />
+          <AdminSubmitButton saving={formState.isSubmitting} />
         </AdminPageActions>
 
         {/* Banner Section */}
@@ -342,9 +339,15 @@ export default function AboutPage() {
                   </div>
                   <div className="flex flex-col gap-2">
                     <Label className="font-bold">Description</Label>
-                    <Textarea
-                      {...register(`secondSection.items.${index}.description`)}
-                      placeholder="Description"
+                    <Controller
+                      name={`secondSection.items.${index}.description`}
+                      control={control}
+                      render={({ field }) => (
+                        <TinyEditor
+                          setNewsContent={field.onChange}
+                          newsContent={field.value}
+                        />
+                      )}
                     />
                   </div>
                 </div>
@@ -446,7 +449,7 @@ export default function AboutPage() {
                 + Add Item
               </Button>
             </div>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-3 gap-4">
               {fourthItems.map((field, index) => (
                 <div
                   key={field.id}
@@ -467,6 +470,7 @@ export default function AboutPage() {
                         <ImageUploader
                           value={field.value}
                           onChange={field.onChange}
+                          isLogo
                         />
                       )}
                     />
@@ -536,9 +540,15 @@ export default function AboutPage() {
                 </div>
                 <div className="flex flex-col gap-2">
                   <Label className="font-bold">Description</Label>
-                  <Textarea
-                    {...register("fifthSection.description")}
-                    placeholder="Description"
+                  <Controller
+                    name="fifthSection.description"
+                    control={control}
+                    render={({ field }) => (
+                      <TinyEditor
+                        setNewsContent={field.onChange}
+                        newsContent={field.value}
+                      />
+                    )}
                   />
                 </div>
               </div>
