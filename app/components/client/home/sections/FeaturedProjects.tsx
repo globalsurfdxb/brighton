@@ -158,7 +158,9 @@ export default function FeaturedProjects({
 
 function ProjectCard({ project }: { project: any }) {
   return (
-    <Link href={`/projects/${project.title.toLowerCase().replace(/\s/g, "-")}`}>
+    <Link
+      href={`/projects/${project.slug ?? project.title.toLowerCase().replace(/\s/g, "-")}`}
+    >
       <div className="featured-project-card flex flex-col group cursor-pointer">
         <h3 className="text-subtitle text-primary line-clamp-1">
           {project.title}

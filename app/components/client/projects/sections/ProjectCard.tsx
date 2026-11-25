@@ -10,7 +10,7 @@ export default function ProjectCard({
   heightClass: string;
 }) {
   return (
-    <Link href={`/projects/${project.title.toLowerCase().replace(/ /g, "-")}`}>
+    <Link href={`/projects/${project.slug}`}>
       <div className="group cursor-pointer">
         <div
           className={`relative w-full overflow-hidden rounded-[10px] ${heightClass}`}
