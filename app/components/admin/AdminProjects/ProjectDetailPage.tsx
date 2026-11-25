@@ -11,9 +11,11 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import AdminItemContainer from "../common/AdminItemContainer";
 import AdminPageActions from "../common/AdminPageActions";
+import AdminSubmitButton from "@/app/components/admin/common/AdminSubmitButton";
+import { useUnsavedChanges } from "@/app/components/admin/common/useUnsavedChanges";
+import AdminVisitLink from "@/app/components/admin/common/AdminVisitLink";
 import { Button } from "@/components/ui/button";
 import CustomButton from "../../client/common/CustomButton";
-import Link from "next/link";
 import { ImageUploader } from "@/components/ui/image-uploader";
 import TinyEditor from "../common/TinyMceEditor";
 import {
@@ -85,7 +87,9 @@ export default function ProjectDetail() {
     watch,
     setValue,
     formState: { errors },
+    getValues,
   } = useForm<ProjectForm>({ defaultValues });
+  const { isDirty, markClean, changes } = useUnsavedChanges(control, getValues);
   const [isSaving, setIsSaving] = useState(false);
   // public link uses the last saved slug, not unsaved edits
   const [savedSlug, setSavedSlug] = useState("");
@@ -131,6 +135,7 @@ export default function ProjectDetail() {
         sector: data.sector || [],
         ctaSection: { ...defaultValues.ctaSection, ...data.ctaSection },
       });
+      markClean();
       replaceImages(data.images || []);
     } catch (e) {
       console.error(e);
@@ -154,6 +159,7 @@ export default function ProjectDetail() {
       const { message, data } = await res.json();
       if (res.ok) {
         toast.success(message || "Project saved");
+        markClean();
         setSavedSlug(data?.slug || formData.slug);
         if (isNew && data?._id) {
           router.replace(`/4dm1n-br1ght0n/projects/${data._id}`);
@@ -172,13 +178,14 @@ export default function ProjectDetail() {
   useEffect(() => {
     fetchOptions();
     if (!isNew) fetchProject();
+    else markClean();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
     <div className="flex flex-col gap-5">
       <form className="flex flex-col gap-5" onSubmit={handleSubmit(onSubmit)}>
-        <AdminPageActions>
+        <AdminPageActions isDirty={isDirty} changes={changes}>
           <CustomButton
             iconDirection="down"
             imageClass="!-rotate-135"
@@ -188,16 +195,9 @@ export default function ProjectDetail() {
             onClick={() => router.back()}
           />
           {savedSlug && (
-            <Link href={`/projects/${savedSlug}`} target="_blank">
-              <CustomButton variant="2" type="button" text="Visit page" />
-            </Link>
+            <AdminVisitLink href={`/projects/${savedSlug}`} />
           )}
-          <CustomButton
-            variant="3"
-            type="submit"
-            text="Page Submit"
-            showIcon={false}
-          />
+          <AdminSubmitButton saving={isSaving} />
         </AdminPageActions>
 
         <AdminItemContainer expansion={false}>

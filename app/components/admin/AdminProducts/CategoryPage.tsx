@@ -42,8 +42,8 @@ import { Label } from "@/components/ui/label";
 import { ImageUploader } from "@/components/ui/image-uploader";
 import CustomButton from "../../client/common/CustomButton";
 import AdminPageActions from "../common/AdminPageActions";
+import AdminVisitLink from "@/app/components/admin/common/AdminVisitLink";
 import Image from "next/image";
-import Link from "next/link";
 import { slugify } from "@/lib/utils/slugify";
 
 type Category = { _id: string; title: string; slug: string };
@@ -353,9 +353,7 @@ export default function CategoryProductsPage() {
   return (
     <div className="flex flex-col gap-5">
       <AdminPageActions>
-        <Link href={`/lighting?category=${params.category}`} target="_blank">
-          <CustomButton variant="2" type="button" text="Visit Page" />
-        </Link>
+        <AdminVisitLink href={`/lighting?category=${params.category}`} />
       </AdminPageActions>
 
       {/* Subcategories */}

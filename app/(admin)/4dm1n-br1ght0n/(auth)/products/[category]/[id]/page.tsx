@@ -1,6 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import AdminPageActions from "@/app/components/admin/common/AdminPageActions";
+import AdminSubmitButton from "@/app/components/admin/common/AdminSubmitButton";
+import { useUnsavedChanges } from "@/app/components/admin/common/useUnsavedChanges";
 import { useForm, Controller, useFieldArray } from "react-hook-form";
 import { useRouter, useParams } from "next/navigation";
 import { toast } from "sonner";
@@ -294,6 +297,7 @@ export default function ProductDetailPage() {
 
   const { register, control, handleSubmit, reset, watch, setValue, getValues } =
     useForm<ProductForm>({ defaultValues });
+  const { isDirty, markClean, changes } = useUnsavedChanges(control, getValues);
   const [isSaving, setIsSaving] = useState(false);
   const [categoryId, setCategoryId] = useState<string | null>(null);
   const [subCategories, setSubCategories] = useState<SubCategoryOption[]>([]);
@@ -347,6 +351,7 @@ export default function ProductDetailPage() {
     if (found) {
       setCategoryId(found._id);
       setValue("category", found._id);
+      if (isNew) markClean();
       const subRes = await fetch(
         `/api/admin/products/subcategory?category=${found._id}`,
       );
@@ -460,6 +465,7 @@ export default function ProductDetailPage() {
           },
         },
       });
+      markClean();
       // preload options for already-selected config categories
       (data.secondSection?.configurations ?? []).forEach((c: any) => {
         const id = c.category?._id ?? c.category;
@@ -481,6 +487,7 @@ export default function ProductDetailPage() {
 
   useEffect(() => {
     if (!isNew) fetchProduct();
+    else markClean();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [params.id]);
 
@@ -552,6 +559,7 @@ export default function ProductDetailPage() {
       if (!res.ok) return toast.error(data.error || "Failed to save product");
 
       toast.success(isNew ? "Product added" : "Product updated");
+      markClean();
       if (isNew && data?._id) {
         router.replace(
           `/4dm1n-br1ght0n/products/${params.category}/${data._id}`,
@@ -1686,7 +1694,7 @@ export default function ProductDetailPage() {
           </div>
         </AdminItemContainer>
 
-        <div className="fixed top-2 right-8 z-50 flex gap-5">
+        <AdminPageActions isDirty={isDirty} changes={changes} className="z-50">
           <CustomButton
             iconDirection="down"
             imageClass="!-rotate-135"
@@ -1695,13 +1703,8 @@ export default function ProductDetailPage() {
             text="Back to Products"
             onClick={() => router.back()}
           />
-          <CustomButton
-            variant="3"
-            type="submit"
-            text={isSaving ? "Saving..." : "Page Submit"}
-            showIcon={false}
-          />
-        </div>
+          <AdminSubmitButton saving={isSaving} />
+        </AdminPageActions>
       </form>
     </div>
   );

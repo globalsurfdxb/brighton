@@ -8,10 +8,11 @@ import { FileUploader } from "@/components/ui/file-uploader";
 import { Textarea } from "@/components/ui/textarea";
 import AdminItemContainer from "@/app/components/admin/common/AdminItemContainer";
 import AdminPageActions from "@/app/components/admin/common/AdminPageActions";
+import AdminSubmitButton from "@/app/components/admin/common/AdminSubmitButton";
+import { useUnsavedChanges } from "@/app/components/admin/common/useUnsavedChanges";
+import AdminVisitLink from "@/app/components/admin/common/AdminVisitLink";
 import { toast } from "sonner";
 import { useEffect } from "react";
-import CustomButton from "../../client/common/CustomButton";
-import Link from "next/link";
 
 interface DigitalCatalogueForm {
   seo: { metaTitle: string; metaDescription: string; script: string };
@@ -54,8 +55,9 @@ const defaultValues: DigitalCatalogueForm = {
 };
 
 export default function DigitalCataloguePage() {
-  const { register, handleSubmit, control, reset } =
+  const { register, handleSubmit, control, reset, getValues, formState } =
     useForm<DigitalCatalogueForm>({ defaultValues });
+  const { isDirty, markClean, changes } = useUnsavedChanges(control, getValues);
 
   const fetchData = async () => {
     try {
@@ -67,6 +69,7 @@ export default function DigitalCataloguePage() {
           firstSection: { ...defaultValues.firstSection, ...data.firstSection },
           ctaSection: { ...defaultValues.ctaSection, ...data.ctaSection },
         });
+        markClean();
       } else {
         const { message } = await res.json();
         toast.error(message);
@@ -86,6 +89,7 @@ export default function DigitalCataloguePage() {
       if (res.ok) {
         const { message } = await res.json();
         toast.success(message);
+        markClean();
       } else {
         const { message } = await res.json();
         toast.error(message);
@@ -102,16 +106,9 @@ export default function DigitalCataloguePage() {
   return (
     <div className="flex flex-col gap-5">
       <form className="flex flex-col gap-5" onSubmit={handleSubmit(onSubmit)}>
-        <AdminPageActions>
-          <Link href={`/resources/digital-catalogue`} target="_blank">
-            <CustomButton variant="2" type="button" text="Visit page" />
-          </Link>
-          <CustomButton
-            variant="3"
-            type="submit"
-            text="Page Submit"
-            showIcon={false}
-          />
+        <AdminPageActions isDirty={isDirty} changes={changes}>
+          <AdminVisitLink href={`/resources/digital-catalogue`} />
+          <AdminSubmitButton saving={formState.isSubmitting} />
         </AdminPageActions>
 
         {/* First Section */}
