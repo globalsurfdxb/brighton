@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { ringItems, sectionTitle, RingItem } from "../data";
+import type { LabToLaunchData, RingItem } from "../types";
 import AnimatedTitle from "../../animations/AnimatedTitle";
 import { motion } from "framer-motion";
 import SectionDescription from "../../animations/SectionDescription";
@@ -93,7 +93,11 @@ function RingPoint({ item }: { item: RingItem }) {
   );
 }
 
-export default function LabToLaunchRing() {
+export default function LabToLaunchRing({ data }: { data: LabToLaunchData }) {
+  const ringItems = data.items;
+  const sectionTitle = { title: data.title };
+  const placedItems = ringItems.filter((item) => pointPositions[item.id]);
+
   return (
     <section className="w-full pt-100 min-[1800px]:pt-[93.5px] max-h-[849px] bg-cream-background">
       <div className="container overflow-hidden">
@@ -112,7 +116,7 @@ export default function LabToLaunchRing() {
               text={sectionTitle.title}
             />
           </div>
-          {ringItems.map((item, index) => (
+          {placedItems.map((item, index) => (
             <motion.div
               initial={{ opacity: 0 }}
               whileInView={{ opacity: 1 }}

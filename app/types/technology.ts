@@ -12,7 +12,7 @@ export interface BannerSection {
 
 export interface FirstSection {
   isHidden: boolean;
-  title: string;
+  description: string;
 }
 
 export interface SecondSection {

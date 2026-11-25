@@ -8,11 +8,12 @@ import { ImageUploader } from "@/components/ui/image-uploader";
 import { Textarea } from "@/components/ui/textarea";
 import AdminItemContainer from "@/app/components/admin/common/AdminItemContainer";
 import AdminPageActions from "@/app/components/admin/common/AdminPageActions";
+import AdminSubmitButton from "@/app/components/admin/common/AdminSubmitButton";
+import { useUnsavedChanges } from "@/app/components/admin/common/useUnsavedChanges";
+import AdminVisitLink from "@/app/components/admin/common/AdminVisitLink";
 import { toast } from "sonner";
 import { useEffect } from "react";
 import { RiDeleteBinLine } from "react-icons/ri";
-import CustomButton from "../../client/common/CustomButton";
-import Link from "next/link";
 
 interface TechnologyForm {
   seo: { metaTitle: string; metaDescription: string; script: string };
@@ -23,7 +24,7 @@ interface TechnologyForm {
   };
   firstSection: {
     isHidden: boolean;
-    title: string;
+    description: string;
   };
   secondSection: {
     isHidden: boolean;
@@ -74,8 +75,9 @@ interface TechnologyForm {
 }
 
 export default function TechnologyPage() {
-  const { register, handleSubmit, setValue, control, watch } =
+  const { register, handleSubmit, setValue, control, watch, getValues, formState } =
     useForm<TechnologyForm>();
+  const { isDirty, markClean, changes } = useUnsavedChanges(control, getValues);
 
   const {
     fields: thirdItems,
@@ -123,6 +125,7 @@ export default function TechnologyPage() {
         replaceThird(data.thirdSection?.items || []);
         replaceFifth(data.fifthSection?.items || []);
         replaceSixth(data.sixthSection?.items || []);
+        markClean();
       } else {
         const { message } = await res.json();
         toast.error(message);
@@ -142,6 +145,7 @@ export default function TechnologyPage() {
       if (res.ok) {
         const { message } = await res.json();
         toast.success(message);
+        markClean();
       } else {
         const { message } = await res.json();
         toast.error(message);
@@ -158,16 +162,9 @@ export default function TechnologyPage() {
   return (
     <div className="flex flex-col gap-5">
       <form className="flex flex-col gap-5" onSubmit={handleSubmit(onSubmit)}>
-        <AdminPageActions>
-          <Link href="/about/technology" target="_blank">
-            <CustomButton variant="2" type="button" text="Visit Page" />
-          </Link>
-          <CustomButton
-            variant="3"
-            type="submit"
-            text="Page Submit"
-            showIcon={false}
-          />
+        <AdminPageActions isDirty={isDirty} changes={changes}>
+          <AdminVisitLink href="/about/technology" />
+          <AdminSubmitButton saving={formState.isSubmitting} />
         </AdminPageActions>
 
         {/* Banner Section */}
@@ -220,8 +217,11 @@ export default function TechnologyPage() {
             First Section
           </Label>
           <div className="p-5 flex flex-col gap-4">
-            <Label className="font-bold">Title</Label>
-            <Input {...register("firstSection.title")} placeholder="Title" />
+            <Label className="font-bold">Description</Label>
+            <Textarea
+              {...register("firstSection.description")}
+              placeholder="Description"
+            />
           </div>
         </AdminItemContainer>
 
@@ -432,7 +432,7 @@ export default function TechnologyPage() {
                 + Add Item
               </Button>
             </div>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-3 gap-4">
               {fifthItems.map((field, index) => (
                 <div
                   key={field.id}
@@ -453,6 +453,7 @@ export default function TechnologyPage() {
                         <ImageUploader
                           value={field.value}
                           onChange={field.onChange}
+                          isLogo
                         />
                       )}
                     />
@@ -517,7 +518,7 @@ export default function TechnologyPage() {
                 + Add Item
               </Button>
             </div>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-3 gap-4">
               {sixthItems.map((field, index) => (
                 <div
                   key={field.id}

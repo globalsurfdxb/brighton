@@ -1,8 +1,12 @@
-import { engineeredSystemData } from "../data";
+import type { EngineeredSystemData } from "../types";
 import AnimatedTitle from "../../animations/AnimatedTitle";
 import Tilt3DImage from "../../common/Tilt3DImage";
 
-export default function EngineeredSystem() {
+export default function EngineeredSystem({
+  data: engineeredSystemData,
+}: {
+  data: EngineeredSystemData;
+}) {
   return (
     <section className="relative w-full overflow-hidden">
       {/* Background image */}
