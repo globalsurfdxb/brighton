@@ -19,6 +19,7 @@ export interface FirstSectionItem {
 
 export interface FirstSection {
   isHidden: boolean;
+  title: string;
   subTitle: string;
   items: FirstSectionItem[];
 }
@@ -34,6 +35,8 @@ export interface SecondSection {
   title: string;
   subTitle: string;
   description: string;
+  image: string;
+  imageAlt: string;
   items: SecondSectionItem[];
 }
 

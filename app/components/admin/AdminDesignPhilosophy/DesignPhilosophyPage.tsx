@@ -8,11 +8,12 @@ import { ImageUploader } from "@/components/ui/image-uploader";
 import { Textarea } from "@/components/ui/textarea";
 import AdminItemContainer from "@/app/components/admin/common/AdminItemContainer";
 import AdminPageActions from "@/app/components/admin/common/AdminPageActions";
+import AdminSubmitButton from "@/app/components/admin/common/AdminSubmitButton";
+import { useUnsavedChanges } from "@/app/components/admin/common/useUnsavedChanges";
+import AdminVisitLink from "@/app/components/admin/common/AdminVisitLink";
 import { toast } from "sonner";
 import { useEffect } from "react";
 import { RiDeleteBinLine } from "react-icons/ri";
-import CustomButton from "../../client/common/CustomButton";
-import Link from "next/link";
 
 interface DesignPhilosophyForm {
   seo: { metaTitle: string; metaDescription: string; script: string };
@@ -23,6 +24,7 @@ interface DesignPhilosophyForm {
   };
   firstSection: {
     isHidden: boolean;
+    title: string;
     subTitle: string;
     items: {
       title: string;
@@ -36,6 +38,8 @@ interface DesignPhilosophyForm {
     title: string;
     subTitle: string;
     description: string;
+    image: string;
+    imageAlt: string;
     items: { title: string; icon: string; iconAlt: string }[];
   };
   ctaSection: {
@@ -48,8 +52,9 @@ interface DesignPhilosophyForm {
 }
 
 export default function DesignPhilosophyPage() {
-  const { register, handleSubmit, setValue, control, watch } =
+  const { register, handleSubmit, setValue, control, watch, getValues, formState } =
     useForm<DesignPhilosophyForm>();
+  const { isDirty, markClean, changes } = useUnsavedChanges(control, getValues);
 
   const {
     fields: firstItems,
@@ -73,15 +78,19 @@ export default function DesignPhilosophyPage() {
         setValue("seo", data.seo);
         setValue("bannerSection", data.bannerSection);
         setValue("firstSection.isHidden", data.firstSection?.isHidden);
+        setValue("firstSection.title", data.firstSection?.title);
         setValue("firstSection.subTitle", data.firstSection?.subTitle);
         setValue("secondSection.isHidden", data.secondSection?.isHidden);
         setValue("secondSection.title", data.secondSection?.title);
         setValue("secondSection.subTitle", data.secondSection?.subTitle);
         setValue("secondSection.description", data.secondSection?.description);
+        setValue("secondSection.image", data.secondSection?.image);
+        setValue("secondSection.imageAlt", data.secondSection?.imageAlt);
         setValue("ctaSection", data.ctaSection);
 
         replaceFirst(data.firstSection?.items || []);
         replaceSecond(data.secondSection?.items || []);
+        markClean();
       } else {
         const { message } = await res.json();
         toast.error(message);
@@ -101,6 +110,7 @@ export default function DesignPhilosophyPage() {
       if (res.ok) {
         const { message } = await res.json();
         toast.success(message);
+        markClean();
       } else {
         const { message } = await res.json();
         toast.error(message);
@@ -117,16 +127,9 @@ export default function DesignPhilosophyPage() {
   return (
     <div className="flex flex-col gap-5">
       <form className="flex flex-col gap-5" onSubmit={handleSubmit(onSubmit)}>
-        <AdminPageActions>
-          <Link href="/about/design-philosophy" target="_blank">
-            <CustomButton variant="2" type="button" text="Visit Page" />
-          </Link>
-          <CustomButton
-            variant="3"
-            type="submit"
-            text="Page Submit"
-            showIcon={false}
-          />
+        <AdminPageActions isDirty={isDirty} changes={changes}>
+          <AdminVisitLink href="/about/design-philosophy" />
+          <AdminSubmitButton saving={formState.isSubmitting} />
         </AdminPageActions>
 
         {/* Banner Section */}
@@ -179,6 +182,10 @@ export default function DesignPhilosophyPage() {
             First Section
           </Label>
           <div className="p-5 flex flex-col gap-4">
+            <div className="flex flex-col gap-2">
+              <Label className="font-bold">Title</Label>
+              <Input {...register("firstSection.title")} placeholder="Title" />
+            </div>
             <div className="flex flex-col gap-2">
               <Label className="font-bold">Sub Title</Label>
               <Input
@@ -270,6 +277,28 @@ export default function DesignPhilosophyPage() {
             Second Section
           </Label>
           <div className="p-5 flex flex-col gap-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div className="flex flex-col gap-2">
+                <Label className="font-bold">Image</Label>
+                <Controller
+                  name="secondSection.image"
+                  control={control}
+                  render={({ field }) => (
+                    <ImageUploader
+                      value={field.value}
+                      onChange={field.onChange}
+                    />
+                  )}
+                />
+              </div>
+              <div className="flex flex-col gap-2">
+                <Label className="font-bold">Image Alt</Label>
+                <Input
+                  {...register("secondSection.imageAlt")}
+                  placeholder="Image Alt"
+                />
+              </div>
+            </div>
             <div className="flex flex-col gap-2">
               <Label className="font-bold">Title</Label>
               <Input {...register("secondSection.title")} placeholder="Title" />
@@ -300,7 +329,7 @@ export default function DesignPhilosophyPage() {
                 + Add Item
               </Button>
             </div>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-3 gap-4">
               {secondItems.map((field, index) => (
                 <div
                   key={field.id}
@@ -321,6 +350,7 @@ export default function DesignPhilosophyPage() {
                         <ImageUploader
                           value={field.value}
                           onChange={field.onChange}
+                          isLogo
                         />
                       )}
                     />

@@ -13,6 +13,7 @@ const designPhilosophySchema = new mongoose.Schema({
   },
   firstSection: {
     isHidden: { type: Boolean, default: false },
+    title: { type: String },
     subTitle: { type: String },
     items: {
       type: [
@@ -31,6 +32,8 @@ const designPhilosophySchema = new mongoose.Schema({
     title: { type: String },
     subTitle: { type: String },
     description: { type: String },
+    image: { type: String },
+    imageAlt: { type: String },
     items: {
       type: [
         {
@@ -50,6 +53,8 @@ const designPhilosophySchema = new mongoose.Schema({
     buttonLink: { type: String },
   },
 });
+
+if (process.env.NODE_ENV !== "production") delete mongoose.models.designPhilosophy;
 
 export default mongoose.models.designPhilosophy ||
   mongoose.model("designPhilosophy", designPhilosophySchema);

@@ -5,14 +5,18 @@ import Image from "next/image";
 import { motion } from "framer-motion";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
-import { guidingPrinciplesData } from "../data";
+import type { GuidingPrinciplesData } from "../types";
 import AnimatedTitle from "../../animations/AnimatedTitle";
 import { useMediaQuery } from "@/app/hooks/useMediaQuery";
 import SectionDescription from "../../animations/SectionDescription";
 import Reveal from "../../animations/RevealItemsOneByOneAnimation";
 import { moveUpV2 } from "../../animations/motionVariants";
 
-export default function GuidingPrinciples() {
+export default function GuidingPrinciples({
+  data: guidingPrinciplesData,
+}: {
+  data: GuidingPrinciplesData;
+}) {
   const [activeIndex, setActiveIndex] = useState(1);
   const isDesktop = useMediaQuery(1280);
 
