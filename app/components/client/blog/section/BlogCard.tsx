@@ -4,7 +4,8 @@ import Link from "next/link";
 import AnimatedDividerTwo from "../../animations/AnimatedDividerTwo";
 
 interface BlogCardProps {
-  id: number;
+  id: string;
+  slug: string;
   title: string;
   date: string;
   category: string;
@@ -26,6 +27,7 @@ const imageSizeClasses = {
 
 const BlogCard = ({
   id,
+  slug,
   title,
   date,
   category,
@@ -35,7 +37,7 @@ const BlogCard = ({
 }: BlogCardProps) => {
   return (
     <Link
-      href={`/blog/${id}`}
+      href={`/blog/${slug}`}
       key={id}
       className={`flex w-full flex-col relative group ${
         isLoneCard ? "lg:!w-1/2" : cardSizeClasses[size]
