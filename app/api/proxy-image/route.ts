@@ -5,7 +5,10 @@ import { NextRequest, NextResponse } from "next/server";
 // which isn't CORS-configured for this origin, so that fetch fails silently
 // and the PDF renders blank. Routing through this same-origin proxy avoids
 // the cross-origin request entirely.
-const ALLOWED_HOSTS = ["azurebloglearn.blob.core.windows.net"];
+const ALLOWED_HOSTS = [
+  "brightonwebstorage.blob.core.windows.net",
+  "azurebloglearn.blob.core.windows.net", // legacy uploads
+];
 
 export async function GET(req: NextRequest) {
   const url = req.nextUrl.searchParams.get("url");
