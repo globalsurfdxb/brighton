@@ -8,12 +8,13 @@ import { ImageUploader } from "@/components/ui/image-uploader";
 import { Textarea } from "@/components/ui/textarea";
 import AdminItemContainer from "@/app/components/admin/common/AdminItemContainer";
 import AdminPageActions from "@/app/components/admin/common/AdminPageActions";
+import AdminSubmitButton from "@/app/components/admin/common/AdminSubmitButton";
+import { useUnsavedChanges } from "@/app/components/admin/common/useUnsavedChanges";
+import AdminVisitLink from "@/app/components/admin/common/AdminVisitLink";
 import { toast } from "sonner";
 import { useEffect } from "react";
 import { RiDeleteBinLine } from "react-icons/ri";
 import TinyEditor from "../common/TinyMceEditor";
-import CustomButton from "../../client/common/CustomButton";
-import Link from "next/link";
 
 interface SustainabilityForm {
   seo: { metaTitle: string; metaDescription: string; script: string };
@@ -75,8 +76,9 @@ interface SustainabilityForm {
 }
 
 export default function SustainabilityPage() {
-  const { register, handleSubmit, setValue, control, watch } =
+  const { register, handleSubmit, setValue, control, watch, getValues, formState } =
     useForm<SustainabilityForm>();
+  const { isDirty, markClean, changes } = useUnsavedChanges(control, getValues);
 
   const {
     fields: secondItems,
@@ -104,6 +106,7 @@ export default function SustainabilityPage() {
         setValue("ctaSection", data.ctaSection);
 
         replaceSecond(data.secondSection?.items || []);
+        markClean();
       } else {
         const { message } = await res.json();
         toast.error(message);
@@ -123,6 +126,7 @@ export default function SustainabilityPage() {
       if (res.ok) {
         const { message } = await res.json();
         toast.success(message);
+        markClean();
       } else {
         const { message } = await res.json();
         toast.error(message);
@@ -139,16 +143,9 @@ export default function SustainabilityPage() {
   return (
     <div className="flex flex-col gap-5">
       <form className="flex flex-col gap-5" onSubmit={handleSubmit(onSubmit)}>
-        <AdminPageActions>
-          <Link href="/about/sustainability" target="_blank">
-            <CustomButton variant="2" type="button" text="Visit Page" />
-          </Link>
-          <CustomButton
-            variant="3"
-            type="submit"
-            text="Page Submit"
-            showIcon={false}
-          />
+        <AdminPageActions isDirty={isDirty} changes={changes}>
+          <AdminVisitLink href="/about/sustainability" />
+          <AdminSubmitButton saving={formState.isSubmitting} />
         </AdminPageActions>
 
         {/* Banner Section */}
@@ -202,15 +199,9 @@ export default function SustainabilityPage() {
           </Label>
           <div className="p-5 flex flex-col gap-4">
             <Label className="font-bold">Description</Label>
-            <Controller
-              name="firstSection.description"
-              control={control}
-              render={({ field }) => (
-                <TinyEditor
-                  setNewsContent={field.onChange}
-                  newsContent={field.value}
-                />
-              )}
+            <Textarea
+              {...register("firstSection.description")}
+              placeholder="Description"
             />
           </div>
         </AdminItemContainer>
@@ -258,7 +249,7 @@ export default function SustainabilityPage() {
                 + Add Item
               </Button>
             </div>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-3 gap-4">
               {secondItems.map((field, index) => (
                 <div
                   key={field.id}
@@ -355,9 +346,15 @@ export default function SustainabilityPage() {
                 </div>
                 <div className="flex flex-col gap-2">
                   <Label className="font-bold">Description</Label>
-                  <Textarea
-                    {...register("thirdSection.description")}
-                    placeholder="Description"
+                  <Controller
+                    name="thirdSection.description"
+                    control={control}
+                    render={({ field }) => (
+                      <TinyEditor
+                        setNewsContent={field.onChange}
+                        newsContent={field.value}
+                      />
+                    )}
                   />
                 </div>
               </div>
@@ -467,10 +464,10 @@ export default function SustainabilityPage() {
                   />
                 </div>
                 <div className="flex flex-col gap-2">
-                  <Label className="font-bold">Sub Title</Label>
-                  <Input
+                  <Label className="font-bold">Description</Label>
+                  <Textarea
                     {...register("fifthSection.subTitle")}
-                    placeholder="Sub Title"
+                    placeholder="Description"
                   />
                 </div>
               </div>
@@ -523,9 +520,15 @@ export default function SustainabilityPage() {
                 </div>
                 <div className="flex flex-col gap-2">
                   <Label className="font-bold">Description</Label>
-                  <Textarea
-                    {...register("sixthSection.description")}
-                    placeholder="Description"
+                  <Controller
+                    name="sixthSection.description"
+                    control={control}
+                    render={({ field }) => (
+                      <TinyEditor
+                        setNewsContent={field.onChange}
+                        newsContent={field.value}
+                      />
+                    )}
                   />
                 </div>
               </div>

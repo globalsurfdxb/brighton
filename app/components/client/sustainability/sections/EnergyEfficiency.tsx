@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
-import { energyEfficiencyData } from "../data";
+import type { EnergyEfficiencyData } from "../types";
 import AnimatedTitle from "../../animations/AnimatedTitle";
 import PlusMinusIcon from "../../technology/sections/PlusMinusIcon";
 import SectionDescription from "../../animations/SectionDescription";
@@ -11,10 +11,15 @@ import Reveal from "../../animations/RevealItemsOneByOneAnimation";
 import { moveUpV2 } from "../../animations/motionVariants";
 import { useLenis } from "../../layout/LenisProvider";
 
-export default function EnergyEfficiency() {
-  const [activeIndex, setActiveIndex] = useState(1);
+export default function EnergyEfficiency({
+  data: energyEfficiencyData,
+}: {
+  data: EnergyEfficiencyData;
+}) {
+  const initialIndex = Math.min(1, energyEfficiencyData.items.length - 1);
+  const [activeIndex, setActiveIndex] = useState(initialIndex);
   const [baseImage, setBaseImage] = useState(
-    energyEfficiencyData.items[1].image,
+    energyEfficiencyData.items[initialIndex]?.image ?? "",
   );
 
   const { scrollTo } = useLenis();
