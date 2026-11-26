@@ -176,18 +176,21 @@ export default function IntroAnimation() {
   return (
     <div
       ref={overlayRef}
+      data-intro-overlay
       className={`fixed inset-0 z-9999 flex items-center justify-center will-change-transform ${
         isLight ? "bg-cream-background" : "bg-white"
       }`}
-      style={{ opacity: 0 }}
     >
+      <noscript>
+        <style>{"[data-intro-overlay]{display:none}"}</style>
+      </noscript>
       <svg
         ref={svgRef}
         viewBox="0 0 190 26"
         xmlns="http://www.w3.org/2000/svg"
         className="h-auto w-[30vh] lg:w-[25vw] min-w-[160px] will-change-transform"
       >
-        <g ref={brightGroupRef}>
+        <g ref={brightGroupRef} style={{ opacity: 0 }}>
           {/* B */}
           <path
             fillRule="evenodd"
@@ -256,7 +259,7 @@ export default function IntroAnimation() {
           />
         </g>
 
-        <g ref={onGroupRef}>
+        <g ref={onGroupRef} style={{ opacity: 0 }}>
           <g ref={oSwitchRef}>
             <path
               fillRule="evenodd"
