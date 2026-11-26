@@ -10,6 +10,7 @@ const contactSchema = new mongoose.Schema({
     isHidden: { type: Boolean, default: false },
     title: { type: String },
     address: { type: String },
+    addressLink: { type: String },
     phone: { type: String },
     email: { type: String },
     subTitle: { type: String },
@@ -39,6 +40,8 @@ const contactSchema = new mongoose.Schema({
     buttonLink: { type: String },
   },
 });
+
+if (process.env.NODE_ENV !== "production") delete mongoose.models.contact;
 
 export default mongoose.models.contact ||
   mongoose.model("contact", contactSchema);
