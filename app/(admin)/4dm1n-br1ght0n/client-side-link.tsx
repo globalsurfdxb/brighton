@@ -142,7 +142,7 @@ function ClientSideLink({
           )}
         >
           <div className="overflow-hidden">
-            <div className="mb-1 ml-[21px] mt-1 flex flex-col gap-0.5 border-l border-white/15 pl-3">
+            <div className="mb-2 ml-[21px] mt-1.5 flex flex-col gap-1 border-l border-white/15 pl-3">
               {children.map((item) => {
                 const isChildActive = item.href === activeChildHref;
                 return (
@@ -151,7 +151,7 @@ function ClientSideLink({
                     href={item.href}
                     tabIndex={isOpen ? 0 : -1}
                     className={cn(
-                      "relative rounded-md px-3 py-1 font-itc-medium text-[13px] transition-colors",
+                      "relative rounded-md px-3 py-1.5 font-itc-medium text-[12.5px] transition-colors",
                       isChildActive
                         ? "bg-white/[0.12] text-white"
                         : "text-white/60 hover:bg-white/[0.06] hover:text-white",

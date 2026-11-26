@@ -6,6 +6,7 @@ import AdminPageHeader from "@/app/components/admin/common/AdminPageHeader";
 import { AdminVisitLinkProvider } from "@/app/components/admin/common/AdminVisitLink";
 import Image from "next/image";
 import Link from "next/link";
+import { UserRound } from "lucide-react";
 
 export default function AdminLayout({
   children,
@@ -45,8 +46,8 @@ export default function AdminLayout({
         <div className="shrink-0 border-t border-white/20 p-3 group-data-[collapsed=true]/shell:p-2">
           <div className="rounded-xl border border-white/10 bg-white/[0.05] p-2 shadow-[inset_0_1px_0_rgba(255,255,255,0.05)] group-data-[collapsed=true]/shell:p-1.5">
             <div className="flex items-center gap-3 px-2 py-1.5 group-data-[collapsed=true]/shell:justify-center group-data-[collapsed=true]/shell:px-0">
-              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white text-xs font-semibold text-primary ring-2 ring-white/15">
-                B
+              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white text-primary ring-2 ring-white/15">
+                <UserRound className="h-[18px] w-[18px]" aria-hidden />
               </span>
               <span className="min-w-0 leading-tight group-data-[collapsed=true]/shell:hidden">
                 <span className="block truncate text-[13px] font-semibold text-white">
