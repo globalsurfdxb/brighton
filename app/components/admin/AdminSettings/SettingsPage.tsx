@@ -1,265 +1,299 @@
 "use client";
 
-import AdminLoadable from "@/app/components/admin/common/AdminLoadable";
-import React, { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { useEffect } from "react";
+import { toast } from "sonner";
+import { Code2, Eye, EyeOff, KeyRound, ShieldCheck } from "lucide-react";
+import AdminLoadable from "@/app/components/admin/common/AdminLoadable";
+import AdminPageActions from "@/app/components/admin/common/AdminPageActions";
+import AdminSubmitButton from "@/app/components/admin/common/AdminSubmitButton";
+import AdminButton from "@/app/components/admin/common/AdminButton";
+import AdminSectionCard from "@/app/components/admin/common/AdminSectionCard";
+import { useUnsavedChanges } from "@/app/components/admin/common/useUnsavedChanges";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
-import AdminItemContainer from "@/app/components/admin/common/AdminItemContainer";
-import { toast } from "sonner";
-import CustomButton from "../../client/common/CustomButton";
+import { cn } from "@/lib/utils/cn";
 
-interface FormValues {
+interface ScriptsForm {
   headerScript: string;
   bodyScript: string;
 }
 
-interface FormValues2 {
+interface PasswordForm {
   currentPassword: string;
   newPassword: string;
+  confirmPassword: string;
+}
+
+const MIN_PASSWORD_LENGTH = 8;
+
+function PasswordInput({
+  id,
+  visible,
+  onToggle,
+  invalid,
+  ...props
+}: React.ComponentProps<"input"> & {
+  visible: boolean;
+  onToggle: () => void;
+  invalid?: boolean;
+}) {
+  return (
+    <div className="relative">
+      <Input
+        id={id}
+        type={visible ? "text" : "password"}
+        className={cn("pr-11", invalid && "border-red-400 focus-visible:border-red-500")}
+        aria-invalid={invalid}
+        {...props}
+      />
+      <button
+        type="button"
+        onClick={onToggle}
+        aria-label={visible ? "Hide password" : "Show password"}
+        className="absolute right-1.5 top-1/2 flex h-8 w-8 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full text-description-color transition-colors hover:bg-cream-background hover:text-primary"
+      >
+        {visible ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+      </button>
+    </div>
+  );
+}
+
+function FieldError({ message }: { message?: string }) {
+  if (!message) return null;
+  return (
+    <p role="alert" className="text-[12.5px] text-red-600">
+      {message}
+    </p>
+  );
 }
 
 const Settings = () => {
   const [loading, setLoading] = useState(true);
-  const { register, handleSubmit, setValue, getValues } = useForm<
-    FormValues | FormValues2
-  >();
-  const [currentPasswordIsCorrect, setCurrentPasswordIsCorrect] =
-    React.useState<boolean>(false);
+  const [visible, setVisible] = useState<Record<keyof PasswordForm, boolean>>({
+    currentPassword: false,
+    newPassword: false,
+    confirmPassword: false,
+  });
+  const toggleVisible = (field: keyof PasswordForm) =>
+    setVisible((prev) => ({ ...prev, [field]: !prev[field] }));
 
-  const [toEmailContact, setToEmailContact] = useState("");
+  const scripts = useForm<ScriptsForm>({
+    defaultValues: { headerScript: "", bodyScript: "" },
+  });
+  const { isDirty, markClean, changes } = useUnsavedChanges(
+    scripts.control,
+    scripts.getValues,
+  );
 
-  const onSubmit = async (data: FormValues | FormValues2) => {
+  const password = useForm<PasswordForm>({
+    defaultValues: { currentPassword: "", newPassword: "", confirmPassword: "" },
+  });
+  const passwordErrors = password.formState.errors;
+
+  const fetchScripts = async () => {
     try {
-      const response = await fetch("/api/admin/tags", {
-        method: "POST",
-        body: JSON.stringify(data),
+      const res = await fetch("/api/admin/tags");
+      if (!res.ok) {
+        const { message } = await res.json();
+        toast.error(message || "Failed to load scripts");
+        return;
+      }
+      const { tag } = await res.json();
+      scripts.reset({
+        headerScript: tag?.headerScript ?? "",
+        bodyScript: tag?.bodyScript ?? "",
       });
-      if (response.ok) {
-        const data = await response.json();
-        toast.success(data.message);
-      } else {
-        const data = await response.json();
-        toast.error(data.message);
-      }
-    } catch (error) {
-      console.log("Error saving details", error);
-    }
-  };
-
-  const fetchTag = async () => {
-    try {
-      const response = await fetch("/api/admin/tags");
-      if (response.ok) {
-        const data = await response.json();
-        setValue("headerScript", data.tag.headerScript);
-        setValue("bodyScript", data.tag.bodyScript);
-      } else {
-        const data = await response.json();
-        toast.error(data.message);
-      }
-    } catch (error) {
-      console.log("Error fetching details", error);
+      markClean();
+    } catch (e) {
+      console.error(e);
+      toast.error("Failed to load scripts");
     }
   };
 
   useEffect(() => {
-    Promise.all([fetchTag(), fetchEmails()]).finally(() => setLoading(false));
+    fetchScripts().finally(() => setLoading(false));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const checkCurrentPassword = async () => {
+  const saveScripts = async (data: ScriptsForm) => {
     try {
-      const currentPassword = getValues("currentPassword");
-      if (!currentPassword) {
-        toast.error("Please enter current password");
-        return;
-      }
-      const response = await fetch("/api/admin/settings/check-password", {
+      const res = await fetch("/api/admin/tags", {
         method: "POST",
-        body: JSON.stringify({ currentPassword }),
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
       });
-      if (response.ok) {
-        const data = await response.json();
-        if (data.success) {
-          setCurrentPasswordIsCorrect(true);
-          setValue("currentPassword", "");
-          toast.success(data.message);
-        } else {
-          setCurrentPasswordIsCorrect(false);
-          toast.error(data.message);
-        }
-      } else {
-        const data = await response.json();
-        toast.error(data.message);
-      }
-    } catch (error) {
-      console.log("Error saving details", error);
-    }
-  };
-
-  const submitNewPassword = async () => {
-    try {
-      const newPassword = getValues("newPassword");
-      if (!newPassword) {
-        alert("Please enter new password");
+      const { message } = await res.json();
+      if (!res.ok) {
+        toast.error(message || "Failed to save scripts");
         return;
       }
-      const response = await fetch("/api/admin/settings/check-password", {
-        method: "PATCH",
-        body: JSON.stringify({ newPassword }),
-      });
-      if (response.ok) {
-        const data = await response.json();
-        if (data.success) {
-          setCurrentPasswordIsCorrect(false);
-          setValue("newPassword", "");
-          toast.success(data.message);
-        } else {
-          setCurrentPasswordIsCorrect(false);
-          toast.error(data.message);
-        }
-      } else {
-        const data = await response.json();
-        toast.error(data.message);
-      }
-    } catch (error) {
-      console.log("Error saving details", error);
+      toast.success("Scripts saved");
+      markClean();
+    } catch (e) {
+      console.error(e);
+      toast.error("Something went wrong");
     }
   };
 
-  const EmailSectionSubmit = async () => {
+  const changePassword = async ({ currentPassword, newPassword }: PasswordForm) => {
     try {
-      const response = await fetch("/api/admin/emails", {
+      const res = await fetch("/api/admin/settings/check-password", {
         method: "PATCH",
-        body: JSON.stringify({ toEmailContact }),
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ currentPassword, newPassword }),
       });
-      if (response.ok) {
-        const data = await response.json();
-        toast.success(data.message);
-      } else {
-        const data = await response.json();
-        toast.error(data.message);
+      const { message } = await res.json();
+      if (!res.ok) {
+        toast.error(message || "Failed to change password");
+        return;
       }
-    } catch (error) {
-      console.log("Error saving details", error);
-    }
-  };
-
-  const fetchEmails = async () => {
-    try {
-      const response = await fetch("/api/admin/emails");
-      if (response.ok) {
-        const data = await response.json();
-        setToEmailContact(data.data.toEmailContact);
-      } else {
-        const data = await response.json();
-        toast.error(data.message);
-      }
-    } catch (error) {
-      console.log("Error fetching details", error);
+      toast.success(message || "Password changed");
+      password.reset();
+      setVisible({
+        currentPassword: false,
+        newPassword: false,
+        confirmPassword: false,
+      });
+    } catch (e) {
+      console.error(e);
+      toast.error("Something went wrong");
     }
   };
 
   return (
     <AdminLoadable loading={loading}>
-      <div className="grid grid-cols-2 gap-5">
-        <AdminItemContainer expansion={false}>
-          <div className="border-b border-secondary">
-            <Label main>Meta Section</Label>
-          </div>
-          <div className="flex flex-col gap-5 p-5">
-            <form
-              className="flex flex-col gap-5"
-              onSubmit={handleSubmit(onSubmit)}
-            >
-              <div className="flex flex-col gap-2">
-                <Label className="">Header Script</Label>
-                <Textarea {...register("headerScript")}></Textarea>
-              </div>
+      <div className="grid grid-cols-1 items-start gap-5 xl:grid-cols-[1.4fr_1fr]">
+        <form onSubmit={scripts.handleSubmit(saveScripts)}>
+          <AdminPageActions isDirty={isDirty} changes={changes}>
+            <AdminSubmitButton saving={scripts.formState.isSubmitting} />
+          </AdminPageActions>
 
-              <div className="flex flex-col gap-2">
-                <Label className="">Body Script</Label>
-                <Textarea {...register("bodyScript")}></Textarea>
-              </div>
-              <CustomButton
-                btnClass="w-fit"
-                variant="3"
-                onClick={submitNewPassword}
-                text="Submit"
-              />
-            </form>
-          </div>
-        </AdminItemContainer>
-
-        <div className="h-fit">
-          <AdminItemContainer expansion={false}>
-            <div className="border-b border-secondary">
-              <Label main>Change Password</Label>
-            </div>
-            {!currentPasswordIsCorrect ? (
-              <form className="flex flex-col gap-5 p-5">
-                <div className="flex flex-col gap-2">
-                  <Label className="">Current Password</Label>
-                  <Input {...register("currentPassword")}></Input>
-                </div>
-                <div className="flex flex-col gap-2">
-                  <p className="text-[16px]">
-                    Type in the current password and hit continue
-                  </p>
-                  <CustomButton
-                    btnClass="w-fit"
-                    variant="3"
-                    onClick={checkCurrentPassword}
-                    text="Continue"
-                  />
-                </div>
-              </form>
-            ) : (
-              <form className="flex flex-col gap-5 p-5">
-                <div className="flex flex-col gap-2">
-                  <Label className="">New Password</Label>
-                  <Input {...register("newPassword")}></Input>
-                </div>
-                <div className="flex flex-col gap-1">
-                  <p className="text-[16px]">
-                    Type in the new password and hit continue
-                  </p>
-                  <CustomButton
-                    onClick={submitNewPassword}
-                    btnClass="w-fit"
-                    variant="3"
-                    text="Confirm"
-                  />
-                </div>
-              </form>
-            )}
-          </AdminItemContainer>
-        </div>
-
-        <AdminItemContainer expansion={false}>
-          <div className="border-b border-secondary">
-            <Label main>Email Section</Label>
-          </div>
-          <div className="flex flex-col gap-5 p-5">
-            <div className="flex flex-col gap-5">
-              <div className="flex flex-col gap-2">
-                <Label className="">To email (Contact)</Label>
-                <Input
-                  value={toEmailContact}
-                  onChange={(e) => setToEmailContact(e.target.value)}
-                ></Input>
-              </div>
-              <CustomButton
-                btnClass="w-fit"
-                variant="3"
-                onClick={EmailSectionSubmit}
-                text="Submit"
+          <AdminSectionCard
+            title={
+              <span className="inline-flex items-center gap-2">
+                <Code2 className="h-5 w-5" />
+                Tracking Scripts
+              </span>
+            }
+            description="Add analytics or tracking snippets such as Google Tag Manager or Meta Pixel. Paste the full code including the script tags."
+          >
+            <div className="flex flex-col gap-2">
+              <Label htmlFor="headerScript" className="font-bold">
+                Header Script
+              </Label>
+              <p className="-mt-1 text-[12.5px] text-description-color">
+                Placed inside the page head.
+              </p>
+              <Textarea
+                id="headerScript"
+                {...scripts.register("headerScript")}
+                placeholder="<script>…</script>"
+                spellCheck={false}
+                className="min-h-[180px] font-mono text-[13px] leading-relaxed"
               />
             </div>
-          </div>
-        </AdminItemContainer>
+            <div className="flex flex-col gap-2">
+              <Label htmlFor="bodyScript" className="font-bold">
+                Body Script
+              </Label>
+              <p className="-mt-1 text-[12.5px] text-description-color">
+                Placed at the start of the page body, for example a Tag Manager noscript fallback.
+              </p>
+              <Textarea
+                id="bodyScript"
+                {...scripts.register("bodyScript")}
+                placeholder="<noscript>…</noscript>"
+                spellCheck={false}
+                className="min-h-[180px] font-mono text-[13px] leading-relaxed"
+              />
+            </div>
+          </AdminSectionCard>
+        </form>
+
+        <form onSubmit={password.handleSubmit(changePassword)}>
+          <AdminSectionCard
+            title={
+              <span className="inline-flex items-center gap-2">
+                <KeyRound className="h-5 w-5" />
+                Change Password
+              </span>
+            }
+            description="You will stay signed in on this device after changing your password."
+          >
+            <div className="flex flex-col gap-2">
+              <Label htmlFor="currentPassword" className="font-bold">
+                Current Password
+              </Label>
+              <PasswordInput
+                id="currentPassword"
+                autoComplete="current-password"
+                visible={visible.currentPassword}
+                onToggle={() => toggleVisible("currentPassword")}
+                invalid={!!passwordErrors.currentPassword}
+                {...password.register("currentPassword", {
+                  required: "Enter your current password",
+                })}
+              />
+              <FieldError message={passwordErrors.currentPassword?.message} />
+            </div>
+            <div className="flex flex-col gap-2">
+              <Label htmlFor="newPassword" className="font-bold">
+                New Password
+              </Label>
+              <PasswordInput
+                id="newPassword"
+                autoComplete="new-password"
+                visible={visible.newPassword}
+                onToggle={() => toggleVisible("newPassword")}
+                invalid={!!passwordErrors.newPassword}
+                {...password.register("newPassword", {
+                  required: "Enter a new password",
+                  minLength: {
+                    value: MIN_PASSWORD_LENGTH,
+                    message: `Use at least ${MIN_PASSWORD_LENGTH} characters`,
+                  },
+                  validate: (value, values) =>
+                    value !== values.currentPassword ||
+                    "New password must be different from the current one",
+                })}
+              />
+              <FieldError message={passwordErrors.newPassword?.message} />
+            </div>
+            <div className="flex flex-col gap-2">
+              <Label htmlFor="confirmPassword" className="font-bold">
+                Confirm New Password
+              </Label>
+              <PasswordInput
+                id="confirmPassword"
+                autoComplete="new-password"
+                visible={visible.confirmPassword}
+                onToggle={() => toggleVisible("confirmPassword")}
+                invalid={!!passwordErrors.confirmPassword}
+                {...password.register("confirmPassword", {
+                  required: "Confirm the new password",
+                  validate: (value, values) =>
+                    value === values.newPassword || "Passwords do not match",
+                })}
+              />
+              <FieldError message={passwordErrors.confirmPassword?.message} />
+            </div>
+            <div className="flex items-center justify-between gap-3 pt-1">
+              <p className="inline-flex items-center gap-1.5 text-[12.5px] text-description-color">
+                <ShieldCheck className="h-4 w-4" />
+                At least {MIN_PASSWORD_LENGTH} characters
+              </p>
+              <AdminButton
+                type="submit"
+                icon={KeyRound}
+                disabled={password.formState.isSubmitting}
+              >
+                {password.formState.isSubmitting ? "Updating" : "Update Password"}
+              </AdminButton>
+            </div>
+          </AdminSectionCard>
+        </form>
       </div>
     </AdminLoadable>
   );
