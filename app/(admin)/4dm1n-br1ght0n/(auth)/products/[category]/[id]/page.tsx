@@ -2,6 +2,9 @@
 
 import { useEffect, useState } from "react";
 import AdminPageActions from "@/app/components/admin/common/AdminPageActions";
+import AdminButton from "@/app/components/admin/common/AdminButton";
+import AdminLoadable from "@/app/components/admin/common/AdminLoadable";
+import { ArrowLeft, Plus, Wand2 } from "lucide-react";
 import AdminSubmitButton from "@/app/components/admin/common/AdminSubmitButton";
 import { useUnsavedChanges } from "@/app/components/admin/common/useUnsavedChanges";
 import { useForm, Controller, useFieldArray } from "react-hook-form";
@@ -44,7 +47,6 @@ import { ImageUploader } from "@/components/ui/image-uploader";
 import { MultiImageUploader } from "@/components/ui/multi-image-uploader";
 import { DOCUMENT_ACCEPT, FileUploader } from "@/components/ui/file-uploader";
 import AdminItemContainer from "@/app/components/admin/common/AdminItemContainer";
-import CustomButton from "@/app/components/client/common/CustomButton";
 import { slugify } from "@/lib/utils/slugify";
 
 type ConfigCategory = {
@@ -294,6 +296,7 @@ export default function ProductDetailPage() {
   const router = useRouter();
   const params = useParams<{ category: string; id: string }>();
   const isNew = params.id === "new";
+  const [loading, setLoading] = useState(!isNew);
 
   const { register, control, handleSubmit, reset, watch, setValue, getValues } =
     useForm<ProductForm>({ defaultValues });
@@ -486,7 +489,7 @@ export default function ProductDetailPage() {
   }, [params.category]);
 
   useEffect(() => {
-    if (!isNew) fetchProduct();
+    if (!isNew) fetchProduct().finally(() => setLoading(false));
     else markClean();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [params.id]);
@@ -642,6 +645,7 @@ export default function ProductDetailPage() {
   };
 
   return (
+    <AdminLoadable loading={loading}>
     <div className="flex flex-col gap-6">
       <form className="flex flex-col gap-6" onSubmit={handleSubmit(onSubmit)}>
         {/* Key Details */}
@@ -662,13 +666,13 @@ export default function ProductDetailPage() {
                 <Label className="font-bold">Slug</Label>
                 <div className="flex items-center gap-2">
                   <Input {...register("slug")} placeholder="Slug" />
-                  <CustomButton
-                    btnClass="-mt-[2px]"
-                    variant="3"
-                    text="Generate"
-                    type="button"
+                  <AdminButton
+                    variant="outline"
+                    icon={Wand2}
                     onClick={() => setValue("slug", slugify(watch("title")))}
-                  />
+                  >
+                    Generate
+                  </AdminButton>
                 </div>
               </div>
             </div>
@@ -1157,11 +1161,8 @@ export default function ProductDetailPage() {
             <div className="flex flex-col gap-4">
               <div className="flex items-center justify-between">
                 <Label className="font-bold">Configurations</Label>
-                <CustomButton
-                  variant="3"
-                  type="button"
-                  text="Add Configuration"
-                  showIcon={false}
+                <AdminButton
+                  icon={Plus}
                   onClick={() =>
                     configArray.append({
                       category: "",
@@ -1169,7 +1170,9 @@ export default function ProductDetailPage() {
                       defaultOption: "",
                     })
                   }
-                />
+                >
+                  Add Configuration
+                </AdminButton>
               </div>
 
               {configArray.fields.map((field, i) => {
@@ -1411,15 +1414,14 @@ export default function ProductDetailPage() {
 
             <div className="flex items-center justify-between">
               <Label className="font-bold">Items</Label>
-              <CustomButton
-                variant="3"
-                type="button"
-                text="Add Item"
-                showIcon={false}
+              <AdminButton
+                icon={Plus}
                 onClick={() =>
                   sectionItemsArray.append({ title: "", items: [] })
                 }
-              />
+              >
+                Add Item
+              </AdminButton>
             </div>
 
             <div className="flex flex-col gap-4">
@@ -1442,15 +1444,14 @@ export default function ProductDetailPage() {
           <div className="p-6 flex flex-col gap-5">
             <div className="flex items-center justify-between">
               <Label className="font-bold">Tiles</Label>
-              <CustomButton
-                variant="3"
-                type="button"
-                text="Add Tile"
-                showIcon={false}
+              <AdminButton
+                icon={Plus}
                 onClick={() =>
                   fourthSectionArray.append({ title: "", items: [] })
                 }
-              />
+              >
+                Add Tile
+              </AdminButton>
             </div>
 
             <div className="flex flex-col gap-4">
@@ -1695,18 +1696,18 @@ export default function ProductDetailPage() {
         </AdminItemContainer>
 
         <AdminPageActions isDirty={isDirty} changes={changes} className="z-50">
-          <CustomButton
-            iconDirection="down"
-            imageClass="!-rotate-135"
-            variant="2"
-            type="button"
-            text="Back to Products"
+          <AdminButton
+            variant="outline"
+            icon={ArrowLeft}
             onClick={() => router.back()}
-          />
+          >
+            Back
+          </AdminButton>
           <AdminSubmitButton saving={isSaving} />
         </AdminPageActions>
       </form>
     </div>
+    </AdminLoadable>
   );
 }
 
