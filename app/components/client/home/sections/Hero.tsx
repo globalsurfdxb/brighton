@@ -1,6 +1,7 @@
 "use client";
 
 import type { HeroData } from "../types";
+import Image from "next/image";
 import CustomButton from "../../common/CustomButton";
 import AnimatedTitle from "../../animations/AnimatedTitle";
 import { motion } from "framer-motion";
@@ -23,11 +24,21 @@ export default function Hero({ data: heroData }: { data: HeroData }) {
   const introComplete = useIntroComplete();
   return (
     <section className="fixed inset-0 h-[85svh] lg:h-svh w-full overflow-hidden z-0">
+      {heroData.poster && (
+        <Image
+          src={heroData.poster}
+          alt=""
+          fill
+          sizes="100vw"
+          fetchPriority="high"
+          loading="eager"
+          className="pointer-events-none object-cover"
+        />
+      )}
       {heroData.video && (
         <video
           className="absolute inset-0 h-full w-full object-cover"
           src={heroData.video}
-          poster={heroData.poster || undefined}
           autoPlay
           muted
           loop
