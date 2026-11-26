@@ -51,6 +51,7 @@ const BlogCard = ({
           alt={title}
           className="w-full h-full object-cover pointer-events-none group-hover:scale-105 transition-transform duration-500 ease-in-out"
           fill
+          sizes="(min-width: 640px) 50vw, 100vw"
         />
       </div>
       <div className="pb-4 flex justify-between min-[1900px]:items-center text-description-color text-subtitle-2">

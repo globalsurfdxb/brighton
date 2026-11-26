@@ -41,6 +41,7 @@ export default function ServiceDriven({
               src={serviceDrivenData.image || "/assets/images/placeholder.png"}
               alt={serviceDrivenData.imageAlt}
               fill
+              sizes="(min-width: 1024px) 50vw, 100vw"
               className="object-cover object-center pointer-events-none"
             />
           </motion.div>

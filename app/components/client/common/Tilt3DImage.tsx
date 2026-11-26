@@ -13,6 +13,7 @@ interface Tilt3DImageProps {
   className?: string;
   imgClassName?: string;
   priority?: boolean;
+  sizes?: string;
   maxTranslate?: number;
   maxRotate?: number;
   reveal?: boolean;
@@ -24,6 +25,7 @@ export default function Tilt3DImage({
   className = "",
   imgClassName = "object-cover",
   priority = false,
+  sizes = "100vw",
   maxTranslate = 60,
   maxRotate = 7,
   reveal = false,
@@ -126,7 +128,9 @@ export default function Tilt3DImage({
           src={src || "/assets/images/placeholder.png"}
           alt={alt}
           fill
-          priority={priority}
+          sizes={sizes}
+          fetchPriority={priority ? "high" : undefined}
+          loading={priority ? "eager" : undefined}
           className={`${imgClassName} pointer-events-none`}
         />
       </div>

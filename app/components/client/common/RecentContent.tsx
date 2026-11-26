@@ -59,6 +59,7 @@ const RecentContent = ({ title, items, hrefPrefix }: RecentContentProps) => {
                       alt={item.title}
                       className="object-cover pointer-events-none group-hover:scale-105 transition-transform duration-500"
                       fill
+                      sizes="(min-width: 1280px) 33vw, (min-width: 768px) 42vw, (min-width: 640px) 50vw, 80vw"
                     />
                   </div>
                   <div className="pb-4 flex justify-between border-b border-secondary text-description-color text-subtitle-2">

@@ -62,7 +62,9 @@ export default function InnerBanner({ data }: PageBannerProps) {
         src={data.image || "/assets/images/placeholder.png"}
         alt={data.imageAlt}
         fill
-        priority
+        sizes="100vw"
+        fetchPriority="high"
+        loading="eager"
         className="object-cover object-center will-change-transform"
       />
 

@@ -18,6 +18,7 @@ export function NewsCard({ image, title, date, category }: any) {
           src={image}
           alt={title}
           fill
+          sizes="(min-width: 1920px) 350px, 320px"
           className="pointer-events-none object-cover group-hover:scale-105 transition-transform duration-500 ease-in-out"
         />
       </div>

@@ -32,6 +32,7 @@ export default function ImageDescription({ data }: ImageDescriptionProps) {
               src={data.image || "/assets/images/placeholder.png"}
               alt={data.imageAlt}
               fill
+              sizes="(min-width: 768px) 50vw, 100vw"
               className="object-cover object-center pointer-events-none"
             />
           </motion.div>

@@ -42,6 +42,7 @@ export default function Main({ data }: { data: MainData }) {
               src={data.image || "/assets/images/placeholder.png"}
               alt={data.imageAlt}
               fill
+              sizes="(min-width: 768px) 40vw, 100vw"
               className="object-cover object-center pointer-events-none"
             />
 

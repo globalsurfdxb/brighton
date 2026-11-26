@@ -103,6 +103,7 @@ export default function Main({
                       src={slide.image}
                       alt={slide.alt}
                       fill
+                      sizes="(min-width: 1280px) 70vw, 90vw"
                       className="object-cover"
                     />
                   </div>

@@ -35,8 +35,10 @@ export default function ProductBanner() {
                   src={images[activeIndex].src || "/assets/images/placeholder.png"}
                   alt={images[activeIndex].alt}
                   fill
+                  sizes="(min-width: 1024px) 50vw, 100vw"
                   className="pointer-events-none object-cover"
-                  priority
+                  fetchPriority="high"
+                  loading="eager"
                 />
               </motion.div>
             </AnimatePresence>
@@ -57,6 +59,7 @@ export default function ProductBanner() {
                   src={img.src || "/assets/images/placeholder.png"}
                   alt={img.alt}
                   fill
+                  sizes="90px"
                   className="pointer-events-none object-cover"
                 />
               </button>

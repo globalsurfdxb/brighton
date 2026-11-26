@@ -63,7 +63,9 @@ export default function ProjectBanner({
         src={image}
         alt={title}
         fill
-        priority
+        sizes="100vw"
+        fetchPriority="high"
+        loading="eager"
         className="object-cover"
       />
 

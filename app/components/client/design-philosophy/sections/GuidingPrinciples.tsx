@@ -59,6 +59,7 @@ export default function GuidingPrinciples({
                       src={item.image || "/assets/images/placeholder.png"}
                       alt={item.imageAlt}
                       fill
+                      sizes="(min-width: 1280px) 33vw, (min-width: 1024px) 48vw, (min-width: 768px) 63vw, (min-width: 640px) 72vw, 84vw"
                       className="object-cover object-center pointer-events-none"
                     />
 

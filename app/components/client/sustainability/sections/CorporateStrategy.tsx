@@ -43,6 +43,7 @@ export default function CorporateStrategy({
               src={image || "/assets/images/placeholder.png"}
               alt={imageAlt}
               fill
+              sizes="(min-width: 1024px) 50vw, 100vw"
               className="object-cover object-top pointer-events-none"
             />
           </motion.div>
