@@ -3,6 +3,7 @@ import connectDB from "@/lib/mongodb";
 import Project from "@/app/models/Projects";
 import { verifyAdmin } from "@/lib/verifyAdmin";
 import { revalidateTag } from "next/cache";
+import { reorderEmbedded } from "@/lib/reorderEmbedded";
 
 async function getOrCreateDoc() {
   let doc = await Project.findOne();
@@ -135,6 +136,42 @@ export async function DELETE(request: NextRequest) {
 
     return NextResponse.json(
       { data: doc.regions, message: "Region deleted successfully" },
+      { status: 200 },
+    );
+  } catch (error: unknown) {
+    console.error(error);
+    return NextResponse.json(
+      { message: "Internal Server Error" },
+      { status: 500 },
+    );
+  }
+}
+
+export async function PUT(request: NextRequest) {
+  try {
+    const isAdmin = await verifyAdmin(request);
+    if (!isAdmin) {
+      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+    }
+
+    await connectDB();
+    const { ids } = await request.json();
+    const doc = await getOrCreateDoc();
+    const reordered = reorderEmbedded(doc.regions, ids);
+    if (!reordered) {
+      return NextResponse.json(
+        { message: "Region list is out of date, please refresh" },
+        { status: 409 },
+      );
+    }
+
+    doc.regions = reordered;
+    await doc.save();
+
+    revalidateTag("Projects", "default");
+
+    return NextResponse.json(
+      { data: doc.regions, message: "Region order updated" },
       { status: 200 },
     );
   } catch (error: unknown) {

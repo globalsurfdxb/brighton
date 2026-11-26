@@ -1,5 +1,6 @@
 "use client";
 
+import AdminSortableList from "@/app/components/admin/common/AdminSortableList";
 import AdminRowNumber from "@/app/components/admin/common/AdminRowNumber";
 import { Newspaper, Plus, Tags } from "lucide-react";
 import AdminTabs from "@/app/components/admin/common/AdminTabs";
@@ -123,6 +124,29 @@ export default function NewsListingPage() {
       toast.success("Topic added");
     } catch (e) {
       console.error(e);
+      toast.error("Something went wrong");
+    }
+  };
+
+  const reorderTopics = async (next: typeof topics) => {
+    const previous = topics;
+    setTopics(next);
+    try {
+      const res = await fetch("/api/admin/news/topics", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ids: next.map((item) => item._id) }),
+      });
+      const { message } = await res.json();
+      if (!res.ok) {
+        setTopics(previous);
+        toast.error(message || "Failed to save order");
+        return;
+      }
+      toast.success("Topic order updated");
+    } catch (e) {
+      console.error(e);
+      setTopics(previous);
       toast.error("Something went wrong");
     }
   };
@@ -368,77 +392,84 @@ export default function NewsListingPage() {
               {topics?.length === 0 && (
                 <p className="text-sm text-black/40">No topics added yet.</p>
               )}
-              {topics?.map((topic, index) => (
-                <div
-                  key={topic._id}
-                  className="flex items-center justify-between border border-secondary/60 rounded-md px-4 py-2"
-                >
-                  <div className="flex min-w-0 flex-1 items-center gap-3">
-                    <AdminRowNumber value={index + 1} />
-                    {editingTopicId === topic._id ? (
-                      <Input
-                        value={editingTopicTitle}
-                        onChange={(e) => setEditingTopicTitle(e.target.value)}
-                        className="mr-2"
-                      />
-                    ) : (
-                      <span className="text-md font-itc-medium">
-                        {topic.title}
-                      </span>
-                    )}
-                  </div>
-                  <div className="flex items-center gap-3">
-                    {editingTopicId === topic._id ? (
-                      <>
+              <AdminSortableList
+                items={topics}
+                onReorder={reorderTopics}
+                disabled={!!editingTopicId}
+              >
+                {(topic, index, handle) => (
+                  <div
+                    key={topic._id}
+                    className="flex items-center justify-between rounded-md border border-secondary/60 bg-white px-4 py-2"
+                  >
+                    <div className="flex min-w-0 flex-1 items-center gap-3">
+                      {handle}
+                      <AdminRowNumber value={index + 1} />
+                      {editingTopicId === topic._id ? (
+                        <Input
+                          value={editingTopicTitle}
+                          onChange={(e) => setEditingTopicTitle(e.target.value)}
+                          className="mr-2"
+                        />
+                      ) : (
+                        <span className="text-md font-itc-medium">
+                          {topic.title}
+                        </span>
+                      )}
+                    </div>
+                    <div className="flex items-center gap-3">
+                      {editingTopicId === topic._id ? (
+                        <>
+                          <button
+                            type="button"
+                            className="cursor-pointer hover:scale-110 transition-all"
+                            onClick={() => saveTopic(topic._id)}
+                          >
+                            <RiCheckLine className="text-green-600" size={20} />
+                          </button>
+                          <button
+                            type="button"
+                            className="cursor-pointer hover:scale-110 transition-all"
+                            onClick={() => setEditingTopicId(null)}
+                          >
+                            <RiCloseLine className="text-gray-500" size={20} />
+                          </button>
+                        </>
+                      ) : (
                         <button
                           type="button"
                           className="cursor-pointer hover:scale-110 transition-all"
-                          onClick={() => saveTopic(topic._id)}
+                          onClick={() => {
+                            setEditingTopicId(topic._id);
+                            setEditingTopicTitle(topic.title);
+                          }}
                         >
-                          <RiCheckLine className="text-green-600" size={20} />
+                          <RiPencilLine
+                            className="text-gray-500 hover:text-primary"
+                            size={20}
+                          />
                         </button>
-                        <button
-                          type="button"
-                          className="cursor-pointer hover:scale-110 transition-all"
-                          onClick={() => setEditingTopicId(null)}
-                        >
-                          <RiCloseLine className="text-gray-500" size={20} />
-                        </button>
-                      </>
-                    ) : (
+                      )}
                       <button
                         type="button"
                         className="cursor-pointer hover:scale-110 transition-all"
-                        onClick={() => {
-                          setEditingTopicId(topic._id);
-                          setEditingTopicTitle(topic.title);
-                        }}
+                        onClick={() =>
+                          setDeleteTarget({
+                            type: "topic",
+                            id: topic._id,
+                            label: topic.title,
+                          })
+                        }
                       >
-                        <RiPencilLine
-                          className="text-gray-500 hover:text-primary"
+                        <RiDeleteBinLine
+                          className="text-red-400 hover:text-red-600"
                           size={20}
                         />
                       </button>
-                    )}
-                    <button
-                      type="button"
-                      className="cursor-pointer hover:scale-110 transition-all"
-                      onClick={() =>
-                        setDeleteTarget({
-                          type: "topic",
-                          id: topic._id,
-                          label: topic.title,
-                        })
-                      }
-                    >
-                      <RiDeleteBinLine
-                        className="text-red-400 hover:text-red-600"
-                        size={20}
-                      />
-                    </button>
+                    </div>
                   </div>
-                </div>
-              ))}
+                )}
+              </AdminSortableList>
             </div>
           </div>
         )}

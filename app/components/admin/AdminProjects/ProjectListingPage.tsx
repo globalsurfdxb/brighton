@@ -1,5 +1,6 @@
 "use client";
 
+import AdminSortableList from "@/app/components/admin/common/AdminSortableList";
 import AdminRowNumber from "@/app/components/admin/common/AdminRowNumber";
 import { Building2, FolderKanban, MapPin, Plus } from "lucide-react";
 import AdminTabs from "@/app/components/admin/common/AdminTabs";
@@ -118,6 +119,52 @@ export default function ProjectListingPage() {
   }, []);
 
   // ---- Regions ----
+  const reorderRegions = async (next: typeof regions) => {
+    const previous = regions;
+    setRegions(next);
+    try {
+      const res = await fetch("/api/admin/projects/regions", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ids: next.map((item) => item._id) }),
+      });
+      const { message } = await res.json();
+      if (!res.ok) {
+        setRegions(previous);
+        toast.error(message || "Failed to save order");
+        return;
+      }
+      toast.success("Region order updated");
+    } catch (e) {
+      console.error(e);
+      setRegions(previous);
+      toast.error("Something went wrong");
+    }
+  };
+
+  const reorderSectors = async (next: typeof sectors) => {
+    const previous = sectors;
+    setSectors(next);
+    try {
+      const res = await fetch("/api/admin/projects/sectors", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ids: next.map((item) => item._id) }),
+      });
+      const { message } = await res.json();
+      if (!res.ok) {
+        setSectors(previous);
+        toast.error(message || "Failed to save order");
+        return;
+      }
+      toast.success("Sector order updated");
+    } catch (e) {
+      console.error(e);
+      setSectors(previous);
+      toast.error("Something went wrong");
+    }
+  };
+
   const addRegion = async () => {
     if (!newRegion.trim()) return;
     try {
@@ -449,77 +496,84 @@ export default function ProjectListingPage() {
             {regions?.length === 0 && (
               <p className="text-sm text-black/40">No regions added yet.</p>
             )}
-            {regions?.map((region, index) => (
-              <div
-                key={region._id}
-                className="flex items-center justify-between border border-secondary/60 rounded-md px-4 py-2"
-              >
-                <div className="flex min-w-0 flex-1 items-center gap-3">
-                  <AdminRowNumber value={index + 1} />
-                  {editingRegionId === region._id ? (
-                    <Input
-                      value={editingRegionTitle}
-                      onChange={(e) => setEditingRegionTitle(e.target.value)}
-                      className="mr-2"
-                    />
-                  ) : (
-                    <span className="text-md font-itc-medium">
-                      {region.title}
-                    </span>
-                  )}
-                </div>
-                <div className="flex items-center gap-3">
-                  {editingRegionId === region._id ? (
-                    <>
+            <AdminSortableList
+              items={regions}
+              onReorder={reorderRegions}
+              disabled={!!editingRegionId}
+            >
+              {(region, index, handle) => (
+                <div
+                  key={region._id}
+                  className="flex items-center justify-between rounded-md border border-secondary/60 bg-white px-4 py-2"
+                >
+                  <div className="flex min-w-0 flex-1 items-center gap-3">
+                    {handle}
+                    <AdminRowNumber value={index + 1} />
+                    {editingRegionId === region._id ? (
+                      <Input
+                        value={editingRegionTitle}
+                        onChange={(e) => setEditingRegionTitle(e.target.value)}
+                        className="mr-2"
+                      />
+                    ) : (
+                      <span className="text-md font-itc-medium">
+                        {region.title}
+                      </span>
+                    )}
+                  </div>
+                  <div className="flex items-center gap-3">
+                    {editingRegionId === region._id ? (
+                      <>
+                        <button
+                          type="button"
+                          className="cursor-pointer hover:scale-110 transition-all"
+                          onClick={() => saveRegion(region._id)}
+                        >
+                          <RiCheckLine className="text-green-600" size={20} />
+                        </button>
+                        <button
+                          type="button"
+                          className="cursor-pointer hover:scale-110 transition-all"
+                          onClick={() => setEditingRegionId(null)}
+                        >
+                          <RiCloseLine className="text-gray-500" size={20} />
+                        </button>
+                      </>
+                    ) : (
                       <button
                         type="button"
                         className="cursor-pointer hover:scale-110 transition-all"
-                        onClick={() => saveRegion(region._id)}
+                        onClick={() => {
+                          setEditingRegionId(region._id);
+                          setEditingRegionTitle(region.title);
+                        }}
                       >
-                        <RiCheckLine className="text-green-600" size={20} />
+                        <RiPencilLine
+                          className="text-gray-500 hover:text-primary"
+                          size={20}
+                        />
                       </button>
-                      <button
-                        type="button"
-                        className="cursor-pointer hover:scale-110 transition-all"
-                        onClick={() => setEditingRegionId(null)}
-                      >
-                        <RiCloseLine className="text-gray-500" size={20} />
-                      </button>
-                    </>
-                  ) : (
+                    )}
                     <button
                       type="button"
                       className="cursor-pointer hover:scale-110 transition-all"
-                      onClick={() => {
-                        setEditingRegionId(region._id);
-                        setEditingRegionTitle(region.title);
-                      }}
+                      onClick={() =>
+                        setDeleteTarget({
+                          type: "region",
+                          id: region._id,
+                          label: region.title,
+                        })
+                      }
                     >
-                      <RiPencilLine
-                        className="text-gray-500 hover:text-primary"
+                      <RiDeleteBinLine
+                        className="text-red-400 hover:text-red-600"
                         size={20}
                       />
                     </button>
-                  )}
-                  <button
-                    type="button"
-                    className="cursor-pointer hover:scale-110 transition-all"
-                    onClick={() =>
-                      setDeleteTarget({
-                        type: "region",
-                        id: region._id,
-                        label: region.title,
-                      })
-                    }
-                  >
-                    <RiDeleteBinLine
-                      className="text-red-400 hover:text-red-600"
-                      size={20}
-                    />
-                  </button>
+                  </div>
                 </div>
-              </div>
-            ))}
+              )}
+            </AdminSortableList>
           </div>
         </div>
         )}
@@ -561,77 +615,84 @@ export default function ProjectListingPage() {
             {sectors?.length === 0 && (
               <p className="text-sm text-black/40">No sectors added yet.</p>
             )}
-            {sectors?.map((sector, index) => (
-              <div
-                key={sector._id}
-                className="flex items-center justify-between border border-secondary/60 rounded-md px-4 py-2"
-              >
-                <div className="flex min-w-0 flex-1 items-center gap-3">
-                  <AdminRowNumber value={index + 1} />
-                  {editingSectorId === sector._id ? (
-                    <Input
-                      value={editingSectorTitle}
-                      onChange={(e) => setEditingSectorTitle(e.target.value)}
-                      className="mr-2"
-                    />
-                  ) : (
-                    <span className="text-md font-itc-medium">
-                      {sector.title}
-                    </span>
-                  )}
-                </div>
-                <div className="flex items-center gap-3">
-                  {editingSectorId === sector._id ? (
-                    <>
+            <AdminSortableList
+              items={sectors}
+              onReorder={reorderSectors}
+              disabled={!!editingSectorId}
+            >
+              {(sector, index, handle) => (
+                <div
+                  key={sector._id}
+                  className="flex items-center justify-between rounded-md border border-secondary/60 bg-white px-4 py-2"
+                >
+                  <div className="flex min-w-0 flex-1 items-center gap-3">
+                    {handle}
+                    <AdminRowNumber value={index + 1} />
+                    {editingSectorId === sector._id ? (
+                      <Input
+                        value={editingSectorTitle}
+                        onChange={(e) => setEditingSectorTitle(e.target.value)}
+                        className="mr-2"
+                      />
+                    ) : (
+                      <span className="text-md font-itc-medium">
+                        {sector.title}
+                      </span>
+                    )}
+                  </div>
+                  <div className="flex items-center gap-3">
+                    {editingSectorId === sector._id ? (
+                      <>
+                        <button
+                          type="button"
+                          className="cursor-pointer hover:scale-110 transition-all"
+                          onClick={() => saveSector(sector._id)}
+                        >
+                          <RiCheckLine className="text-green-600" size={20} />
+                        </button>
+                        <button
+                          type="button"
+                          className="cursor-pointer hover:scale-110 transition-all"
+                          onClick={() => setEditingSectorId(null)}
+                        >
+                          <RiCloseLine className="text-gray-500" size={20} />
+                        </button>
+                      </>
+                    ) : (
                       <button
                         type="button"
                         className="cursor-pointer hover:scale-110 transition-all"
-                        onClick={() => saveSector(sector._id)}
+                        onClick={() => {
+                          setEditingSectorId(sector._id);
+                          setEditingSectorTitle(sector.title);
+                        }}
                       >
-                        <RiCheckLine className="text-green-600" size={20} />
+                        <RiPencilLine
+                          className="text-gray-500 hover:text-primary"
+                          size={20}
+                        />
                       </button>
-                      <button
-                        type="button"
-                        className="cursor-pointer hover:scale-110 transition-all"
-                        onClick={() => setEditingSectorId(null)}
-                      >
-                        <RiCloseLine className="text-gray-500" size={20} />
-                      </button>
-                    </>
-                  ) : (
+                    )}
                     <button
                       type="button"
                       className="cursor-pointer hover:scale-110 transition-all"
-                      onClick={() => {
-                        setEditingSectorId(sector._id);
-                        setEditingSectorTitle(sector.title);
-                      }}
+                      onClick={() =>
+                        setDeleteTarget({
+                          type: "sector",
+                          id: sector._id,
+                          label: sector.title,
+                        })
+                      }
                     >
-                      <RiPencilLine
-                        className="text-gray-500 hover:text-primary"
+                      <RiDeleteBinLine
+                        className="text-red-400 hover:text-red-600"
                         size={20}
                       />
                     </button>
-                  )}
-                  <button
-                    type="button"
-                    className="cursor-pointer hover:scale-110 transition-all"
-                    onClick={() =>
-                      setDeleteTarget({
-                        type: "sector",
-                        id: sector._id,
-                        label: sector.title,
-                      })
-                    }
-                  >
-                    <RiDeleteBinLine
-                      className="text-red-400 hover:text-red-600"
-                      size={20}
-                    />
-                  </button>
+                  </div>
                 </div>
-              </div>
-            ))}
+              )}
+            </AdminSortableList>
           </div>
         </div>
         )}
