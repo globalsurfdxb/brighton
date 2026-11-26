@@ -1,60 +1,36 @@
-import { NextResponse } from "next/server";
-import { NextRequest } from "next/server";
+import { NextResponse, type NextRequest } from "next/server";
 import * as jose from "jose";
 import { jwtSecret } from "@/lib/jwtSecret";
 
+const ADMIN_BASE = "/4dm1n-br1ght0n";
+const LOGIN_PATH = `${ADMIN_BASE}/login`;
+
+async function hasValidToken(request: NextRequest) {
+  const token = request.cookies.get("adminToken")?.value;
+  if (!token) return false;
+  try {
+    await jose.jwtVerify(token, jwtSecret());
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 export async function proxy(request: NextRequest) {
-  const response = NextResponse.next();
-  const path = request.nextUrl.pathname;
+  const isLoginPage = request.nextUrl.pathname === LOGIN_PATH;
+  const isAuthenticated = await hasValidToken(request);
 
-  // CORS headers
-  response.headers.set(
-    "Access-Control-Allow-Origin",
-    "https://docs-rho-wine.vercel.app",
-  );
-  response.headers.set(
-    "Access-Control-Allow-Methods",
-    "GET, POST, PUT, DELETE, OPTIONS",
-  );
-  response.headers.set(
-    "Access-Control-Allow-Headers",
-    "Content-Type, Authorization",
-  );
-
-  // Define protected and public admin routes
-  const isLoginPage = path === "/4dm1n-br1ght0n/login";
-  const isProtectedRoute = path.startsWith("/4dm1n-br1ght0n") && !isLoginPage;
-
-  const token = request.cookies.get("adminToken")?.value || "";
-
-  // 🔹 1. If user is on login page and already has a valid token → redirect to /admin
-  if (isLoginPage && token) {
-    try {
-      await jose.jwtVerify(token, jwtSecret());
-      return NextResponse.redirect(new URL("/4dm1n-br1ght0n", request.url));
-    } catch {
-      // invalid token — let them stay on login
-    }
+  if (isLoginPage && isAuthenticated) {
+    return NextResponse.redirect(new URL(ADMIN_BASE, request.url));
   }
 
-  // 🔹 2. If user is on a protected route and no valid token → redirect to login
-  if (isProtectedRoute) {
-    if (!token) {
-      return NextResponse.redirect(new URL("/4dm1n-br1ght0n/login", request.url));
-    }
-
-    try {
-      await jose.jwtVerify(token, jwtSecret());
-      return NextResponse.next();
-    } catch {
-      return NextResponse.redirect(new URL("/4dm1n-br1ght0n/login", request.url));
-    }
+  if (!isLoginPage && !isAuthenticated) {
+    return NextResponse.redirect(new URL(LOGIN_PATH, request.url));
   }
 
-  // Default (public routes)
-  return response;
+  return NextResponse.next();
 }
 
 export const config = {
-  matcher: ["/api/:path*", "/4dm1n-br1ght0n/:path*"],
+  matcher: ["/4dm1n-br1ght0n/:path*"],
 };
