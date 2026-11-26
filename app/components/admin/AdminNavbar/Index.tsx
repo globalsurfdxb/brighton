@@ -19,6 +19,7 @@ import {
   Package,
   Settings,
   Mail,
+  PanelsTopLeft,
 } from "lucide-react";
 
 type Category = { _id: string; title: string; slug: string };
@@ -149,7 +150,14 @@ const AdminNavbar = () => {
     },
     {
       label: "Site",
-      items: [{ name: "Settings", href: `${BASE}/settings`, icon: Settings }],
+      items: [
+        {
+          name: "Header & Footer",
+          href: `${BASE}/header-footer`,
+          icon: PanelsTopLeft,
+        },
+        { name: "Settings", href: `${BASE}/settings`, icon: Settings },
+      ],
     },
   ];
 
@@ -182,9 +190,9 @@ const AdminNavbar = () => {
       {navGroups.map((group) => (
         <div key={group.label}>
           {collapsed ? (
-            <div className="mx-auto mb-2 h-px w-6 bg-white/15" aria-hidden />
+            <div className="mx-auto mb-2 h-px w-6 bg-white/25" aria-hidden />
           ) : (
-            <p className="mb-1.5 whitespace-nowrap px-3 text-[11px] font-semibold uppercase tracking-[0.1em] text-white/40">
+            <p className="mb-1.5 whitespace-nowrap px-3 text-[11px] font-semibold uppercase tracking-[0.1em] text-white/60">
               <span className="text-trim block">{group.label}</span>
             </p>
           )}
