@@ -1,4 +1,3 @@
-import { socialsData } from "../data";
 import AnimatedDivider from "../../animations/AnimatedDivider";
 import Link from "next/link";
 import Tilt3DImage from "../../common/Tilt3DImage";
@@ -6,14 +5,15 @@ import Image from "next/image";
 import Reveal from "../../animations/RevealItemsOneByOneAnimation";
 import { moveUpV2 } from "../../animations/motionVariants";
 import AnimatedTitle from "../../animations/AnimatedTitle";
+import type { SocialsData } from "../types";
 
-export default function Socials() {
+export default function Socials({ data }: { data: SocialsData }) {
   return (
     <section className="w-full">
       <div className="relative w-full h-[253px] md:h-[400px] 2xl:h-[500px] 3xl:h-[600px] overflow-hidden">
         <Tilt3DImage
-          src={socialsData.image}
-          alt={socialsData.imageAlt}
+          src={data.image}
+          alt={data.imageAlt}
           imgClassName="object-cover object-center"
           reveal
         />
@@ -22,7 +22,7 @@ export default function Socials() {
       <div className="container py-100">
         <AnimatedDivider className="border-secondary" />
         <div className="grid grid-cols-2 xl:grid-cols-[62%_1fr] 3xl:grid-cols-[1078px_1fr]">
-          {socialsData.socials.map((item, i) => (
+          {data.socials.map((item, i) => (
             <Reveal key={i} variants={moveUpV2} delayRange={i * 0.12}>
               <div>
                 <Link
@@ -35,13 +35,13 @@ export default function Socials() {
                   />
                   <Image
                     src={item.icon || "/assets/images/placeholder.png"}
-                    alt={item.title}
+                    alt={item.iconAlt || item.title}
                     width={20}
                     height={20}
                     className="w-auto h-4 md:h-5 group-hover:scale-120 transition-all duration-500 ease-in-out pointer-events-none"
                   />
                 </Link>
-                {i < socialsData.socials.length - 2 && (
+                {i < data.socials.length - 2 && (
                   <AnimatedDivider className="border-secondary" />
                 )}
               </div>

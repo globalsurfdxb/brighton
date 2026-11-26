@@ -2,9 +2,9 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
-import { RiDeleteBinLine, RiSearchLine } from "react-icons/ri";
+import { RiDeleteBinLine } from "react-icons/ri";
 import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
+import { SearchInput } from "@/components/ui/search-input";
 import {
   Dialog,
   DialogContent,
@@ -149,19 +149,12 @@ export default function CatalogueRequestsPage() {
           </Label>
 
           <div className="flex items-center gap-3">
-            <div className="relative">
-              <RiSearchLine
-                className="absolute left-3 top-1/2 -translate-y-1/2 text-description-color/60"
-                size={16}
-              />
-              <Input
-                type="text"
-                placeholder="Search..."
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                className="pl-9 h-9.25 md:h-10.5"
-              />
-            </div>
+            <SearchInput
+              placeholder="Search..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="h-9.25 md:h-10.5"
+            />
 
             {selectedIds.length > 0 && (
               <CustomButton

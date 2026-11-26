@@ -8,6 +8,7 @@ export interface FirstSection {
   isHidden: boolean;
   title: string;
   address: string;
+  addressLink?: string;
   phone: string;
   email: string;
   subTitle: string;

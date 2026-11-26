@@ -5,17 +5,19 @@ import gsap from "gsap";
 import Image from "next/image";
 import { useContainerInset } from "@/app/hooks/useContainerInset";
 import AnimatedTitle from "../../animations/AnimatedTitle";
+import type { LogoCarouselData } from "../types";
 
 interface Logo {
   image: string;
+  imageAlt?: string;
 }
 
-function LogoItem({ image }: Logo) {
+function LogoItem({ image, imageAlt }: Logo) {
   return (
     <div className="shrink-0 flex items-center">
       <Image
         src={image}
-        alt={"client-logo"}
+        alt={imageAlt || "Logo"}
         width={160}
         height={50}
         className="select-none w-auto max-w-[160px] h-6 sm:h-8 lg:h-12.5 object-contain pointer-events-none"
@@ -82,7 +84,7 @@ export default function ClientsCorousal({
   data,
   className,
 }: {
-  data: any;
+  data: LogoCarouselData;
   className?: string;
 }) {
   const { label, logos } = data;

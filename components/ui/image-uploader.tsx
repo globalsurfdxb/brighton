@@ -17,6 +17,7 @@ interface ImageUploaderProps {
   className?: string;
   deleteAfterUpload?: boolean;
   isLogo?: boolean;
+  contain?: boolean;
   multiple?: boolean;
   recommendedDimension?: string;
 }
@@ -27,6 +28,7 @@ export function ImageUploader({
   className,
   deleteAfterUpload = false,
   isLogo = false,
+  contain = false,
   multiple = false,
   recommendedDimension,
 }: ImageUploaderProps) {
@@ -97,7 +99,9 @@ export function ImageUploader({
           <Image
             src={displayUrl as string}
             alt="Uploaded image"
-            className={isLogo ? "object-contain p-2" : "object-cover"}
+            className={
+              isLogo ? "object-contain p-2" : contain ? "object-contain p-6" : "object-cover"
+            }
             fill
           />
           <Button

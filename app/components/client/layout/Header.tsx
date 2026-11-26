@@ -8,7 +8,8 @@ import {
   useScroll,
   AnimatePresence,
 } from "framer-motion";
-import { navItems } from "./data";
+import { toNavItems, type HeaderButton } from "./types";
+import type { HeaderData } from "@/app/types/headerFooter";
 import {
   useIntroComplete,
   registerHeaderSurface,
@@ -68,7 +69,12 @@ export function PlusMinusIcon({ isHovered }: { isHovered: boolean }) {
   );
 }
 
-export default function Header() {
+export default function Header({ data }: { data?: HeaderData }) {
+  const navItems = toNavItems(data);
+  const button: HeaderButton = {
+    text: data?.buttonText ?? "",
+    href: data?.buttonLink || "#",
+  };
   const { scrollY } = useScroll();
   const [hidden, setHidden] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
@@ -259,13 +265,15 @@ export default function Header() {
               <div className="flex gap-50 2xl:gap-60">
                 <motion.div variants={itemVariants}>
                   <Link href="/">
-                    <Image
-                      src="/assets/logos/header-logo.svg"
-                      alt="logo"
-                      width={180}
-                      height={24}
-                      className="pointer-events-none w-auto h-6"
-                    />
+                    {data?.logo && (
+                      <Image
+                        src={data.logo}
+                        alt={data.logoAlt || "Brighton Lighting"}
+                        width={180}
+                        height={24}
+                        className="pointer-events-none w-auto h-6"
+                      />
+                    )}
                   </Link>
                 </motion.div>
 
@@ -315,11 +323,11 @@ export default function Header() {
               <div className="flex items-center gap-1.5 xl:gap-2.5">
                 <motion.div variants={itemVariants}>
                   <Link
-                    href="/contact-us"
+                    href={button.href}
                     className="btn-fill-center hidden xl:flex items-center justify-center gap-4 rounded-[20px] bg-primary max-h-[36px] py-[11px] px-[19px] group border border-transparent hover:border-secondary transition-all duration-500"
                   >
                     <span className="text-15 font-itc-medium uppercase text-trim text-secondary group-hover:text-primary">
-                      Contact
+                      {button.text}
                     </span>
                     <Image
                       src="/assets/icons/right-top-arrow-secondary.svg"
@@ -517,6 +525,8 @@ export default function Header() {
           <MobileNav
             headerHeight={headerHeight}
             onClose={() => setIsMobileMenuOpen(false)}
+            navItems={navItems}
+            button={button}
           />
         )}
       </AnimatePresence>

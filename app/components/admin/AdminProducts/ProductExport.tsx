@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
-import { RiSearchLine, RiDeleteBinLine } from "react-icons/ri";
+import { RiDeleteBinLine } from "react-icons/ri";
 import {
   Select,
   SelectTrigger,
@@ -17,7 +17,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
+import { SearchInput } from "@/components/ui/search-input";
 import { Label } from "@/components/ui/label";
 import CustomButton from "../../client/common/CustomButton";
 
@@ -227,18 +227,11 @@ export default function ProductExport({ categories }: { categories: Option[] }) 
         </div>
         <div className="flex flex-col gap-2">
           <Label className="font-bold">Search</Label>
-          <div className="relative">
-            <RiSearchLine
-              size={16}
-              className="absolute left-3 top-1/2 -translate-y-1/2 text-description-color"
-            />
-            <Input
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder="Product name or code"
-              className="pl-9"
-            />
-          </div>
+          <SearchInput
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Product name or code"
+          />
         </div>
       </div>
 

@@ -20,6 +20,7 @@ import {
   Newspaper,
   Package,
   Settings,
+  PanelsTopLeft,
   type LucideIcon,
 } from "lucide-react";
 
@@ -56,6 +57,7 @@ const SECTIONS: Record<
   },
   "digital-catalogue": { label: "Digital Catalogue", icon: LayoutGrid },
   contact: { label: "Contact", icon: Mail },
+  "header-footer": { label: "Header & Footer", icon: PanelsTopLeft },
   settings: { label: "Settings", icon: Settings },
 };
 

@@ -491,3 +491,34 @@ body {
   scrollbar-width: thin;
   scrollbar-color: color-mix(in srgb, var(--secondary) 80%, transparent) transparent;
 }
+.admin-skeleton {
+  background: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--secondary) 45%, transparent) 0%,
+    color-mix(in srgb, var(--secondary) 20%, transparent) 50%,
+    color-mix(in srgb, var(--secondary) 45%, transparent) 100%
+  );
+  background-size: 200% 100%;
+  animation: adminShimmer 1.4s ease-in-out infinite;
+}
+@keyframes adminShimmer {
+  from {
+    background-position: 100% 0;
+  }
+  to {
+    background-position: -100% 0;
+  }
+}
+@keyframes adminFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .admin-skeleton {
+    animation: none;
+  }
+}

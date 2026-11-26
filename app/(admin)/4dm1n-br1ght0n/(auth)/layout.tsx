@@ -18,7 +18,7 @@ export default function AdminLayout({
       <aside className="admin-sidebar relative z-20 flex h-screen w-[var(--admin-sidebar-w)] shrink-0 flex-col overflow-hidden shadow-[8px_0_30px_-12px_rgba(0,0,0,0.45)] transition-[width] duration-300 ease-out group-data-[ready=false]/shell:transition-none">
         <Link
           href="/4dm1n-br1ght0n"
-          className="group relative flex shrink-0 flex-col items-center gap-3 border-b border-white/10 px-6 pb-5 pt-8 transition-[padding] duration-300 group-data-[collapsed=true]/shell:px-2 group-data-[collapsed=true]/shell:pb-4 group-data-[collapsed=true]/shell:pt-6"
+          className="group relative flex shrink-0 flex-col items-center gap-3 border-b border-white/20 px-6 pb-5 pt-8 transition-[padding] duration-300 group-data-[collapsed=true]/shell:px-2 group-data-[collapsed=true]/shell:pb-4 group-data-[collapsed=true]/shell:pt-6"
         >
           <span className="block h-[22px] w-[164px] overflow-hidden transition-[width] duration-300 group-data-[collapsed=true]/shell:w-[18px]">
             <Image
@@ -42,7 +42,7 @@ export default function AdminLayout({
           <div className="pointer-events-none sticky -bottom-5 -mx-3 -mb-5 h-8 bg-gradient-to-t from-[#0d0d0d] to-transparent" />
         </div>
 
-        <div className="shrink-0 border-t border-white/10 p-3 group-data-[collapsed=true]/shell:p-2">
+        <div className="shrink-0 border-t border-white/20 p-3 group-data-[collapsed=true]/shell:p-2">
           <div className="rounded-xl border border-white/10 bg-white/[0.05] p-2 shadow-[inset_0_1px_0_rgba(255,255,255,0.05)] group-data-[collapsed=true]/shell:p-1.5">
             <div className="flex items-center gap-3 px-2 py-1.5 group-data-[collapsed=true]/shell:justify-center group-data-[collapsed=true]/shell:px-0">
               <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white text-xs font-semibold text-primary ring-2 ring-white/15">

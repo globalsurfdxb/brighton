@@ -1,5 +1,8 @@
 "use client";
 
+import AdminRowNumber from "@/app/components/admin/common/AdminRowNumber";
+import { AdminSkeleton } from "@/app/components/admin/common/AdminLoadable";
+
 import { useEffect, useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { useRouter, useParams } from "next/navigation";
@@ -11,7 +14,6 @@ import {
   RiEyeLine,
   RiEyeOffLine,
   RiDraggable,
-  RiSearchLine,
 } from "react-icons/ri";
 import {
   DndContext,
@@ -38,6 +40,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
+import { SearchInput } from "@/components/ui/search-input";
 import { Label } from "@/components/ui/label";
 import { ImageUploader } from "@/components/ui/image-uploader";
 import CustomButton from "../../client/common/CustomButton";
@@ -347,7 +350,7 @@ export default function CategoryProductsPage() {
   };
 
   if (!category) {
-    return <p className="text-sm text-black/40">Loading...</p>;
+    return <AdminSkeleton variant="list" />;
   }
 
   return (
@@ -413,18 +416,12 @@ export default function CategoryProductsPage() {
               : `(${products.length})`}
           </Label>
           <div className="flex items-center gap-3 ml-auto">
-            <div className="relative w-64">
-              <RiSearchLine
-                size={16}
-                className="absolute left-3 top-1/2 -translate-y-1/2 text-description-color"
-              />
-              <Input
-                value={productSearch}
-                onChange={(e) => setProductSearch(e.target.value)}
-                placeholder="Search name, code or sub category"
-                className="pl-9"
-              />
-            </div>
+            <SearchInput
+              wrapperClassName="w-64"
+              value={productSearch}
+              onChange={(e) => setProductSearch(e.target.value)}
+              placeholder="Search name, code or sub category"
+            />
             <CustomButton
               variant="3"
               type="button"
@@ -470,6 +467,9 @@ export default function CategoryProductsPage() {
                       }
                     >
                       <div className="flex items-center gap-4">
+                        <AdminRowNumber
+                          value={products.indexOf(product) + 1}
+                        />
                         {handle}
                         <span className="text-md font-itc-medium flex flex-col items-start gap-2">
                           {product.title || "Untitled Product"}

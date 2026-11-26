@@ -3,7 +3,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { useState } from "react";
-import { navItems } from "./data";
+import type { HeaderButton, NavItem } from "./types";
 import { PlusMinusIcon } from "./Header";
 import AnimatedDivider from "../animations/AnimatedDivider";
 import { itemVariants, listVariants } from "./Deskdropdown";
@@ -34,9 +34,13 @@ export type SearchResult = {
 export default function MobileNav({
   headerHeight,
   onClose,
+  navItems,
+  button,
 }: {
   headerHeight: number;
   onClose: () => void;
+  navItems: NavItem[];
+  button: HeaderButton;
 }) {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
@@ -86,12 +90,12 @@ export default function MobileNav({
             viewport={{ once: true }}
           >
             <Link
-              href="/contact-us"
+              href={button.href}
               onClick={onClose}
               className="btn-fill-center flex items-center justify-center gap-4 rounded-[20px] bg-primary max-h-[37px] py-[11px] px-[19px] group border border-transparent hover:border-secondary transition-all duration-500"
             >
               <span className="text-15 font-itc-medium uppercase leading-none text-white max-h-[11px] group-hover:text-primary transition-all duration-500">
-                Contact
+                {button.text}
               </span>
               <Image
                 src="/assets/icons/right-top-arrow-secondary.svg"

@@ -1,13 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import {
-  footerColumns,
-  footerAddress,
-  footerContact,
-  footerSocials,
-  footerLegal,
-} from "./data";
 import { motion } from "framer-motion";
 import Image from "next/image";
 import { useRef, useState } from "react";
@@ -19,6 +12,7 @@ import { useLenis } from "./LenisProvider";
 import CatalogueRequestDrawer from "../digital-catalogue/CatalogueRequestDrawer";
 import CatalogueFlipbook from "../digital-catalogue/CatalogueFlipbook";
 import type { CatalogueAccess } from "@/app/types/catalogueRequest";
+import type { FooterData } from "@/app/types/headerFooter";
 
 function AccordionToggleIcon({ isOpen }: { isOpen: boolean }) {
   return (
@@ -46,7 +40,24 @@ function AccordionToggleIcon({ isOpen }: { isOpen: boolean }) {
   );
 }
 
-export default function Footer() {
+const toHref = (link?: string) => link || "#";
+
+export default function Footer({ data }: { data?: FooterData }) {
+  const footerColumns = (data?.columns ?? []).map((column) => ({
+    title: column.title ?? "",
+    links: (column.links ?? []).map((link) => ({
+      label: link.label ?? "",
+      href: toHref(link.link),
+    })),
+  }));
+  const socials = (data?.socials ?? []).map((social) => ({
+    label: social.label ?? "",
+    href: toHref(social.link),
+  }));
+  const legalLinks = (data?.legalLinks ?? []).map((link) => ({
+    label: link.label ?? "",
+    href: toHref(link.link),
+  }));
   const [openIndex, setOpenIndex] = useState<number | null>(null);
   const [isCatalogueDrawerOpen, setIsCatalogueDrawerOpen] = useState(false);
   const [catalogue, setCatalogue] = useState<CatalogueAccess | null>(null);
@@ -85,9 +96,9 @@ export default function Footer() {
     <footer className="border-t border-black z-10 bg-white">
       <div className="pt-100 pb-10 sm:pb-70">
         <div className="container hidden  md:grid md:grid-cols-3 xl:grid-cols-6 gap-x-6 gap-y-5 lg:gap-y-10">
-          {footerColumns.map((column) => (
+          {footerColumns.map((column, columnIndex) => (
             <div
-              key={column.title}
+              key={columnIndex}
               className="flex flex-col gap-6 min-[1850px]:gap-[26px]"
             >
               <AnimatedTitle
@@ -113,13 +124,12 @@ export default function Footer() {
           ))}
         </div>
 
-        {/* Mobile/tablet accordion — md+ uses the grid above */}
         <div className="md:hidden flex flex-col">
           {footerColumns.map((column, index) => {
             const isOpen = openIndex === index;
             return (
               <div
-                key={column.title}
+                key={index}
                 ref={(el) => {
                   containerRefs.current[index] = el;
                 }}
@@ -179,12 +189,13 @@ export default function Footer() {
 
         <div className="container grid grid-cols-2 lg:grid-cols-6 gap-x-6 gap-y-3.75 md:gap-y-8">
           <div className="col-span-2 text-description text-description-color hover:text-primary transition-colors duration-500 w-fit max-w-[35ch]">
-            <Link
-              href={"https://maps.app.goo.gl/1Ze6x9FHGQF4eCPF8"}
-              target="_blank"
-            >
-              <SectionDescription direction="y" text={footerAddress.line} />
-            </Link>
+            {data?.addressLink ? (
+              <Link href={data.addressLink} target="_blank" rel="noopener noreferrer">
+                <SectionDescription direction="y" text={data.address ?? ""} />
+              </Link>
+            ) : (
+              <SectionDescription direction="y" text={data?.address ?? ""} />
+            )}
           </div>
 
           <div className="col-span-2 lg:col-start-3 text-subtitle">
@@ -195,26 +206,29 @@ export default function Footer() {
               viewport={{ once: true }}
               className="flex flex-col"
             >
-              <Link
-                className="w-fit hover:text-description-color transition-colors duration-500"
-                href={`tel:${footerContact.phone}`}
-              >
-                {footerContact.phone}
-              </Link>
-              <Link
-                className="w-fit hover:text-description-color transition-colors duration-500"
-                href={`mailto:${footerContact.email}`}
-              >
-                {footerContact.email}
-              </Link>
+              {data?.phone && (
+                <Link
+                  className="w-fit hover:text-description-color transition-colors duration-500"
+                  href={`tel:${data.phone.replace(/\s+/g, "")}`}
+                >
+                  {data.phone}
+                </Link>
+              )}
+              {data?.email && (
+                <Link
+                  className="w-fit hover:text-description-color transition-colors duration-500"
+                  href={`mailto:${data.email}`}
+                >
+                  {data.email}
+                </Link>
+              )}
             </motion.div>
 
             <div className="flex flex-wrap gap-6 sm:gap-x-30 gap-y-2 text-description text-description-color mt-3.75 md:mt-30">
-              {footerSocials.map((social, i) => (
+              {socials.map((social, i) => (
                 <Reveal key={i} variants={moveUpV2} delayRange={i * 0.1}>
                   <Link
-                    key={social.label}
-                    href={social.href || "#"}
+                    href={social.href}
                     {...(social.href !== "#" && {
                       target: "_blank",
                       rel: "noopener noreferrer",
@@ -241,11 +255,11 @@ export default function Footer() {
               className="btn-fill-center cursor-pointer max-h-[51px] md:max-h-[80px] rounded-[50px] border border-secondary px-[30px] sm:px-8 3xl:px-[39.5px] py-[15.5px] lg:py-6 3xl:py-[27px] transition-colors duration-500 group w-full flex items-center justify-center gap-2.5 sm:gap-4 bg-primary"
             >
               <span className="text-subtitle text-28 md:text-24 3xl:text-28  !leading-none text-white max-h-[21px] group-hover:text-primary">
-                Download Catalogue
+                {data?.catalogueButtonText}
               </span>
               <Image
                 src="/assets/icons/download-primary.svg"
-                alt="Download Catalogue"
+                alt={data?.catalogueButtonText || "Download catalogue"}
                 width={26}
                 height={26}
                 className="pointer-events-none invert brightness-0 transition-all duration-500 group-hover:invert-0 group-hover:brightness-100 w-auto h-5 3xl:h-[26px]"
@@ -258,9 +272,9 @@ export default function Footer() {
       <div className="bg-[#F8F8F8] overflow-hidden">
         <div className="container flex flex-col sm:flex-row md:items-center pt-5 sm:pt-[27px] pb-5 sm:pb-[23px] text-description sm:text-subtitle-2 text-description-color">
           <div className="flex flex-col md:flex-row md:flex-wrap gap-3.75 md:gap-5 lg:gap-40 min-[1850px]:gap-[47px]">
-            <span className="w-fit">{footerLegal.links[0].label}</span>
+            {data?.copyright && <span className="w-fit">{data.copyright}</span>}
             <div className="flex gap-3.75 md:gap-5 lg:gap-40 min-[1850px]:gap-[47px]">
-              {footerLegal.links.slice(1).map((link, i) => (
+              {legalLinks.map((link, i) => (
                 <Link
                   key={i}
                   href={link.href}

@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { motion } from "framer-motion";
-import { servicesData } from "../data";
+import type { ServicesData } from "../types";
 import { useContainerInset } from "@/app/hooks/useContainerInset";
 import { useLayoutEffect, useRef, useState } from "react";
 import gsap from "gsap";
@@ -12,8 +12,8 @@ import Link from "next/link";
 
 gsap.registerPlugin(ScrollTrigger);
 
-export default function Services() {
-  const { sectionTitle, services } = servicesData;
+export default function Services({ data }: { data: ServicesData }) {
+  const { sectionTitle, services } = data;
   const inset = useContainerInset();
   const sectionRef = useRef<HTMLElement>(null);
   const mediaWrapperRef = useRef<HTMLDivElement>(null);
@@ -141,7 +141,7 @@ export default function Services() {
             >
               <Image
                 src={service.image}
-                alt={service.title}
+                alt={service.imageAlt || service.title}
                 fill
                 className="pointer-events-none object-cover"
                 priority={index === 0}
@@ -252,7 +252,7 @@ export default function Services() {
             <div className="relative w-full min-h-[238px] aspect-[335/220] rounded-[10px] overflow-hidden">
               <Image
                 src={service.image}
-                alt={service.title}
+                alt={service.imageAlt || service.title}
                 fill
                 className="object-cover"
               />

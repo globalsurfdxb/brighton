@@ -1,5 +1,6 @@
 "use client";
 
+import AdminLoadable from "@/app/components/admin/common/AdminLoadable";
 import { useEffect, useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { useRouter, useParams } from "next/navigation";
@@ -65,6 +66,7 @@ const defaultValues: BlogForm = {
 type Option = { _id: string; title: string };
 
 export default function BlogDetail() {
+  const [loading, setLoading] = useState(true);
   const router = useRouter();
   const params = useParams<{ id: string }>();
   const isNew = params.id === "new";
@@ -151,210 +153,213 @@ export default function BlogDetail() {
   };
 
   useEffect(() => {
-    fetchOptions();
-    if (!isNew) fetchBlog();
+    const loads = [fetchOptions()];
+    if (!isNew) loads.push(fetchBlog());
     else markClean();
+    Promise.all(loads).finally(() => setLoading(false));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
-    <div className="flex flex-col gap-5">
-      <form className="flex flex-col gap-5" onSubmit={handleSubmit(onSubmit)}>
-        <AdminPageActions isDirty={isDirty} changes={changes}>
-          <CustomButton
-            iconDirection="down"
-            imageClass="!-rotate-135"
-            variant="2"
-            type="button"
-            text="Back to Blogs"
-            onClick={() => router.back()}
-          />
-          {savedSlug && (
-            <AdminVisitLink href={`/blog/${savedSlug}`} />
-          )}
-          <AdminSubmitButton saving={isSaving} />
-        </AdminPageActions>
-
-        <AdminItemContainer expansion={false}>
-          <div className="p-5 flex flex-col gap-4">
-            <div className="grid grid-cols-2 gap-4">
-              <div className="flex flex-col gap-2">
-                <Label className="font-bold">Title</Label>
-                <Input
-                  {...register("title")}
-                  placeholder="e.g. Marina Heights"
-                />
-              </div>
-              <div className="flex flex-col gap-2">
-                <Label className="font-bold">Slug</Label>
-                <div className="flex gap-2">
-                  <Input
-                    {...register("slug")}
-                    placeholder="e.g. marina-heights"
-                  />
-                  <CustomButton
-                    btnClass="-mt-[2px]"
-                    variant="3"
-                    text="Generate"
-                    type="button"
-                    onClick={() =>
-                      setValue(
-                        "slug",
-                        watch("title").toLowerCase().replace(/\s+/g, "-"),
-                      )
-                    }
-                  />
-                </div>
-              </div>
-            </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="flex flex-col gap-2">
-                <div className="flex flex-col gap-2">
-                  <Label className="font-bold">Topic</Label>
-                  <Controller
-                    name="topic"
-                    control={control}
-                    rules={{ required: "Topic is required" }}
-                    render={({ field }) => (
-                      <Select value={field.value} onValueChange={field.onChange}>
-                        <SelectTrigger className="cursor-pointer">
-                          <SelectValue placeholder="Select topic" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {topics.map((topic) => (
-                            <SelectItem
-                              className="cursor-pointer"
-                              key={topic._id}
-                              value={topic._id}
-                            >
-                              {topic.title}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    )}
-                  />
-                </div>
-                {errors.topic && (
-                  <p className="text-red-500 text-sm">{errors.topic.message}</p>
-                )}
-              </div>
-            </div>
-          </div>
-        </AdminItemContainer>
-
-        <AdminItemContainer>
-          <Label main>Thumbnail and Banner</Label>
-          <div className="p-5 flex flex-col gap-4">
-            <div className="grid grid-cols-2 gap-4">
-              <div className="flex flex-col gap-2">
-                <div className="flex flex-col gap-2">
-                  <Label className="font-bold">Thumbnail</Label>
-                  <Controller
-                    name="thumbImage"
-                    control={control}
-                    render={({ field }) => (
-                      <ImageUploader
-                        value={field.value}
-                        onChange={field.onChange}
-                      />
-                    )}
-                  />
-                </div>
-                <div className="flex flex-col gap-2">
-                  <Label className="font-bold">Image Alt</Label>
-                  <Input {...register("thumbImageAlt")} placeholder="Image Alt" />
-                </div>
-              </div>
-              <div className="flex flex-col gap-2">
-                <div className="flex flex-col gap-2">
-                  <Label className="font-bold">Banner</Label>
-                  <Controller
-                    name="bannerImage"
-                    control={control}
-                    render={({ field }) => (
-                      <ImageUploader
-                        value={field.value}
-                        onChange={field.onChange}
-                      />
-                    )}
-                  />
-                </div>
-                <div className="flex flex-col gap-2">
-                  <Label className="font-bold">Banner Alt</Label>
-                  <Input
-                    {...register("bannerImageAlt")}
-                    placeholder="Image Alt"
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-        </AdminItemContainer>
-
-        <AdminItemContainer>
-          <Label main>Content</Label>
-          <div className="p-5 flex flex-col gap-4">
-            <Label className="font-bold">Content</Label>
-            <Controller
-              name="content"
-              control={control}
-              render={({ field }) => (
-                <TinyEditor
-                  newsContent={field.value}
-                  setNewsContent={field.onChange}
-                />
-              )}
+    <AdminLoadable loading={loading}>
+      <div className="flex flex-col gap-5">
+        <form className="flex flex-col gap-5" onSubmit={handleSubmit(onSubmit)}>
+          <AdminPageActions isDirty={isDirty} changes={changes}>
+            <CustomButton
+              iconDirection="down"
+              imageClass="!-rotate-135"
+              variant="2"
+              type="button"
+              text="Back to Blogs"
+              onClick={() => router.back()}
             />
-          </div>
-        </AdminItemContainer>
-
-        <AdminItemContainer>
-          <Controller
-            name="ctaSection.isHidden"
-            control={control}
-            render={({ field }) => (
-              <Label
-                main
-                isHidden={field.value}
-                onToggleHidden={() => field.onChange(!field.value)}
-              >
-                CTA Section
-              </Label>
+            {savedSlug && (
+              <AdminVisitLink href={`/blog/${savedSlug}`} />
             )}
-          />
-          <div className="p-5 flex flex-col gap-4">
-            <div className="flex flex-col gap-2">
-              <Label className="font-bold">Title</Label>
-              <Input {...register("ctaSection.title")} placeholder="Title" />
+            <AdminSubmitButton saving={isSaving} />
+          </AdminPageActions>
+
+          <AdminItemContainer expansion={false}>
+            <div className="p-5 flex flex-col gap-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div className="flex flex-col gap-2">
+                  <Label className="font-bold">Title</Label>
+                  <Input
+                    {...register("title")}
+                    placeholder="e.g. Marina Heights"
+                  />
+                </div>
+                <div className="flex flex-col gap-2">
+                  <Label className="font-bold">Slug</Label>
+                  <div className="flex gap-2">
+                    <Input
+                      {...register("slug")}
+                      placeholder="e.g. marina-heights"
+                    />
+                    <CustomButton
+                      btnClass="-mt-[2px]"
+                      variant="3"
+                      text="Generate"
+                      type="button"
+                      onClick={() =>
+                        setValue(
+                          "slug",
+                          watch("title").toLowerCase().replace(/\s+/g, "-"),
+                        )
+                      }
+                    />
+                  </div>
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="flex flex-col gap-2">
+                  <div className="flex flex-col gap-2">
+                    <Label className="font-bold">Topic</Label>
+                    <Controller
+                      name="topic"
+                      control={control}
+                      rules={{ required: "Topic is required" }}
+                      render={({ field }) => (
+                        <Select value={field.value} onValueChange={field.onChange}>
+                          <SelectTrigger className="cursor-pointer">
+                            <SelectValue placeholder="Select topic" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {topics.map((topic) => (
+                              <SelectItem
+                                className="cursor-pointer"
+                                key={topic._id}
+                                value={topic._id}
+                              >
+                                {topic.title}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      )}
+                    />
+                  </div>
+                  {errors.topic && (
+                    <p className="text-red-500 text-sm">{errors.topic.message}</p>
+                  )}
+                </div>
+              </div>
             </div>
-            <div className="flex flex-col gap-2">
-              <Label className="font-bold">Description</Label>
-              <Textarea
-                {...register("ctaSection.description")}
-                placeholder="Description"
+          </AdminItemContainer>
+
+          <AdminItemContainer>
+            <Label main>Thumbnail and Banner</Label>
+            <div className="p-5 flex flex-col gap-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div className="flex flex-col gap-2">
+                  <div className="flex flex-col gap-2">
+                    <Label className="font-bold">Thumbnail</Label>
+                    <Controller
+                      name="thumbImage"
+                      control={control}
+                      render={({ field }) => (
+                        <ImageUploader
+                          value={field.value}
+                          onChange={field.onChange}
+                        />
+                      )}
+                    />
+                  </div>
+                  <div className="flex flex-col gap-2">
+                    <Label className="font-bold">Image Alt</Label>
+                    <Input {...register("thumbImageAlt")} placeholder="Image Alt" />
+                  </div>
+                </div>
+                <div className="flex flex-col gap-2">
+                  <div className="flex flex-col gap-2">
+                    <Label className="font-bold">Banner</Label>
+                    <Controller
+                      name="bannerImage"
+                      control={control}
+                      render={({ field }) => (
+                        <ImageUploader
+                          value={field.value}
+                          onChange={field.onChange}
+                        />
+                      )}
+                    />
+                  </div>
+                  <div className="flex flex-col gap-2">
+                    <Label className="font-bold">Banner Alt</Label>
+                    <Input
+                      {...register("bannerImageAlt")}
+                      placeholder="Image Alt"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </AdminItemContainer>
+
+          <AdminItemContainer>
+            <Label main>Content</Label>
+            <div className="p-5 flex flex-col gap-4">
+              <Label className="font-bold">Content</Label>
+              <Controller
+                name="content"
+                control={control}
+                render={({ field }) => (
+                  <TinyEditor
+                    newsContent={field.value}
+                    setNewsContent={field.onChange}
+                  />
+                )}
               />
             </div>
-            <div className="grid grid-cols-2 gap-4">
+          </AdminItemContainer>
+
+          <AdminItemContainer>
+            <Controller
+              name="ctaSection.isHidden"
+              control={control}
+              render={({ field }) => (
+                <Label
+                  main
+                  isHidden={field.value}
+                  onToggleHidden={() => field.onChange(!field.value)}
+                >
+                  CTA Section
+                </Label>
+              )}
+            />
+            <div className="p-5 flex flex-col gap-4">
               <div className="flex flex-col gap-2">
-                <Label className="font-bold">Button Text</Label>
-                <Input
-                  {...register("ctaSection.buttonText")}
-                  placeholder="Button Text"
-                />
+                <Label className="font-bold">Title</Label>
+                <Input {...register("ctaSection.title")} placeholder="Title" />
               </div>
               <div className="flex flex-col gap-2">
-                <Label className="font-bold">Button Link</Label>
-                <Input
-                  {...register("ctaSection.buttonLink")}
-                  placeholder="Button Link"
+                <Label className="font-bold">Description</Label>
+                <Textarea
+                  {...register("ctaSection.description")}
+                  placeholder="Description"
                 />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="flex flex-col gap-2">
+                  <Label className="font-bold">Button Text</Label>
+                  <Input
+                    {...register("ctaSection.buttonText")}
+                    placeholder="Button Text"
+                  />
+                </div>
+                <div className="flex flex-col gap-2">
+                  <Label className="font-bold">Button Link</Label>
+                  <Input
+                    {...register("ctaSection.buttonLink")}
+                    placeholder="Button Link"
+                  />
+                </div>
               </div>
             </div>
-          </div>
-        </AdminItemContainer>
+          </AdminItemContainer>
 
-      </form>
-    </div>
+        </form>
+      </div>
+    </AdminLoadable>
   );
 }

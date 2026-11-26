@@ -3,7 +3,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { usePathname, useSearchParams } from "next/navigation";
-import type { NavDropdownItem } from "./data";
+import type { NavDropdownItem } from "./types";
 
 const shutterVariants = {
   hidden: { clipPath: "inset(0 0 100% 0 round 10px)", opacity: 0 },

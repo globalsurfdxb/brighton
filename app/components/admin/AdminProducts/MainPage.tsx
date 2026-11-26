@@ -1,5 +1,7 @@
 "use client";
 
+import AdminLoadable from "@/app/components/admin/common/AdminLoadable";
+
 import { useEffect, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useForm, Controller } from "react-hook-form";
@@ -482,6 +484,7 @@ function SortableConfigOptionCard({
 /* -------------------------------------------------------------------------- */
 
 export default function ProductsMainPage() {
+  const [loading, setLoading] = useState(true);
   const [categories, setCategories] = useState<Category[]>([]);
   const [configCategories, setConfigCategories] = useState<ConfigCategory[]>(
     [],
@@ -656,11 +659,13 @@ export default function ProductsMainPage() {
   };
 
   useEffect(() => {
-    fetchCategories();
-    fetchConfigCategories();
-    fetchSpecs();
-    fetchIcons();
-    fetchQrs();
+    Promise.all([
+      fetchCategories(),
+      fetchConfigCategories(),
+      fetchSpecs(),
+      fetchIcons(),
+      fetchQrs(),
+    ]).finally(() => setLoading(false));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -706,191 +711,128 @@ export default function ProductsMainPage() {
   };
 
   return (
-    <div className="flex flex-col gap-5">
-      {/* Tabs */}
-      <div className="flex items-center gap-2 bg-white border border-secondary rounded-[10px] p-2 w-fit">
-        {TABS.map((tab) => (
-          <button
-            key={tab.key}
-            type="button"
-            onClick={() => setActiveTab(tab.key)}
-            className={`px-4 py-2 rounded-md text-sm font-itc-medium transition-all ${
-              activeTab === tab.key
-                ? "bg-primary text-white"
-                : "text-description-color hover:bg-secondary/10"
-            }`}
-          >
-            {tab.label}
-          </button>
-        ))}
-      </div>
-
-      {/* Category */}
-      {activeTab === "category" && (
-      <div className="bg-white border border-secondary rounded-[10px] p-5 flex flex-col gap-4">
-        <div className="flex items-center justify-between border-b border-secondary pb-3">
-          <Label className="!text-xl !font-semibold">
-            Categories {`(${categories.length})`}
-          </Label>
-          <CustomButton
-            variant="3"
-            type="button"
-            text="Add Category"
-            showIcon={false}
-            onClick={() => setCategoryDialog("new")}
-          />
-        </div>
-        <div className="grid grid-cols-1 xl:grid-cols-2 gap-2">
-          {categories.length === 0 && (
-            <p className="text-sm text-black/40">No categories added yet.</p>
-          )}
-          {categories.map((cat) => (
-            <div
-              key={cat._id}
-              className="flex items-center justify-between border border-secondary/60 rounded-md px-4 py-2"
+    <AdminLoadable loading={loading} variant="list">
+      <div className="flex flex-col gap-5">
+        {/* Tabs */}
+        <div className="flex items-center gap-2 bg-white border border-secondary rounded-[10px] p-2 w-fit">
+          {TABS.map((tab) => (
+            <button
+              key={tab.key}
+              type="button"
+              onClick={() => setActiveTab(tab.key)}
+              className={`px-4 py-2 rounded-md text-sm font-itc-medium transition-all ${
+                activeTab === tab.key
+                  ? "bg-primary text-white"
+                  : "text-description-color hover:bg-secondary/10"
+              }`}
             >
-              <span className="text-md font-itc-medium">{cat.title}</span>
-              <div className="flex items-center gap-3">
-                <button
-                  type="button"
-                  className="cursor-pointer hover:scale-110 transition-all"
-                  onClick={() => setCategoryDialog(cat)}
-                >
-                  <RiPencilLine
-                    className="text-gray-500 hover:text-primary"
-                    size={20}
-                  />
-                </button>
-                <button
-                  type="button"
-                  className="cursor-pointer hover:scale-110 transition-all"
-                  onClick={() =>
-                    setDeleteTarget({
-                      type: "category",
-                      id: cat._id,
-                      label: cat.title,
-                    })
-                  }
-                >
-                  <RiDeleteBinLine
-                    className="text-red-400 hover:text-red-600"
-                    size={20}
-                  />
-                </button>
-              </div>
-            </div>
+              {tab.label}
+            </button>
           ))}
         </div>
-      </div>
-      )}
 
-      {/* Configuration */}
-      {activeTab === "configuration" && (
-      <>
-      <div className="bg-white border border-secondary rounded-[10px] p-5 flex flex-col gap-4">
-        <div className="flex items-center justify-between border-b border-secondary pb-3">
-          <Label className="!text-xl !font-semibold">
-            Config Categories {`(${configCategories.length})`}
-          </Label>
-          <CustomButton
-            variant="3"
-            type="button"
-            text="Add Config Category"
-            showIcon={false}
-            onClick={() => openConfigCategoryDialog("new")}
-          />
-        </div>
-        {configCategories.length === 0 ? (
-          <p className="text-sm text-black/40">
-            No config categories added yet.
-          </p>
-        ) : (
-          <DndContext
-            sensors={dndSensors}
-            collisionDetection={closestCenter}
-            onDragEnd={handleConfigCategoryDragEnd}
-          >
-            <SortableContext
-              items={configCategories.map((c) => c._id)}
-              strategy={rectSortingStrategy}
-            >
-              <div className="flex flex-wrap gap-2">
-                {configCategories.map((cc) => (
-                  <SortableConfigCategoryCard
-                    key={cc._id}
-                    configCategory={cc}
-                    isActive={activeConfigCategoryId === cc._id}
-                    onSelect={() => setActiveConfigCategoryId(cc._id)}
-                    onEdit={() => openConfigCategoryDialog(cc)}
-                    onDelete={() =>
-                      setDeleteTarget({
-                        type: "configCategory",
-                        id: cc._id,
-                        label: cc.title,
-                      })
-                    }
-                  />
-                ))}
-              </div>
-            </SortableContext>
-          </DndContext>
-        )}
-      </div>
-
-      {/* Config Options — scoped to selected config category */}
-      {activeConfigCategoryId && (
+        {/* Category */}
+        {activeTab === "category" && (
         <div className="bg-white border border-secondary rounded-[10px] p-5 flex flex-col gap-4">
           <div className="flex items-center justify-between border-b border-secondary pb-3">
-            <div className="flex flex-col gap-1">
-              <Label className="!text-xl !font-semibold">
-                Options {`(${configOptions.length})`}
-              </Label>
-              <span className="text-sm text-description-color">
-                Adding options under{" "}
-                <span className="font-itc-medium text-primary">
-                  {
-                    configCategories.find(
-                      (c) => c._id === activeConfigCategoryId,
-                    )?.title
-                  }
-                </span>
-                {" "} category
-              </span>
-            </div>
+            <Label className="!text-xl !font-semibold">
+              Categories {`(${categories.length})`}
+            </Label>
             <CustomButton
               variant="3"
               type="button"
-              text="Add Option"
+              text="Add Category"
               showIcon={false}
-              onClick={() => setConfigOptionDialog("new")}
+              onClick={() => setCategoryDialog("new")}
             />
           </div>
-          {configOptions.length === 0 ? (
-            <p className="text-sm text-black/40">No options added yet.</p>
+          <div className="grid grid-cols-1 xl:grid-cols-2 gap-2">
+            {categories.length === 0 && (
+              <p className="text-sm text-black/40">No categories added yet.</p>
+            )}
+            {categories.map((cat) => (
+              <div
+                key={cat._id}
+                className="flex items-center justify-between border border-secondary/60 rounded-md px-4 py-2"
+              >
+                <span className="text-md font-itc-medium">{cat.title}</span>
+                <div className="flex items-center gap-3">
+                  <button
+                    type="button"
+                    className="cursor-pointer hover:scale-110 transition-all"
+                    onClick={() => setCategoryDialog(cat)}
+                  >
+                    <RiPencilLine
+                      className="text-gray-500 hover:text-primary"
+                      size={20}
+                    />
+                  </button>
+                  <button
+                    type="button"
+                    className="cursor-pointer hover:scale-110 transition-all"
+                    onClick={() =>
+                      setDeleteTarget({
+                        type: "category",
+                        id: cat._id,
+                        label: cat.title,
+                      })
+                    }
+                  >
+                    <RiDeleteBinLine
+                      className="text-red-400 hover:text-red-600"
+                      size={20}
+                    />
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+        )}
+
+        {/* Configuration */}
+        {activeTab === "configuration" && (
+        <>
+        <div className="bg-white border border-secondary rounded-[10px] p-5 flex flex-col gap-4">
+          <div className="flex items-center justify-between border-b border-secondary pb-3">
+            <Label className="!text-xl !font-semibold">
+              Config Categories {`(${configCategories.length})`}
+            </Label>
+            <CustomButton
+              variant="3"
+              type="button"
+              text="Add Config Category"
+              showIcon={false}
+              onClick={() => openConfigCategoryDialog("new")}
+            />
+          </div>
+          {configCategories.length === 0 ? (
+            <p className="text-sm text-black/40">
+              No config categories added yet.
+            </p>
           ) : (
             <DndContext
               sensors={dndSensors}
               collisionDetection={closestCenter}
-              onDragEnd={handleConfigOptionDragEnd}
+              onDragEnd={handleConfigCategoryDragEnd}
             >
               <SortableContext
-                items={configOptions.map((o) => o._id)}
+                items={configCategories.map((c) => c._id)}
                 strategy={rectSortingStrategy}
               >
-                <div className="grid grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-2">
-                  {configOptions.map((opt) => (
-                    <SortableConfigOptionCard
-                      key={opt._id}
-                      option={opt}
-                      isHovered={hoveredOptionId === opt._id}
-                      onHoverStart={() => setHoveredOptionId(opt._id)}
-                      onHoverEnd={() => setHoveredOptionId(null)}
-                      onEdit={() => setConfigOptionDialog(opt)}
+                <div className="flex flex-wrap gap-2">
+                  {configCategories.map((cc) => (
+                    <SortableConfigCategoryCard
+                      key={cc._id}
+                      configCategory={cc}
+                      isActive={activeConfigCategoryId === cc._id}
+                      onSelect={() => setActiveConfigCategoryId(cc._id)}
+                      onEdit={() => openConfigCategoryDialog(cc)}
                       onDelete={() =>
                         setDeleteTarget({
-                          type: "configOption",
-                          id: opt._id,
-                          label: opt.label,
+                          type: "configCategory",
+                          id: cc._id,
+                          label: cc.title,
                         })
                       }
                     />
@@ -900,346 +842,411 @@ export default function ProductsMainPage() {
             </DndContext>
           )}
         </div>
-      )}
-      </>
-      )}
 
-      {/* Master Data */}
-      {activeTab === "masterData" && (
-        <>
-          <div className="flex items-center gap-2 bg-white border border-secondary rounded-[10px] p-2 w-fit">
-            {COMMON_DATA_SUB_TABS.map((tab) => (
-              <button
-                key={tab.key}
+        {/* Config Options — scoped to selected config category */}
+        {activeConfigCategoryId && (
+          <div className="bg-white border border-secondary rounded-[10px] p-5 flex flex-col gap-4">
+            <div className="flex items-center justify-between border-b border-secondary pb-3">
+              <div className="flex flex-col gap-1">
+                <Label className="!text-xl !font-semibold">
+                  Options {`(${configOptions.length})`}
+                </Label>
+                <span className="text-sm text-description-color">
+                  Adding options under{" "}
+                  <span className="font-itc-medium text-primary">
+                    {
+                      configCategories.find(
+                        (c) => c._id === activeConfigCategoryId,
+                      )?.title
+                    }
+                  </span>
+                  {" "} category
+                </span>
+              </div>
+              <CustomButton
+                variant="3"
                 type="button"
-                onClick={() => setActiveCommonDataSubTab(tab.key)}
-                className={`px-4 py-2 rounded-md text-sm font-itc-medium transition-all ${
-                  activeCommonDataSubTab === tab.key
-                    ? "bg-primary text-white"
-                    : "text-description-color hover:bg-secondary/10"
-                }`}
-              >
-                {tab.label}
-              </button>
-            ))}
-          </div>
-
-          {/* Product — Specs */}
-          {activeCommonDataSubTab === "product" && (
-            <div className="bg-white border border-secondary rounded-[10px] p-5 flex flex-col gap-4">
-              <div className="flex items-center justify-between border-b border-secondary pb-3">
-                <div className="flex flex-col gap-1">
-                  <Label className="!text-xl !font-semibold">
-                    Specs {`(${specs.length})`}
-                  </Label>
-                  <span className="text-sm text-description-color">
-                    Master list of specs available to every product. Each
-                    product can enable/disable individual specs, plus add its
-                    own product-specific ones.
-                  </span>
-                </div>
-                <CustomButton
-                  variant="3"
-                  type="button"
-                  text="Add Spec"
-                  showIcon={false}
-                  onClick={() => setSpecDialog("new")}
-                />
-              </div>
-              {specs.length === 0 ? (
-                <p className="text-sm text-black/40">No specs added yet.</p>
-              ) : (
-                <DndContext
-                  sensors={dndSensors}
-                  collisionDetection={closestCenter}
-                  onDragEnd={handleSpecDragEnd}
-                >
-                  <SortableContext
-                    items={specs.map((s) => s._id)}
-                    strategy={rectSortingStrategy}
-                  >
-                    <div className="grid grid-cols-2 xl:grid-cols-4 gap-2">
-                      {specs.map((spec) => (
-                        <SortableSpecCard
-                          key={spec._id}
-                          spec={spec}
-                          onEdit={() => setSpecDialog(spec)}
-                          onDelete={() =>
-                            setDeleteTarget({
-                              type: "spec",
-                              id: spec._id,
-                              label: spec.label,
-                            })
-                          }
-                        />
-                      ))}
-                    </div>
-                  </SortableContext>
-                </DndContext>
-              )}
+                text="Add Option"
+                showIcon={false}
+                onClick={() => setConfigOptionDialog("new")}
+              />
             </div>
-          )}
-
-          {/* Icons — master list for every product's datasheet */}
-          {activeCommonDataSubTab === "icons" && (
-            <div className="bg-white border border-secondary rounded-[10px] p-5 flex flex-col gap-4">
-              <div className="flex items-center justify-between border-b border-secondary pb-3">
-                <div className="flex flex-col gap-1">
-                  <Label className="!text-xl !font-semibold">
-                    Icons {`(${icons.length})`}
-                  </Label>
-                  <span className="text-sm text-description-color">
-                    Common icons are added to every product&apos;s datasheet
-                    automatically. Others can be picked per product.
-                  </span>
-                </div>
-                <CustomButton
-                  variant="3"
-                  type="button"
-                  text="Add Icon"
-                  showIcon={false}
-                  onClick={() => setIconDialog("new")}
-                />
-              </div>
-              <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-5 gap-3">
-                {icons.length === 0 && (
-                  <p className="text-sm text-black/40">No icons added yet.</p>
-                )}
-                {icons.map((icon) => (
-                  <div
-                    key={icon._id}
-                    className="flex items-center justify-between border border-secondary/60 rounded-md px-3 py-2 gap-2"
-                  >
-                    <div className="flex items-center gap-3">
-                      <div className="w-12 h-12 shrink-0 rounded-[4px] border border-[#2A2A2A] flex items-center justify-center overflow-hidden">
-                        {icon.image && (
-                          // eslint-disable-next-line @next/next/no-img-element
-                          <img
-                            src={icon.image}
-                            alt=""
-                            className="w-8 h-8 object-contain"
-                          />
-                        )}
-                      </div>
-                      {icon.isCommon && (
-                        <span className="text-[10px] font-itc-medium uppercase text-trim rounded-full px-2 py-1.5 border border-primary text-primary">
-                          Common
-                        </span>
-                      )}
-                    </div>
-                    <div className="flex items-center gap-2 ml-auto">
-                      <button
-                        type="button"
-                        className="cursor-pointer hover:scale-110 transition-all"
-                        onClick={() => setIconDialog(icon)}
-                      >
-                        <RiPencilLine
-                          className="text-gray-500 hover:text-primary"
-                          size={18}
-                        />
-                      </button>
-                      <button
-                        type="button"
-                        className="cursor-pointer hover:scale-110 transition-all"
-                        onClick={() =>
+            {configOptions.length === 0 ? (
+              <p className="text-sm text-black/40">No options added yet.</p>
+            ) : (
+              <DndContext
+                sensors={dndSensors}
+                collisionDetection={closestCenter}
+                onDragEnd={handleConfigOptionDragEnd}
+              >
+                <SortableContext
+                  items={configOptions.map((o) => o._id)}
+                  strategy={rectSortingStrategy}
+                >
+                  <div className="grid grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-2">
+                    {configOptions.map((opt) => (
+                      <SortableConfigOptionCard
+                        key={opt._id}
+                        option={opt}
+                        isHovered={hoveredOptionId === opt._id}
+                        onHoverStart={() => setHoveredOptionId(opt._id)}
+                        onHoverEnd={() => setHoveredOptionId(null)}
+                        onEdit={() => setConfigOptionDialog(opt)}
+                        onDelete={() =>
                           setDeleteTarget({
-                            type: "icon",
-                            id: icon._id,
-                            label: "this icon",
+                            type: "configOption",
+                            id: opt._id,
+                            label: opt.label,
                           })
                         }
-                      >
-                        <RiDeleteBinLine
-                          className="text-red-400 hover:text-red-600"
-                          size={18}
-                        />
-                      </button>
-                    </div>
+                      />
+                    ))}
                   </div>
-                ))}
-              </div>
-            </div>
-          )}
-        </>
-      )}
-
-      {/* QR Generated */}
-      {activeTab === "qrGenerated" && (
-        <div className="bg-white border border-secondary rounded-[10px] p-5 flex flex-col gap-4">
-          <div className="flex items-center justify-between border-b border-secondary pb-3">
-            <Label className="!text-xl !font-semibold">
-              Generated QR Codes {`(${qrs.length})`}
-            </Label>
-          </div>
-          <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-6 gap-3">
-            {qrs.length === 0 && (
-              <p className="text-sm text-black/40">
-                No QR codes generated yet.
-              </p>
+                </SortableContext>
+              </DndContext>
             )}
-            {qrs.map((qr) => (
-              <div
-                key={qr._id}
-                className="flex flex-col gap-3 border border-secondary/60 rounded-md p-3"
-              >
-                <div className="w-full aspect-square rounded-[6px] border border-[#2A2A2A] flex items-center justify-center overflow-hidden p-3">
-                  {qr.image && (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img
-                      src={qr.image}
-                      alt={qr.productTitle ?? "Generated QR code"}
-                      className="w-full h-full object-contain"
-                    />
-                  )}
-                </div>
-                <div className="flex flex-col gap-1">
-                  <span className="text-md font-itc-medium truncate">
-                    {qr.productTitle || "Untitled product"}
-                  </span>
-                  {qr.productCode && (
-                    <span className="text-sm text-description-color truncate">
-                      {qr.productCode}
+          </div>
+        )}
+        </>
+        )}
+
+        {/* Master Data */}
+        {activeTab === "masterData" && (
+          <>
+            <div className="flex items-center gap-2 bg-white border border-secondary rounded-[10px] p-2 w-fit">
+              {COMMON_DATA_SUB_TABS.map((tab) => (
+                <button
+                  key={tab.key}
+                  type="button"
+                  onClick={() => setActiveCommonDataSubTab(tab.key)}
+                  className={`px-4 py-2 rounded-md text-sm font-itc-medium transition-all ${
+                    activeCommonDataSubTab === tab.key
+                      ? "bg-primary text-white"
+                      : "text-description-color hover:bg-secondary/10"
+                  }`}
+                >
+                  {tab.label}
+                </button>
+              ))}
+            </div>
+
+            {/* Product — Specs */}
+            {activeCommonDataSubTab === "product" && (
+              <div className="bg-white border border-secondary rounded-[10px] p-5 flex flex-col gap-4">
+                <div className="flex items-center justify-between border-b border-secondary pb-3">
+                  <div className="flex flex-col gap-1">
+                    <Label className="!text-xl !font-semibold">
+                      Specs {`(${specs.length})`}
+                    </Label>
+                    <span className="text-sm text-description-color">
+                      Master list of specs available to every product. Each
+                      product can enable/disable individual specs, plus add its
+                      own product-specific ones.
                     </span>
-                  )}
-                  <span className="text-xs text-description-color">
-                    {new Date(qr.createdAt).toLocaleString()}
-                  </span>
-                </div>
-                <div className="flex items-center justify-between gap-3">
-                  <a
-                    href={qr.image}
-                    download={`${qr.productCode || "product"}-qr.png`}
-                    className="text-sm font-itc-medium text-primary hover:underline"
-                  >
-                    Download
-                  </a>
-                  <button
+                  </div>
+                  <CustomButton
+                    variant="3"
                     type="button"
-                    className="cursor-pointer hover:scale-110 transition-all"
-                    onClick={() =>
-                      setDeleteTarget({
-                        type: "qr",
-                        id: qr._id,
-                        label: qr.productTitle || "this QR code",
-                      })
-                    }
+                    text="Add Spec"
+                    showIcon={false}
+                    onClick={() => setSpecDialog("new")}
+                  />
+                </div>
+                {specs.length === 0 ? (
+                  <p className="text-sm text-black/40">No specs added yet.</p>
+                ) : (
+                  <DndContext
+                    sensors={dndSensors}
+                    collisionDetection={closestCenter}
+                    onDragEnd={handleSpecDragEnd}
                   >
-                    <RiDeleteBinLine
-                      className="text-red-400 hover:text-red-600"
-                      size={18}
-                    />
-                  </button>
+                    <SortableContext
+                      items={specs.map((s) => s._id)}
+                      strategy={rectSortingStrategy}
+                    >
+                      <div className="grid grid-cols-2 xl:grid-cols-4 gap-2">
+                        {specs.map((spec) => (
+                          <SortableSpecCard
+                            key={spec._id}
+                            spec={spec}
+                            onEdit={() => setSpecDialog(spec)}
+                            onDelete={() =>
+                              setDeleteTarget({
+                                type: "spec",
+                                id: spec._id,
+                                label: spec.label,
+                              })
+                            }
+                          />
+                        ))}
+                      </div>
+                    </SortableContext>
+                  </DndContext>
+                )}
+              </div>
+            )}
+
+            {/* Icons — master list for every product's datasheet */}
+            {activeCommonDataSubTab === "icons" && (
+              <div className="bg-white border border-secondary rounded-[10px] p-5 flex flex-col gap-4">
+                <div className="flex items-center justify-between border-b border-secondary pb-3">
+                  <div className="flex flex-col gap-1">
+                    <Label className="!text-xl !font-semibold">
+                      Icons {`(${icons.length})`}
+                    </Label>
+                    <span className="text-sm text-description-color">
+                      Common icons are added to every product&apos;s datasheet
+                      automatically. Others can be picked per product.
+                    </span>
+                  </div>
+                  <CustomButton
+                    variant="3"
+                    type="button"
+                    text="Add Icon"
+                    showIcon={false}
+                    onClick={() => setIconDialog("new")}
+                  />
+                </div>
+                <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-5 gap-3">
+                  {icons.length === 0 && (
+                    <p className="text-sm text-black/40">No icons added yet.</p>
+                  )}
+                  {icons.map((icon) => (
+                    <div
+                      key={icon._id}
+                      className="flex items-center justify-between border border-secondary/60 rounded-md px-3 py-2 gap-2"
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className="w-12 h-12 shrink-0 rounded-[4px] border border-[#2A2A2A] flex items-center justify-center overflow-hidden">
+                          {icon.image && (
+                            // eslint-disable-next-line @next/next/no-img-element
+                            <img
+                              src={icon.image}
+                              alt=""
+                              className="w-8 h-8 object-contain"
+                            />
+                          )}
+                        </div>
+                        {icon.isCommon && (
+                          <span className="text-[10px] font-itc-medium uppercase text-trim rounded-full px-2 py-1.5 border border-primary text-primary">
+                            Common
+                          </span>
+                        )}
+                      </div>
+                      <div className="flex items-center gap-2 ml-auto">
+                        <button
+                          type="button"
+                          className="cursor-pointer hover:scale-110 transition-all"
+                          onClick={() => setIconDialog(icon)}
+                        >
+                          <RiPencilLine
+                            className="text-gray-500 hover:text-primary"
+                            size={18}
+                          />
+                        </button>
+                        <button
+                          type="button"
+                          className="cursor-pointer hover:scale-110 transition-all"
+                          onClick={() =>
+                            setDeleteTarget({
+                              type: "icon",
+                              id: icon._id,
+                              label: "this icon",
+                            })
+                          }
+                        >
+                          <RiDeleteBinLine
+                            className="text-red-400 hover:text-red-600"
+                            size={18}
+                          />
+                        </button>
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </div>
-            ))}
+            )}
+          </>
+        )}
+
+        {/* QR Generated */}
+        {activeTab === "qrGenerated" && (
+          <div className="bg-white border border-secondary rounded-[10px] p-5 flex flex-col gap-4">
+            <div className="flex items-center justify-between border-b border-secondary pb-3">
+              <Label className="!text-xl !font-semibold">
+                Generated QR Codes {`(${qrs.length})`}
+              </Label>
+            </div>
+            <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-6 gap-3">
+              {qrs.length === 0 && (
+                <p className="text-sm text-black/40">
+                  No QR codes generated yet.
+                </p>
+              )}
+              {qrs.map((qr) => (
+                <div
+                  key={qr._id}
+                  className="flex flex-col gap-3 border border-secondary/60 rounded-md p-3"
+                >
+                  <div className="w-full aspect-square rounded-[6px] border border-[#2A2A2A] flex items-center justify-center overflow-hidden p-3">
+                    {qr.image && (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img
+                        src={qr.image}
+                        alt={qr.productTitle ?? "Generated QR code"}
+                        className="w-full h-full object-contain"
+                      />
+                    )}
+                  </div>
+                  <div className="flex flex-col gap-1">
+                    <span className="text-md font-itc-medium truncate">
+                      {qr.productTitle || "Untitled product"}
+                    </span>
+                    {qr.productCode && (
+                      <span className="text-sm text-description-color truncate">
+                        {qr.productCode}
+                      </span>
+                    )}
+                    <span className="text-xs text-description-color">
+                      {new Date(qr.createdAt).toLocaleString()}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between gap-3">
+                    <a
+                      href={qr.image}
+                      download={`${qr.productCode || "product"}-qr.png`}
+                      className="text-sm font-itc-medium text-primary hover:underline"
+                    >
+                      Download
+                    </a>
+                    <button
+                      type="button"
+                      className="cursor-pointer hover:scale-110 transition-all"
+                      onClick={() =>
+                        setDeleteTarget({
+                          type: "qr",
+                          id: qr._id,
+                          label: qr.productTitle || "this QR code",
+                        })
+                      }
+                    >
+                      <RiDeleteBinLine
+                        className="text-red-400 hover:text-red-600"
+                        size={18}
+                      />
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
-        </div>
-      )}
+        )}
 
-      {/* Export */}
-      {activeTab === "export" && <ProductExport categories={categories} />}
+        {/* Export */}
+        {activeTab === "export" && <ProductExport categories={categories} />}
 
-      {/* Import */}
-      {activeTab === "import" && <ProductImport onImported={fetchCategories} />}
+        {/* Import */}
+        {activeTab === "import" && <ProductImport onImported={fetchCategories} />}
 
-      {/* ---- Dialogs ---- */}
-      {categoryDialog !== null && (
-        <CategoryFormDialog
-          initial={categoryDialog === "new" ? null : categoryDialog}
-          onClose={() => setCategoryDialog(null)}
-          onSaved={() => {
-            setCategoryDialog(null);
-            fetchCategories();
-          }}
-        />
-      )}
+        {/* ---- Dialogs ---- */}
+        {categoryDialog !== null && (
+          <CategoryFormDialog
+            initial={categoryDialog === "new" ? null : categoryDialog}
+            onClose={() => setCategoryDialog(null)}
+            onSaved={() => {
+              setCategoryDialog(null);
+              fetchCategories();
+            }}
+          />
+        )}
 
-      {specDialog !== null && (
-        <SpecFormDialog
-          initial={specDialog === "new" ? null : specDialog}
-          onClose={() => setSpecDialog(null)}
-          onSaved={() => {
-            setSpecDialog(null);
-            fetchSpecs();
-          }}
-        />
-      )}
+        {specDialog !== null && (
+          <SpecFormDialog
+            initial={specDialog === "new" ? null : specDialog}
+            onClose={() => setSpecDialog(null)}
+            onSaved={() => {
+              setSpecDialog(null);
+              fetchSpecs();
+            }}
+          />
+        )}
 
-      {iconDialog !== null && (
-        <IconFormDialog
-          initial={iconDialog === "new" ? null : iconDialog}
-          onClose={() => setIconDialog(null)}
-          onSaved={() => {
-            setIconDialog(null);
-            fetchIcons();
-          }}
-        />
-      )}
+        {iconDialog !== null && (
+          <IconFormDialog
+            initial={iconDialog === "new" ? null : iconDialog}
+            onClose={() => setIconDialog(null)}
+            onSaved={() => {
+              setIconDialog(null);
+              fetchIcons();
+            }}
+          />
+        )}
 
-      {configCategoryDialog !== null && (
-        <ConfigCategoryFormDialog
-          initial={configCategoryDialog === "new" ? null : configCategoryDialog}
-          hasOptions={configCategoryHasOptions}
-          onClose={() => setConfigCategoryDialog(null)}
-          onSaved={() => {
-            setConfigCategoryDialog(null);
-            fetchConfigCategories();
-          }}
-        />
-      )}
+        {configCategoryDialog !== null && (
+          <ConfigCategoryFormDialog
+            initial={configCategoryDialog === "new" ? null : configCategoryDialog}
+            hasOptions={configCategoryHasOptions}
+            onClose={() => setConfigCategoryDialog(null)}
+            onSaved={() => {
+              setConfigCategoryDialog(null);
+              fetchConfigCategories();
+            }}
+          />
+        )}
 
-      {configOptionDialog !== null && activeConfigCategoryId && (
-        <ConfigOptionFormDialog
-          initial={configOptionDialog === "new" ? null : configOptionDialog}
-          categoryId={activeConfigCategoryId}
-          previewType={
-            configCategories.find((c) => c._id === activeConfigCategoryId)
-              ?.previewType ?? "none"
-          }
-          onClose={() => setConfigOptionDialog(null)}
-          onSaved={() => {
-            setConfigOptionDialog(null);
-            fetchConfigOptions(activeConfigCategoryId);
-          }}
-        />
-      )}
+        {configOptionDialog !== null && activeConfigCategoryId && (
+          <ConfigOptionFormDialog
+            initial={configOptionDialog === "new" ? null : configOptionDialog}
+            categoryId={activeConfigCategoryId}
+            previewType={
+              configCategories.find((c) => c._id === activeConfigCategoryId)
+                ?.previewType ?? "none"
+            }
+            onClose={() => setConfigOptionDialog(null)}
+            onSaved={() => {
+              setConfigOptionDialog(null);
+              fetchConfigOptions(activeConfigCategoryId);
+            }}
+          />
+        )}
 
-      <Dialog
-        open={!!deleteTarget}
-        onOpenChange={(open) => !open && setDeleteTarget(null)}
-      >
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle className="!text-xl !font-itc-medium">
-              Delete {deleteTarget ? deleteLabels[deleteTarget.type] : ""}
-            </DialogTitle>
-          </DialogHeader>
-          <p className="text-md text-description-color">
-            Are you sure you want to delete{" "}
-            <span className="font-semibold font-tasa text-primary font-itc-medium">
-              {deleteTarget?.label}
-            </span>
-            ? This cannot be undone.
-          </p>
-          <DialogFooter>
-            <CustomButton
-              variant="2"
-              type="button"
-              text="Cancel"
-              showIcon={false}
-              onClick={() => setDeleteTarget(null)}
-            />
-            <CustomButton
-              variant="3"
-              type="button"
-              text="Delete"
-              showIcon={false}
-              onClick={confirmDelete}
-            />
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-    </div>
+        <Dialog
+          open={!!deleteTarget}
+          onOpenChange={(open) => !open && setDeleteTarget(null)}
+        >
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle className="!text-xl !font-itc-medium">
+                Delete {deleteTarget ? deleteLabels[deleteTarget.type] : ""}
+              </DialogTitle>
+            </DialogHeader>
+            <p className="text-md text-description-color">
+              Are you sure you want to delete{" "}
+              <span className="font-semibold font-tasa text-primary font-itc-medium">
+                {deleteTarget?.label}
+              </span>
+              ? This cannot be undone.
+            </p>
+            <DialogFooter>
+              <CustomButton
+                variant="2"
+                type="button"
+                text="Cancel"
+                showIcon={false}
+                onClick={() => setDeleteTarget(null)}
+              />
+              <CustomButton
+                variant="3"
+                type="button"
+                text="Delete"
+                showIcon={false}
+                onClick={confirmDelete}
+              />
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      </div>
+    </AdminLoadable>
   );
 }
 

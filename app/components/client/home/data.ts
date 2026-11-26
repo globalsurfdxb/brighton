@@ -1,55 +1,3 @@
-export const heroData = {
-  title: "Architectural Lighting, Engineered.",
-  description:
-    "Engineered in our in-house lab. Specified worldwide. Brighton designs and manufactures LED solutions where precision in light meets reliability in spec.",
-  buttons: [
-    { text: "Download Catalogue", link: "/resources/digital-catalogue" },
-    { text: "View Products", link: "/lighting" },
-  ],
-  video: "/assets/videos/home/hero-bg.mp4",
-  poster: "/assets/images/home/hero/hero-poster.jpg",
-};
-
-export const overviewData = {
-  stats: [
-    {
-      label: "Designed For",
-      icon: "/assets/images/home/overview/1.svg",
-      value: "Lighting Designers - Architects - Consultants - Specifiers",
-    },
-    {
-      label: "Regional Coverage",
-      icon: "/assets/images/home/overview/2.svg",
-      value: "UK - UAE - Egypt - GCC",
-    },
-    {
-      label: "Specification Scale",
-      icon: "/assets/images/home/overview/3.svg",
-      value: "75 Product Families - 2,000+ Configurations",
-    },
-  ],
-  cards: [
-    {
-      title: "Interior Lighting",
-      description: "From inground uplights to street lighting — engineered for architecture, landscape, and infrastructure.",
-      button: "Explore Interior",
-      video: "/assets/videos/home/interior.mp4",
-      poster: "/assets/images/home/overview/cards/1.jpg",
-      imageAlt: "Interior Lighting",
-      link: "/lighting?category=interior",
-    },
-    {
-      title: "Exterior Lighting",
-      description: "From recessed downlights to architectural profiles — engineered for spaces people live in.",
-      button: "Explore Exterior",
-      video: "/assets/videos/home/exterior.mp4",
-      poster: "/assets/images/home/overview/cards/2.jpg",
-      imageAlt: "Exterior Lighting",
-      link: "/lighting?category=exterior",
-    },
-  ],
-};
-
 export const featuredProductsData = {
   sectionTitle: "Featured Products",
   products: [
@@ -86,7 +34,6 @@ export const featuredProductsData = {
   ],
 };
 
-
 export const featuredProjectsData = {
   sectionTitle: "Featured Projects",
   projects: [
@@ -118,54 +65,6 @@ export const featuredProjectsData = {
   ],
 };
 
-
-
-export const trustedByData = {
-  label: "Trusted By",
-  logos: [
-    { image: "/assets/images/home/clients/2.png", },
-    { image: "/assets/images/home/clients/3.png", },
-    { image: "/assets/images/home/clients/4.png", },
-    { image: "/assets/images/home/clients/5.png", },
-    { image: "/assets/images/home/clients/6.png", },
-    { image: "/assets/images/home/clients/7.png", },
-  ],
-};
-
-export const certifiedByData = {
-  label: "Certified By",
-  logos: [
-    { image: "/assets/images/home/certifications/1.png", },
-    { image: "/assets/images/home/certifications/2.png", },
-    { image: "/assets/images/home/certifications/3.png", },
-    { image: "/assets/images/home/certifications/4.png", },
-    { image: "/assets/images/home/certifications/5.png", },
-  ],
-};
-
-
-export const servicesData = {
-  sectionTitle: "Services",
-  services: [
-    {
-      title: "Bespoke/Custom Solutions",
-      description:
-        "Tailored lighting solutions engineered to meet unique architectural, performance, and project requirements.",
-      image: "/assets/images/home/services/bespoke.jpg",
-      link: "/services/bespoke-and-custom-solutions",
-    },
-    {
-      title: "Technical Consulting",
-      description:
-        "Supporting architects, designers, and consultants with specification-led guidance",
-      image: "/assets/images/home/services/consulting.jpg",
-      link: "/services/technical-consulting",
-    },
-  ],
-};
- 
-
-
 export const newsData = {
   sectionTitle: "Latest News",
   news: [
@@ -194,13 +93,3 @@ export const newsData = {
     category: "TECHNOLOGY",
   },
 ]};
-
-
-export const homeCtaData = {
-  title: "Let's Talk Lighting",
-  description: "Discuss your project, technical requirements, or product selection with our specialists.",
-  button: {
-    text: "Connect With Us",
-    href: "#",
-  }
-}
