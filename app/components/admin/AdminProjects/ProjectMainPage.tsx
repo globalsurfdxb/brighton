@@ -1,5 +1,6 @@
 "use client";
 
+import AdminLoadable from "@/app/components/admin/common/AdminLoadable";
 import { useEffect, useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { toast } from "sonner";
@@ -38,6 +39,7 @@ const defaultValues: TopLevelForm = {
 };
 
 export default function ProjectMainPage() {
+  const [loading, setLoading] = useState(true);
   const { register, control, reset, handleSubmit, getValues } = useForm<TopLevelForm>({
     defaultValues,
   });
@@ -70,7 +72,7 @@ export default function ProjectMainPage() {
   };
 
   useEffect(() => {
-    fetchPage();
+    fetchPage().finally(() => setLoading(false));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -98,87 +100,89 @@ export default function ProjectMainPage() {
   };
 
   return (
-    <form className="flex flex-col gap-5" onSubmit={handleSubmit(onSubmit)}>
-      <AdminPageActions isDirty={isDirty} changes={changes}>
-        <AdminVisitLink href={`/projects`} />
-        <AdminSubmitButton saving={isSaving} />
-      </AdminPageActions>
+    <AdminLoadable loading={loading}>
+      <form className="flex flex-col gap-5" onSubmit={handleSubmit(onSubmit)}>
+        <AdminPageActions isDirty={isDirty} changes={changes}>
+          <AdminVisitLink href={`/projects`} />
+          <AdminSubmitButton saving={isSaving} />
+        </AdminPageActions>
 
-      <AdminItemContainer expansion={false}>
-        <div className="flex items-center justify-between border-b border-secondary">
-          <Label main>Banner Section</Label>
-        </div>
-        <div className="p-5 flex flex-col gap-2">
-          <Label className="font-bold">Title</Label>
-          <Input {...register("bannerSection.title")} placeholder="Title" />
-        </div>
-      </AdminItemContainer>
-
-      <AdminItemContainer>
-        <Controller
-          name="ctaSection.isHidden"
-          control={control}
-          render={({ field }) => (
-            <Label
-              main
-              isHidden={field.value}
-              onToggleHidden={() => field.onChange(!field.value)}
-            >
-              CTA Section
-            </Label>
-          )}
-        />
-        <div className="p-5 flex flex-col gap-4">
-          <div className="flex flex-col gap-2">
+        <AdminItemContainer expansion={false}>
+          <div className="flex items-center justify-between border-b border-secondary">
+            <Label main>Banner Section</Label>
+          </div>
+          <div className="p-5 flex flex-col gap-2">
             <Label className="font-bold">Title</Label>
-            <Input {...register("ctaSection.title")} placeholder="Title" />
+            <Input {...register("bannerSection.title")} placeholder="Title" />
           </div>
-          <div className="flex flex-col gap-2">
-            <Label className="font-bold">Description</Label>
-            <Textarea
-              {...register("ctaSection.description")}
-              placeholder="Description"
-            />
-          </div>
-          <div className="grid grid-cols-2 gap-4">
-            <div className="flex flex-col gap-2">
-              <Label className="font-bold">Button Text</Label>
-              <Input
-                {...register("ctaSection.buttonText")}
-                placeholder="Button Text"
-              />
-            </div>
-            <div className="flex flex-col gap-2">
-              <Label className="font-bold">Button Link</Label>
-              <Input
-                {...register("ctaSection.buttonLink")}
-                placeholder="Button Link"
-              />
-            </div>
-          </div>
-        </div>
-      </AdminItemContainer>
+        </AdminItemContainer>
 
-      <AdminItemContainer>
-        <Label main>SEO</Label>
-        <div className="p-5 flex flex-col gap-4">
-          <div className="flex flex-col gap-2">
-            <Label className="font-bold">Meta Title</Label>
-            <Input {...register("seo.metaTitle")} placeholder="Meta Title" />
+        <AdminItemContainer>
+          <Controller
+            name="ctaSection.isHidden"
+            control={control}
+            render={({ field }) => (
+              <Label
+                main
+                isHidden={field.value}
+                onToggleHidden={() => field.onChange(!field.value)}
+              >
+                CTA Section
+              </Label>
+            )}
+          />
+          <div className="p-5 flex flex-col gap-4">
+            <div className="flex flex-col gap-2">
+              <Label className="font-bold">Title</Label>
+              <Input {...register("ctaSection.title")} placeholder="Title" />
+            </div>
+            <div className="flex flex-col gap-2">
+              <Label className="font-bold">Description</Label>
+              <Textarea
+                {...register("ctaSection.description")}
+                placeholder="Description"
+              />
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="flex flex-col gap-2">
+                <Label className="font-bold">Button Text</Label>
+                <Input
+                  {...register("ctaSection.buttonText")}
+                  placeholder="Button Text"
+                />
+              </div>
+              <div className="flex flex-col gap-2">
+                <Label className="font-bold">Button Link</Label>
+                <Input
+                  {...register("ctaSection.buttonLink")}
+                  placeholder="Button Link"
+                />
+              </div>
+            </div>
           </div>
-          <div className="flex flex-col gap-2">
-            <Label className="font-bold">Meta Description</Label>
-            <Input
-              {...register("seo.metaDescription")}
-              placeholder="Meta Description"
-            />
+        </AdminItemContainer>
+
+        <AdminItemContainer>
+          <Label main>SEO</Label>
+          <div className="p-5 flex flex-col gap-4">
+            <div className="flex flex-col gap-2">
+              <Label className="font-bold">Meta Title</Label>
+              <Input {...register("seo.metaTitle")} placeholder="Meta Title" />
+            </div>
+            <div className="flex flex-col gap-2">
+              <Label className="font-bold">Meta Description</Label>
+              <Input
+                {...register("seo.metaDescription")}
+                placeholder="Meta Description"
+              />
+            </div>
+            <div className="flex flex-col gap-2">
+              <Label className="font-bold">Script</Label>
+              <Textarea {...register("seo.script")} placeholder="Script" />
+            </div>
           </div>
-          <div className="flex flex-col gap-2">
-            <Label className="font-bold">Script</Label>
-            <Textarea {...register("seo.script")} placeholder="Script" />
-          </div>
-        </div>
-      </AdminItemContainer>
-    </form>
+        </AdminItemContainer>
+      </form>
+    </AdminLoadable>
   );
 }

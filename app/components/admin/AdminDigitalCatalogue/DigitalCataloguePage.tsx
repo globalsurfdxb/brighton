@@ -1,5 +1,6 @@
 "use client";
 
+import AdminLoadable from "@/app/components/admin/common/AdminLoadable";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Controller, useForm } from "react-hook-form";
@@ -12,7 +13,7 @@ import AdminSubmitButton from "@/app/components/admin/common/AdminSubmitButton";
 import { useUnsavedChanges } from "@/app/components/admin/common/useUnsavedChanges";
 import AdminVisitLink from "@/app/components/admin/common/AdminVisitLink";
 import { toast } from "sonner";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 interface DigitalCatalogueForm {
   seo: { metaTitle: string; metaDescription: string; script: string };
@@ -55,6 +56,7 @@ const defaultValues: DigitalCatalogueForm = {
 };
 
 export default function DigitalCataloguePage() {
+  const [loading, setLoading] = useState(true);
   const { register, handleSubmit, control, reset, getValues, formState } =
     useForm<DigitalCatalogueForm>({ defaultValues });
   const { isDirty, markClean, changes } = useUnsavedChanges(control, getValues);
@@ -100,165 +102,167 @@ export default function DigitalCataloguePage() {
   };
 
   useEffect(() => {
-    fetchData();
+    fetchData().finally(() => setLoading(false));
   }, []);
 
   return (
-    <div className="flex flex-col gap-5">
-      <form className="flex flex-col gap-5" onSubmit={handleSubmit(onSubmit)}>
-        <AdminPageActions isDirty={isDirty} changes={changes}>
-          <AdminVisitLink href={`/resources/digital-catalogue`} />
-          <AdminSubmitButton saving={formState.isSubmitting} />
-        </AdminPageActions>
+    <AdminLoadable loading={loading}>
+      <div className="flex flex-col gap-5">
+        <form className="flex flex-col gap-5" onSubmit={handleSubmit(onSubmit)}>
+          <AdminPageActions isDirty={isDirty} changes={changes}>
+            <AdminVisitLink href={`/resources/digital-catalogue`} />
+            <AdminSubmitButton saving={formState.isSubmitting} />
+          </AdminPageActions>
 
-        {/* First Section */}
-        <AdminItemContainer>
-          <Controller
-            name="firstSection.isHidden"
-            control={control}
-            render={({ field }) => (
-              <Label
-                main
-                isHidden={field.value}
-                onToggleHidden={() => field.onChange(!field.value)}
-              >
-                First Section
-              </Label>
-            )}
-          />
-          <div className="p-5 flex flex-col gap-4">
-            <div className="grid grid-cols-2 gap-4">
-              <div className="flex flex-col gap-2">
+          {/* First Section */}
+          <AdminItemContainer>
+            <Controller
+              name="firstSection.isHidden"
+              control={control}
+              render={({ field }) => (
+                <Label
+                  main
+                  isHidden={field.value}
+                  onToggleHidden={() => field.onChange(!field.value)}
+                >
+                  First Section
+                </Label>
+              )}
+            />
+            <div className="p-5 flex flex-col gap-4">
+              <div className="grid grid-cols-2 gap-4">
                 <div className="flex flex-col gap-2">
-                  <Label className="font-bold">Image</Label>
-                  <Controller
-                    name="firstSection.image"
-                    control={control}
-                    render={({ field }) => (
-                      <ImageUploader
-                        value={field.value}
-                        onChange={field.onChange}
-                      />
-                    )}
+                  <div className="flex flex-col gap-2">
+                    <Label className="font-bold">Image</Label>
+                    <Controller
+                      name="firstSection.image"
+                      control={control}
+                      render={({ field }) => (
+                        <ImageUploader
+                          value={field.value}
+                          onChange={field.onChange}
+                        />
+                      )}
+                    />
+                  </div>
+                  <div className="flex flex-col gap-2">
+                    <Label className="font-bold">Image Alt</Label>
+                    <Input
+                      {...register("firstSection.imageAlt")}
+                      placeholder="Image Alt"
+                    />
+                  </div>
+                </div>
+                <div className="flex flex-col gap-2">
+                  <div className="flex flex-col gap-2">
+                    <Label className="font-bold">Title</Label>
+                    <Input
+                      {...register("firstSection.title")}
+                      placeholder="Title"
+                    />
+                  </div>
+                  <div className="flex flex-col gap-2">
+                    <Label className="font-bold">Sub Title</Label>
+                    <Input
+                      {...register("firstSection.subTitle")}
+                      placeholder="Sub Title"
+                    />
+                  </div>
+                  <div className="flex flex-col gap-2">
+                    <Label className="font-bold">Catalogue Text</Label>
+                    <Input
+                      {...register("firstSection.catalogueText")}
+                      placeholder="Catalogue Text"
+                    />
+                  </div>
+                  <div className="flex flex-col gap-2">
+                    <Label className="font-bold">Catalogue File</Label>
+                    <Controller
+                      name="firstSection.catalogueLink"
+                      control={control}
+                      render={({ field }) => (
+                        <FileUploader
+                          value={field.value}
+                          onChange={field.onChange}
+                        />
+                      )}
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </AdminItemContainer>
+
+          {/* CTA Section */}
+          <AdminItemContainer>
+            <Controller
+              name="ctaSection.isHidden"
+              control={control}
+              render={({ field }) => (
+                <Label
+                  main
+                  isHidden={field.value}
+                  onToggleHidden={() => field.onChange(!field.value)}
+                >
+                  CTA Section
+                </Label>
+              )}
+            />
+            <div className="p-5 flex flex-col gap-4">
+              <div className="flex flex-col gap-2">
+                <Label className="font-bold">Title</Label>
+                <Input {...register("ctaSection.title")} placeholder="Title" />
+              </div>
+              <div className="flex flex-col gap-2">
+                <Label className="font-bold">Description</Label>
+                <Textarea
+                  {...register("ctaSection.description")}
+                  placeholder="Description"
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="flex flex-col gap-2">
+                  <Label className="font-bold">Button Text</Label>
+                  <Input
+                    {...register("ctaSection.buttonText")}
+                    placeholder="Button Text"
                   />
                 </div>
                 <div className="flex flex-col gap-2">
-                  <Label className="font-bold">Image Alt</Label>
+                  <Label className="font-bold">Button Link</Label>
                   <Input
-                    {...register("firstSection.imageAlt")}
-                    placeholder="Image Alt"
+                    {...register("ctaSection.buttonLink")}
+                    placeholder="Button Link"
                   />
                 </div>
               </div>
-              <div className="flex flex-col gap-2">
-                <div className="flex flex-col gap-2">
-                  <Label className="font-bold">Title</Label>
-                  <Input
-                    {...register("firstSection.title")}
-                    placeholder="Title"
-                  />
-                </div>
-                <div className="flex flex-col gap-2">
-                  <Label className="font-bold">Sub Title</Label>
-                  <Input
-                    {...register("firstSection.subTitle")}
-                    placeholder="Sub Title"
-                  />
-                </div>
-                <div className="flex flex-col gap-2">
-                  <Label className="font-bold">Catalogue Text</Label>
-                  <Input
-                    {...register("firstSection.catalogueText")}
-                    placeholder="Catalogue Text"
-                  />
-                </div>
-                <div className="flex flex-col gap-2">
-                  <Label className="font-bold">Catalogue File</Label>
-                  <Controller
-                    name="firstSection.catalogueLink"
-                    control={control}
-                    render={({ field }) => (
-                      <FileUploader
-                        value={field.value}
-                        onChange={field.onChange}
-                      />
-                    )}
-                  />
-                </div>
-              </div>
             </div>
-          </div>
-        </AdminItemContainer>
+          </AdminItemContainer>
 
-        {/* CTA Section */}
-        <AdminItemContainer>
-          <Controller
-            name="ctaSection.isHidden"
-            control={control}
-            render={({ field }) => (
-              <Label
-                main
-                isHidden={field.value}
-                onToggleHidden={() => field.onChange(!field.value)}
-              >
-                CTA Section
-              </Label>
-            )}
-          />
-          <div className="p-5 flex flex-col gap-4">
-            <div className="flex flex-col gap-2">
-              <Label className="font-bold">Title</Label>
-              <Input {...register("ctaSection.title")} placeholder="Title" />
-            </div>
-            <div className="flex flex-col gap-2">
-              <Label className="font-bold">Description</Label>
-              <Textarea
-                {...register("ctaSection.description")}
-                placeholder="Description"
-              />
-            </div>
-            <div className="grid grid-cols-2 gap-4">
+          {/* SEO */}
+          <AdminItemContainer>
+            <Label main>SEO</Label>
+            <div className="p-5 flex flex-col gap-4">
               <div className="flex flex-col gap-2">
-                <Label className="font-bold">Button Text</Label>
+                <Label className="font-bold">Meta Title</Label>
+                <Input {...register("seo.metaTitle")} placeholder="Meta Title" />
+              </div>
+              <div className="flex flex-col gap-2">
+                <Label className="font-bold">Meta Description</Label>
                 <Input
-                  {...register("ctaSection.buttonText")}
-                  placeholder="Button Text"
+                  {...register("seo.metaDescription")}
+                  placeholder="Meta Description"
                 />
               </div>
               <div className="flex flex-col gap-2">
-                <Label className="font-bold">Button Link</Label>
-                <Input
-                  {...register("ctaSection.buttonLink")}
-                  placeholder="Button Link"
-                />
+                <Label className="font-bold">Script</Label>
+                <Textarea {...register("seo.script")} placeholder="Script" />
               </div>
             </div>
-          </div>
-        </AdminItemContainer>
+          </AdminItemContainer>
 
-        {/* SEO */}
-        <AdminItemContainer>
-          <Label main>SEO</Label>
-          <div className="p-5 flex flex-col gap-4">
-            <div className="flex flex-col gap-2">
-              <Label className="font-bold">Meta Title</Label>
-              <Input {...register("seo.metaTitle")} placeholder="Meta Title" />
-            </div>
-            <div className="flex flex-col gap-2">
-              <Label className="font-bold">Meta Description</Label>
-              <Input
-                {...register("seo.metaDescription")}
-                placeholder="Meta Description"
-              />
-            </div>
-            <div className="flex flex-col gap-2">
-              <Label className="font-bold">Script</Label>
-              <Textarea {...register("seo.script")} placeholder="Script" />
-            </div>
-          </div>
-        </AdminItemContainer>
-
-      </form>
-    </div>
+        </form>
+      </div>
+    </AdminLoadable>
   );
 }

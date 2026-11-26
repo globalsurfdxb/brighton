@@ -1,5 +1,6 @@
 "use client";
 
+import AdminLoadable from "@/app/components/admin/common/AdminLoadable";
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useEffect } from "react";
@@ -21,6 +22,7 @@ interface FormValues2 {
 }
 
 const Settings = () => {
+  const [loading, setLoading] = useState(true);
   const { register, handleSubmit, setValue, getValues } = useForm<
     FormValues | FormValues2
   >();
@@ -64,8 +66,7 @@ const Settings = () => {
   };
 
   useEffect(() => {
-    fetchTag();
-    fetchEmails();
+    Promise.all([fetchTag(), fetchEmails()]).finally(() => setLoading(false));
   }, []);
 
   const checkCurrentPassword = async () => {
@@ -162,103 +163,105 @@ const Settings = () => {
   };
 
   return (
-    <div className="grid grid-cols-2 gap-5">
-      <AdminItemContainer expansion={false}>
-        <div className="border-b border-secondary">
-          <Label main>Meta Section</Label>
-        </div>
-        <div className="flex flex-col gap-5 p-5">
-          <form
-            className="flex flex-col gap-5"
-            onSubmit={handleSubmit(onSubmit)}
-          >
-            <div className="flex flex-col gap-2">
-              <Label className="">Header Script</Label>
-              <Textarea {...register("headerScript")}></Textarea>
-            </div>
-
-            <div className="flex flex-col gap-2">
-              <Label className="">Body Script</Label>
-              <Textarea {...register("bodyScript")}></Textarea>
-            </div>
-            <CustomButton
-              btnClass="w-fit"
-              variant="3"
-              onClick={submitNewPassword}
-              text="Submit"
-            />
-          </form>
-        </div>
-      </AdminItemContainer>
-
-      <div className="h-fit">
+    <AdminLoadable loading={loading}>
+      <div className="grid grid-cols-2 gap-5">
         <AdminItemContainer expansion={false}>
           <div className="border-b border-secondary">
-            <Label main>Change Password</Label>
+            <Label main>Meta Section</Label>
           </div>
-          {!currentPasswordIsCorrect ? (
-            <form className="flex flex-col gap-5 p-5">
+          <div className="flex flex-col gap-5 p-5">
+            <form
+              className="flex flex-col gap-5"
+              onSubmit={handleSubmit(onSubmit)}
+            >
               <div className="flex flex-col gap-2">
-                <Label className="">Current Password</Label>
-                <Input {...register("currentPassword")}></Input>
+                <Label className="">Header Script</Label>
+                <Textarea {...register("headerScript")}></Textarea>
               </div>
+
               <div className="flex flex-col gap-2">
-                <p className="text-[16px]">
-                  Type in the current password and hit continue
-                </p>
-                <CustomButton
-                  btnClass="w-fit"
-                  variant="3"
-                  onClick={checkCurrentPassword}
-                  text="Continue"
-                />
+                <Label className="">Body Script</Label>
+                <Textarea {...register("bodyScript")}></Textarea>
               </div>
+              <CustomButton
+                btnClass="w-fit"
+                variant="3"
+                onClick={submitNewPassword}
+                text="Submit"
+              />
             </form>
-          ) : (
-            <form className="flex flex-col gap-5 p-5">
+          </div>
+        </AdminItemContainer>
+
+        <div className="h-fit">
+          <AdminItemContainer expansion={false}>
+            <div className="border-b border-secondary">
+              <Label main>Change Password</Label>
+            </div>
+            {!currentPasswordIsCorrect ? (
+              <form className="flex flex-col gap-5 p-5">
+                <div className="flex flex-col gap-2">
+                  <Label className="">Current Password</Label>
+                  <Input {...register("currentPassword")}></Input>
+                </div>
+                <div className="flex flex-col gap-2">
+                  <p className="text-[16px]">
+                    Type in the current password and hit continue
+                  </p>
+                  <CustomButton
+                    btnClass="w-fit"
+                    variant="3"
+                    onClick={checkCurrentPassword}
+                    text="Continue"
+                  />
+                </div>
+              </form>
+            ) : (
+              <form className="flex flex-col gap-5 p-5">
+                <div className="flex flex-col gap-2">
+                  <Label className="">New Password</Label>
+                  <Input {...register("newPassword")}></Input>
+                </div>
+                <div className="flex flex-col gap-1">
+                  <p className="text-[16px]">
+                    Type in the new password and hit continue
+                  </p>
+                  <CustomButton
+                    onClick={submitNewPassword}
+                    btnClass="w-fit"
+                    variant="3"
+                    text="Confirm"
+                  />
+                </div>
+              </form>
+            )}
+          </AdminItemContainer>
+        </div>
+
+        <AdminItemContainer expansion={false}>
+          <div className="border-b border-secondary">
+            <Label main>Email Section</Label>
+          </div>
+          <div className="flex flex-col gap-5 p-5">
+            <div className="flex flex-col gap-5">
               <div className="flex flex-col gap-2">
-                <Label className="">New Password</Label>
-                <Input {...register("newPassword")}></Input>
+                <Label className="">To email (Contact)</Label>
+                <Input
+                  value={toEmailContact}
+                  onChange={(e) => setToEmailContact(e.target.value)}
+                ></Input>
               </div>
-              <div className="flex flex-col gap-1">
-                <p className="text-[16px]">
-                  Type in the new password and hit continue
-                </p>
-                <CustomButton
-                  onClick={submitNewPassword}
-                  btnClass="w-fit"
-                  variant="3"
-                  text="Confirm"
-                />
-              </div>
-            </form>
-          )}
+              <CustomButton
+                btnClass="w-fit"
+                variant="3"
+                onClick={EmailSectionSubmit}
+                text="Submit"
+              />
+            </div>
+          </div>
         </AdminItemContainer>
       </div>
-
-      <AdminItemContainer expansion={false}>
-        <div className="border-b border-secondary">
-          <Label main>Email Section</Label>
-        </div>
-        <div className="flex flex-col gap-5 p-5">
-          <div className="flex flex-col gap-5">
-            <div className="flex flex-col gap-2">
-              <Label className="">To email (Contact)</Label>
-              <Input
-                value={toEmailContact}
-                onChange={(e) => setToEmailContact(e.target.value)}
-              ></Input>
-            </div>
-            <CustomButton
-              btnClass="w-fit"
-              variant="3"
-              onClick={EmailSectionSubmit}
-              text="Submit"
-            />
-          </div>
-        </div>
-      </AdminItemContainer>
-    </div>
+    </AdminLoadable>
   );
 };
 

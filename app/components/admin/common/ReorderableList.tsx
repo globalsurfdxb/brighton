@@ -8,7 +8,6 @@ import {
   RiArrowUpLine,
   RiArrowUpSLine,
   RiDraggable,
-  RiSearchLine,
 } from "react-icons/ri";
 import {
   DndContext,
@@ -27,8 +26,10 @@ import {
 import { CSS } from "@dnd-kit/utilities";
 
 import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
-import CustomButton from "../../client/common/CustomButton";
+import { SearchInput } from "@/components/ui/search-input";
+import { ArrowUpDown, Check, X } from "lucide-react";
+import AdminButton from "./AdminButton";
+import AdminRowNumber from "./AdminRowNumber";
 
 type Item = { _id: string };
 
@@ -243,22 +244,18 @@ export default function ReorderableList<T extends Item>({
           {title} {count}
         </Label>
         <div className="flex items-center gap-3 ml-auto">
-          <div className="relative w-72">
-            <RiSearchLine
-              size={16}
-              className="absolute left-3 top-1/2 -translate-y-1/2 text-description-color"
-            />
-            <Input
-              value={search}
-              onChange={(e) => handleSearchChange(e.target.value)}
-              onKeyDown={(e) => {
-                if (!reordering || e.key !== "Enter") return;
-                e.preventDefault();
-                focusMatch(activeMatchIndex + (e.shiftKey ? -1 : 1));
-              }}
-              placeholder={reordering ? "Find item to move" : searchPlaceholder}
-              className={`pl-9 ${reordering && searchTerm ? "pr-28" : ""}`}
-            />
+          <SearchInput
+            wrapperClassName="w-72"
+            value={search}
+            onChange={(e) => handleSearchChange(e.target.value)}
+            onKeyDown={(e) => {
+              if (!reordering || e.key !== "Enter") return;
+              e.preventDefault();
+              focusMatch(activeMatchIndex + (e.shiftKey ? -1 : 1));
+            }}
+            placeholder={reordering ? "Find item to move" : searchPlaceholder}
+            className={reordering && searchTerm ? "pr-28" : undefined}
+          >
             {reordering && searchTerm && (
               <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1 text-[12px] text-description-color">
                 <span className="text-trim whitespace-nowrap">
@@ -286,35 +283,30 @@ export default function ReorderableList<T extends Item>({
                 </button>
               </div>
             )}
-          </div>
+          </SearchInput>
           {reordering ? (
             <>
-              <CustomButton
-                variant="2"
-                type="button"
-                text="Cancel"
-                showIcon={false}
-                onClick={cancelReorder}
-              />
-              <CustomButton
-                variant="3"
-                type="button"
-                text={isSavingOrder ? "Saving..." : "Done"}
-                showIcon={false}
+              <AdminButton variant="outline" icon={X} onClick={cancelReorder}>
+                Cancel
+              </AdminButton>
+              <AdminButton
+                icon={Check}
                 disabled={isSavingOrder}
                 onClick={saveReorder}
-              />
+              >
+                {isSavingOrder ? "Saving" : "Done"}
+              </AdminButton>
             </>
           ) : (
             <>
-              <CustomButton
-                variant="2"
-                type="button"
-                text="Reorder"
-                showIcon={false}
+              <AdminButton
+                variant="outline"
+                icon={ArrowUpDown}
                 disabled={items.length < 2}
                 onClick={startReorder}
-              />
+              >
+                Reorder
+              </AdminButton>
               {headerActions}
             </>
           )}
@@ -377,14 +369,10 @@ export default function ReorderableList<T extends Item>({
                       onClick={() => !reordering && onRowClick(item)}
                     >
                       <div className="flex items-center gap-4">
-                        {reordering && (
-                          <>
-                            <span className="text-[12px] text-description-color w-6 text-right tabular-nums">
-                              {index + 1}
-                            </span>
-                            {handle}
-                          </>
-                        )}
+                        <AdminRowNumber
+                          value={reordering ? index + 1 : items.indexOf(item) + 1}
+                        />
+                        {reordering && handle}
                         {renderContent(item)}
                       </div>
                       {reordering ? (
