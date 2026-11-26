@@ -1,7 +1,7 @@
 "use client"
 
 import Image from "next/image";
-import { overviewData } from "../data";
+import type { OverviewData } from "../types";
 import AnimatedDivider from "../../animations/AnimatedDivider";
 import CustomButton from "../../common/CustomButton";
 import AnimatedTitle from "../../animations/AnimatedTitle";
@@ -11,7 +11,11 @@ import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
 import { useMediaQuery } from "@/app/hooks/useMediaQuery";
 
-export default function Overview() {
+export default function Overview({
+  data: overviewData,
+}: {
+  data: OverviewData;
+}) {
   const isDesktop = useMediaQuery(1280);
   const sectionRef = useRef<HTMLElement>(null);
   const isInView = useInView(sectionRef, {
@@ -44,7 +48,7 @@ export default function Overview() {
                 </span>
                 <Image
                   src={stat.icon}
-                  alt={stat.label}
+                  alt={stat.iconAlt || stat.label}
                   width={35}
                   height={45}
                   className="pointer-events-none w-9 md:w-auto h-9 lg:h-9.5 2xl:h-10 3xl:h-[45px] md:mr-30 3xl:mr-[28px] md:mb-[2px] object-contain"
@@ -62,20 +66,19 @@ export default function Overview() {
       <div className="mt-60 grid grid-cols-1 md:grid-cols-2 gap-3.75 sm:gap-30">
         {overviewData.cards.map((card, index) => (
           <Reveal
-            key={card.title}
+            key={index}
             variants={moveUpV2}
             delayRange={index * 0.14}
           >
               <div
-                key={card.title}
                 className="group relative min-h-[325px] sm:min-h-[400px] md:min-h-auto md:aspect-6/5 w-full overflow-hidden rounded-[10px] 3xl:aspect-auto min-[1800px]:h-[760px]"
               >
-                {/* Video wrapper handles fit + clipping; scaling happens here, isolated */}
                 <div className="absolute inset-0 overflow-hidden">
                   <video
                     className="h-full w-full object-cover"
                     src={card.video}
-                    poster={card.poster}
+                    poster={card.poster || undefined}
+                    aria-label={card.posterAlt || card.title}
                     autoPlay
                     muted
                     loop
@@ -84,7 +87,6 @@ export default function Overview() {
                   />
                 </div>
 
-                {/* Default gradient desktop — fades out on hover */}
                 <div
                   style={{
                     background:
@@ -101,7 +103,6 @@ export default function Overview() {
                   className="hidden md:block 2xl:hidden absolute inset-0 transition-opacity duration-500 group-hover:opacity-0"
                 />
 
-                {/* Default gradient mobile — fades out on hover */}
                 <div
                   style={{
                     background:
@@ -110,7 +111,6 @@ export default function Overview() {
                   className="md:hidden absolute inset-0"
                 />
 
-                {/* Hover gradient — fades in on hover */}
                 <div
                   style={{
                     background:
@@ -119,7 +119,6 @@ export default function Overview() {
                   className="hidden md:block absolute inset-0 opacity-0 transition-opacity duration-500 group-hover:opacity-100"
                 />
 
-                {/* Content */}
                 <div className="absolute bottom-0 left-0 md:top-0 flex flex-col p-5 sm:p-40 3xl:p-[45px]">
                   <AnimatedTitle
                     tag="h3"

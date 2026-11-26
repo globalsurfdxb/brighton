@@ -1,6 +1,6 @@
 "use client";
 
-import { heroData } from "../data";
+import type { HeroData } from "../types";
 import CustomButton from "../../common/CustomButton";
 import AnimatedTitle from "../../animations/AnimatedTitle";
 import { motion } from "framer-motion";
@@ -19,19 +19,21 @@ const itemVariants = {
   },
 };
 
-export default function Hero() {
+export default function Hero({ data: heroData }: { data: HeroData }) {
   const introComplete = useIntroComplete();
   return (
     <section className="fixed inset-0 h-[85svh] lg:h-svh w-full overflow-hidden z-0">
-      <video
-        className="absolute inset-0 h-full w-full object-cover"
-        src={heroData.video}
-        poster={heroData.poster}
-        autoPlay
-        muted
-        loop
-        playsInline
-      />
+      {heroData.video && (
+        <video
+          className="absolute inset-0 h-full w-full object-cover"
+          src={heroData.video}
+          poster={heroData.poster || undefined}
+          autoPlay
+          muted
+          loop
+          playsInline
+        />
+      )}
 
       <div
         style={{
@@ -77,7 +79,7 @@ export default function Hero() {
               <CustomButton
                 key={index}
                 text={button.text}
-                link={button.link}
+                link={button.link || "#"}
                 btnClass="w-fit"
               />
             ))}
