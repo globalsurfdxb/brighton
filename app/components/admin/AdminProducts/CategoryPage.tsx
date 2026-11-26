@@ -603,7 +603,8 @@ function SubCategoryFormDialog({
               name="icon"
               control={control}
               render={({ field }) => (
-                <ImageUploader value={field.value} onChange={field.onChange} />
+                <ImageUploader
+ contain value={field.value} onChange={field.onChange} />
               )}
             />
           </div>
