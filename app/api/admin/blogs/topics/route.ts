@@ -3,6 +3,7 @@ import connectDB from "@/lib/mongodb";
 import Blogs from "@/app/models/Blogs";
 import { verifyAdmin } from "@/lib/verifyAdmin";
 import { revalidateTag } from "next/cache";
+import { reorderEmbedded } from "@/lib/reorderEmbedded";
 
 async function getOrCreateDoc() {
   let doc = await Blogs.findOne();
@@ -135,6 +136,42 @@ export async function DELETE(request: NextRequest) {
 
     return NextResponse.json(
       { data: doc.topics, message: "Topic deleted successfully" },
+      { status: 200 },
+    );
+  } catch (error: unknown) {
+    console.error(error);
+    return NextResponse.json(
+      { message: "Internal Server Error" },
+      { status: 500 },
+    );
+  }
+}
+
+export async function PUT(request: NextRequest) {
+  try {
+    const isAdmin = await verifyAdmin(request);
+    if (!isAdmin) {
+      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+    }
+
+    await connectDB();
+    const { ids } = await request.json();
+    const doc = await getOrCreateDoc();
+    const reordered = reorderEmbedded(doc.topics, ids);
+    if (!reordered) {
+      return NextResponse.json(
+        { message: "Topic list is out of date, please refresh" },
+        { status: 409 },
+      );
+    }
+
+    doc.topics = reordered;
+    await doc.save();
+
+    revalidateTag("Blogs", "default");
+
+    return NextResponse.json(
+      { data: doc.topics, message: "Topic order updated" },
       { status: 200 },
     );
   } catch (error: unknown) {

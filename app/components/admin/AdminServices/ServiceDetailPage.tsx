@@ -534,7 +534,7 @@ export default function ServiceDetail() {
                     + Add Item
                   </Button>
                 </div>
-                <div className="grid grid-cols-3 gap-4">
+                <div className="grid grid-cols-5 gap-4">
                   {thirdItems.map((field, index) => (
                     <div
                       key={field.id}
@@ -553,6 +553,7 @@ export default function ServiceDetail() {
                           control={control}
                           render={({ field }) => (
                             <ImageUploader
+                              contain
                               value={field.value}
                               onChange={field.onChange}
                             />

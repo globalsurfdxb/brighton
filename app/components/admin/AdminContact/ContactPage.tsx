@@ -250,6 +250,7 @@ export default function ContactPage() {
                         control={control}
                         render={({ field }) => (
                           <ImageUploader
+                            contain
                             value={field.value}
                             onChange={field.onChange}
                           />
