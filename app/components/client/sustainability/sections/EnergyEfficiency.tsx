@@ -48,6 +48,7 @@ export default function EnergyEfficiency({
                 src={baseImage || "/assets/images/placeholder.png"}
                 alt=""
                 fill
+                sizes="(min-width: 1024px) 50vw, 100vw"
                 className="object-cover object-center pointer-events-none"
               />
               <motion.div
@@ -64,6 +65,7 @@ export default function EnergyEfficiency({
                   src={energyEfficiencyData.items[activeIndex].image || "/assets/images/placeholder.png"}
                   alt={energyEfficiencyData.items[activeIndex].imageAlt}
                   fill
+                  sizes="(min-width: 1024px) 50vw, 100vw"
                   className="object-cover object-center pointer-events-none"
                 />
               </motion.div>
@@ -123,6 +125,7 @@ export default function EnergyEfficiency({
                                 src={item.image || "/assets/images/placeholder.png"}
                                 alt={item.imageAlt}
                                 fill
+                                sizes="100vw"
                                 className="object-cover object-center pointer-events-none"
                               />
                             </div>

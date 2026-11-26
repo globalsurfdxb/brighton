@@ -174,6 +174,7 @@ function ProjectCard({ project }: { project: any }) {
             src={project.image}
             alt={project.title}
             fill
+            sizes="(min-width: 1400px) 46vw, (min-width: 1024px) 56vw, (min-width: 640px) 67vw, 80vw"
             className="pointer-events-none object-cover group-hover:scale-105 transition-all duration-500 ease-in-out"
           />
           <div className="absolute top-3.75 md:top-5 right-3.75 md:right-5 rounded-full bg-black/50 px-3.75 md:px-[18.5px] py-[5px] md:py-[9.5px] flex justify-center items-center border border-secondary">

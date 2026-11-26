@@ -143,8 +143,8 @@ export default function Services({ data }: { data: ServicesData }) {
                 src={service.image}
                 alt={service.imageAlt || service.title}
                 fill
+                sizes="100vw"
                 className="pointer-events-none object-cover"
-                priority={index === 0}
               />
             </div>
           ))}
@@ -254,6 +254,7 @@ export default function Services({ data }: { data: ServicesData }) {
                 src={service.image}
                 alt={service.imageAlt || service.title}
                 fill
+                sizes="100vw"
                 className="object-cover"
               />
             </div>

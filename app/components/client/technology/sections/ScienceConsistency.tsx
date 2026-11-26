@@ -46,6 +46,7 @@ export default function ScienceConsistency({
               src={baseImage || "/assets/images/placeholder.png"}
               alt=""
               fill
+              sizes="(min-width: 1024px) 50vw, 100vw"
               className="object-cover object-center pointer-events-none"
             />
 
@@ -63,6 +64,7 @@ export default function ScienceConsistency({
                 src={scienceConsistencyData.items[activeIndex].image || "/assets/images/placeholder.png"}
                 alt={scienceConsistencyData.items[activeIndex].imageAlt}
                 fill
+                sizes="(min-width: 1024px) 50vw, 100vw"
                 className="object-cover object-center pointer-events-none"
               />
             </motion.div>
@@ -124,6 +126,7 @@ export default function ScienceConsistency({
                               src={item.image || "/assets/images/placeholder.png"}
                               alt={item.imageAlt}
                               fill
+                              sizes="100vw"
                               className="object-cover object-center pointer-events-none"
                             />
                           </div>

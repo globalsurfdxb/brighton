@@ -27,6 +27,7 @@ export default function CertifiedCompliant({
               src={certifiedCompliantData.image || "/assets/images/placeholder.png"}
               alt={certifiedCompliantData.imageAlt}
               fill
+              sizes="265px"
               className="object-contain pointer-events-none"
             />  
           </motion.div>

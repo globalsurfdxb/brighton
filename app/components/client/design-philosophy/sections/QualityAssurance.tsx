@@ -31,6 +31,7 @@ export default function QualityAssurance({
               }
               alt={qualityAssuranceData.imageAlt}
               fill
+              sizes="(min-width: 1024px) 55vw, 100vw"
               className="object-cover object-center pointer-events-none"
             />
           </motion.div>

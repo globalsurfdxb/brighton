@@ -26,7 +26,7 @@ function FileTypeIcon({
 }) {
   return (
     <div className="relative w-10 h-12 md:w-12 md:h-14 xl:w-[76.9px] xl:h-[89.04px] flex-shrink-0">
-      <Image src={iconSrc} alt={fileType} fill className="object-contain" />
+      <Image src={iconSrc} alt={fileType} fill sizes="80px" className="object-contain" />
       <span className="absolute inset-0 flex items-center justify-center text-description text-trim text-white">
         {fileType}
       </span>

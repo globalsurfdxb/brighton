@@ -57,6 +57,7 @@ function PhotometricGallery({
                 src={item.src || "/assets/images/placeholder.png"}
                 alt={item.alt}
                 fill
+                sizes="32px"
                 className="pointer-events-none object-contain"
               />
             </span>
@@ -80,6 +81,7 @@ function PhotometricGallery({
                   src={item.src || "/assets/images/placeholder.png"}
                   alt={item.alt}
                   fill
+                  sizes="140px"
                   className="object-contain p-2"
                 />
               </motion.div>
@@ -173,6 +175,7 @@ export default function ProductBanner({ product }: { product: Product }) {
                   src={activeImage.src || "/assets/images/placeholder.png"}
                   alt={activeImage.alt}
                   fill
+                  sizes="(min-width: 1024px) 50vw, 100vw"
                   className="pointer-events-none object-cover transition-transform duration-400 ease-in-out"
                   style={{
                     transform:
@@ -181,7 +184,8 @@ export default function ProductBanner({ product }: { product: Product }) {
                         : "scale(1)",
                     transformOrigin: `${zoomOrigin.x}% ${zoomOrigin.y}%`,
                   }}
-                  priority
+                  fetchPriority="high"
+                  loading="eager"
                 />
               </motion.div>
             </AnimatePresence>
@@ -211,6 +215,7 @@ export default function ProductBanner({ product }: { product: Product }) {
                   src={img.src || "/assets/images/placeholder.png"}
                   alt={img.alt}
                   fill
+                  sizes="90px"
                   className="pointer-events-none object-cover"
                 />
               </motion.button>

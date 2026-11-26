@@ -24,6 +24,7 @@ const NewsCard = ({ slug, title, date, category, image }: NewsCardProps) => {
             alt={title}
             className="object-cover pointer-events-none group-hover:scale-105 transition-transform duration-500 ease-in-out"
             fill
+            sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
           />
         </div>
         <div className="pb-4 flex justify-between text-description-color text-subtitle-2">

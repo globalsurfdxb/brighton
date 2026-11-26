@@ -22,6 +22,8 @@ export default function Overview({
     once: true,
     amount: 0.3,
   });
+  const cardsRef = useRef<HTMLDivElement>(null);
+  const loadVideos = useInView(cardsRef, { once: true, margin: "300px 0px" });
 
   return (
     <motion.section
@@ -63,7 +65,10 @@ export default function Overview({
         ))}
       </div>
 
-      <div className="mt-60 grid grid-cols-1 md:grid-cols-2 gap-3.75 sm:gap-30">
+      <div
+        ref={cardsRef}
+        className="mt-60 grid grid-cols-1 md:grid-cols-2 gap-3.75 sm:gap-30"
+      >
         {overviewData.cards.map((card, index) => (
           <Reveal
             key={index}
@@ -74,17 +79,27 @@ export default function Overview({
                 className="group relative min-h-[325px] sm:min-h-[400px] md:min-h-auto md:aspect-6/5 w-full overflow-hidden rounded-[10px] 3xl:aspect-auto min-[1800px]:h-[760px]"
               >
                 <div className="absolute inset-0 overflow-hidden">
-                  <video
-                    className="h-full w-full object-cover"
-                    src={card.video}
-                    poster={card.poster || undefined}
-                    aria-label={card.posterAlt || card.title}
-                    autoPlay
-                    muted
-                    loop
-                    playsInline
-                    preload="auto"
-                  />
+                  {card.poster && (
+                    <Image
+                      src={card.poster}
+                      alt={card.posterAlt || card.title}
+                      fill
+                      sizes="(min-width: 768px) 50vw, 100vw"
+                      className="pointer-events-none object-cover"
+                    />
+                  )}
+                  {loadVideos && card.video && (
+                    <video
+                      className="relative h-full w-full object-cover"
+                      src={card.video}
+                      aria-hidden
+                      autoPlay
+                      muted
+                      loop
+                      playsInline
+                      preload="auto"
+                    />
+                  )}
                 </div>
 
                 <div

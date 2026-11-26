@@ -221,6 +221,7 @@ export default function FeaturedProducts() {
                         src={product.image}
                         alt={product.title}
                         fill
+                        sizes="(min-width: 1024px) 33vw, (min-width: 768px) 42vw, (min-width: 640px) 50vw, 80vw"
                         className="featured-slide-image pointer-events-none object-cover group-hover:scale-105 transition-all duration-500 ease-in-out"
                       />
                     </div>

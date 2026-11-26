@@ -61,6 +61,7 @@ const ServiceTabSection = ({ data }: ServiceTabSectionProps) => {
                 src={baseImage || "/assets/images/placeholder.png"}
                 alt=""
                 fill
+                sizes="(min-width: 1280px) 50vw, 100vw"
                 className="object-cover object-center pointer-events-none"
               />
 
@@ -77,6 +78,7 @@ const ServiceTabSection = ({ data }: ServiceTabSectionProps) => {
                     src={activeItem.image || "/assets/images/placeholder.png"}
                     alt={activeItem.title}
                     fill
+                    sizes="(min-width: 1280px) 50vw, 100vw"
                     className="object-cover object-center pointer-events-none"
                   />
                 </motion.div>
@@ -232,6 +234,7 @@ const ServiceTabSection = ({ data }: ServiceTabSectionProps) => {
                               src={item.image}
                               alt={item.title}
                               fill
+                              sizes="100vw"
                               className="object-cover object-center"
                             />
                           </div>

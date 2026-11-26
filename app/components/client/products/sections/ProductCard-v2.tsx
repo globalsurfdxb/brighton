@@ -70,6 +70,7 @@ export default function ProductCard({
               src={product.thumbImage || "/assets/images/placeholder.png"}
               alt={product.thumbImageAlt || product.title}
               fill
+              sizes="(min-width: 1536px) 25vw, (min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
               className="object-contain pointer-events-none"
             />
           </motion.div>
@@ -96,7 +97,7 @@ export default function ProductCard({
                   src={product.hoverImage}
                   alt={product.hoverImageAlt || product.title}
                   fill
-                  priority
+                  sizes="(min-width: 1536px) 25vw, (min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
                   className="object-cover pointer-events-none"
                 />
                 <div

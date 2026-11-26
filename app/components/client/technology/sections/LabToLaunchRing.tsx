@@ -107,6 +107,7 @@ export default function LabToLaunchRing({ data }: { data: LabToLaunchData }) {
               src="/assets/images/technology/ring.svg"
               alt="Lab to Launch Ring"
               fill
+              sizes="(min-width: 1280px) 900px, 100vw"
               className="object-contain pointer-events-none select-none"
             />
           </div>
