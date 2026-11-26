@@ -16,12 +16,14 @@ export default function AdminTabs<K extends string>({
   active,
   onChange,
   label,
+  size = "md",
   className,
 }: {
   tabs: readonly AdminTab<K>[];
   active: K;
   onChange: (key: K) => void;
   label: string;
+  size?: "md" | "sm";
   className?: string;
 }) {
   const index = Math.max(
@@ -57,13 +59,18 @@ export default function AdminTabs<K extends string>({
             aria-selected={isActive}
             onClick={() => onChange(key)}
             className={cn(
-              "relative z-[1] flex min-w-[130px] cursor-pointer items-center justify-center gap-2 rounded-full px-5 py-2.5 text-[13.5px] font-medium outline-none transition-colors duration-200 focus-visible:ring-2 focus-visible:ring-primary/25",
+              "relative z-[1] flex cursor-pointer items-center justify-center rounded-full font-medium outline-none transition-colors duration-200 focus-visible:ring-2 focus-visible:ring-primary/25",
+              size === "sm"
+                ? "min-w-[100px] gap-1.5 px-3.5 py-1.5 text-[12.5px]"
+                : "min-w-[130px] gap-2 px-5 py-2.5 text-[13.5px]",
               isActive
                 ? "text-white"
                 : "text-description-color hover:text-primary",
             )}
           >
-            {Icon && <Icon className="h-4 w-4" />}
+            {Icon && (
+              <Icon className={size === "sm" ? "h-3.5 w-3.5" : "h-4 w-4"} />
+            )}
             <span className="text-trim">{tabLabel}</span>
             {count !== undefined && (
               <span

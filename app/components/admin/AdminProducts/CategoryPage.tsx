@@ -1,11 +1,16 @@
 "use client";
 
 import AdminRowNumber from "@/app/components/admin/common/AdminRowNumber";
+import AdminTabs from "@/app/components/admin/common/AdminTabs";
+import AdminButton from "@/app/components/admin/common/AdminButton";
+import AdminSectionCard from "@/app/components/admin/common/AdminSectionCard";
+import ReorderableList from "@/app/components/admin/common/ReorderableList";
+import { Layers, Package, Plus } from "lucide-react";
 import { AdminSkeleton } from "@/app/components/admin/common/AdminLoadable";
 
 import { useEffect, useState } from "react";
 import { useForm, Controller } from "react-hook-form";
-import { useRouter, useParams } from "next/navigation";
+import { usePathname, useRouter, useParams, useSearchParams } from "next/navigation";
 import { toast } from "sonner";
 import {
   RiDeleteBinLine,
@@ -27,7 +32,6 @@ import {
   SortableContext,
   arrayMove,
   rectSortingStrategy,
-  verticalListSortingStrategy,
   useSortable,
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
@@ -40,7 +44,6 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { SearchInput } from "@/components/ui/search-input";
 import { Label } from "@/components/ui/label";
 import { ImageUploader } from "@/components/ui/image-uploader";
 import CustomButton from "../../client/common/CustomButton";
@@ -74,16 +77,24 @@ type DeleteTarget = {
   label: string;
 };
 
+const TABS = [
+  { key: "products", label: "Products", icon: Package },
+  { key: "subcategories", label: "Subcategories", icon: Layers },
+] as const;
+type TabKey = (typeof TABS)[number]["key"];
+
 const deleteLabels: Record<DeleteTarget["type"], string> = {
   subcategory: "Subcategory",
   product: "Product",
 };
 
 function SortableSubCategoryCard({
+  index,
   subCategory,
   onEdit,
   onDelete,
 }: {
+  index: number;
   subCategory: SubCategory;
   onEdit: () => void;
   onDelete: () => void;
@@ -100,9 +111,10 @@ function SortableSubCategoryCard({
     <div
       ref={setNodeRef}
       style={style}
-      className="flex items-center justify-between border border-secondary/60 rounded-md px-4 py-2"
+      className="flex items-center justify-between rounded-lg border border-secondary/60 bg-white px-4 py-3"
     >
-      <div className="flex items-center justify-center gap-2">
+      <div className="flex items-center justify-center gap-3">
+        <AdminRowNumber value={index + 1} />
         <button
           type="button"
           {...attributes}
@@ -117,7 +129,7 @@ function SortableSubCategoryCard({
           alt={subCategory.iconAlt || ""}
           width={40}
           height={40}
-          className="object-cover ml-3"
+          className="object-cover"
         />
         <span className="text-md font-itc-medium">{subCategory.title}</span>
       </div>
@@ -141,76 +153,23 @@ function SortableSubCategoryCard({
   );
 }
 
-/** Sortable product row; `children` receives the drag handle. */
-function SortableProductRow({
-  id,
-  dragDisabled,
-  children,
-}: {
-  id: string;
-  dragDisabled: boolean;
-  children: (handle: React.ReactNode) => React.ReactNode;
-}) {
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    transform,
-    transition,
-    isDragging,
-  } = useSortable({ id, disabled: dragDisabled });
-
-  const handle = (
-    <button
-      type="button"
-      {...attributes}
-      {...listeners}
-      // the row itself navigates on click
-      onClick={(e) => e.stopPropagation()}
-      disabled={dragDisabled}
-      title={dragDisabled ? "Clear the search to reorder" : "Drag to reorder"}
-      aria-label="Drag to reorder"
-      className={`touch-none ${
-        dragDisabled
-          ? "cursor-not-allowed text-gray-300"
-          : "cursor-grab active:cursor-grabbing text-description-color"
-      }`}
-    >
-      <RiDraggable size={18} />
-    </button>
-  );
-
-  return (
-    <div
-      ref={setNodeRef}
-      style={{
-        transform: CSS.Transform.toString(transform),
-        transition,
-        position: "relative",
-        zIndex: isDragging ? 10 : undefined,
-      }}
-    >
-      {children(handle)}
-    </div>
-  );
-}
-
 export default function CategoryProductsPage() {
   const router = useRouter();
   const params = useParams<{ category: string }>();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const tabParam = searchParams.get("tab");
+  const activeTab: TabKey =
+    TABS.find((t) => t.key === tabParam)?.key ?? "products";
+  const setActiveTab = (tab: TabKey) =>
+    router.replace(`${pathname}?${new URLSearchParams({ tab })}`, {
+      scroll: false,
+    });
+  const [loadedSlug, setLoadedSlug] = useState<string | null>(null);
 
   const [category, setCategory] = useState<Category | null>(null);
   const [subCategories, setSubCategories] = useState<SubCategory[]>([]);
   const [products, setProducts] = useState<ProductListItem[]>([]);
-  const [productSearch, setProductSearch] = useState("");
-  const searchTerm = productSearch.trim().toLowerCase();
-  const filteredProducts = searchTerm
-    ? products.filter((p) =>
-        [p.title, p.productCode, p.subCategory?.title].some((v) =>
-          v?.toLowerCase().includes(searchTerm),
-        ),
-      )
-    : products;
 
   const [subCategoryDialog, setSubCategoryDialog] = useState<
     SubCategory | null | "new"
@@ -243,30 +202,6 @@ export default function CategoryProductsPage() {
     }
   };
 
-  const handleProductDragEnd = async (event: DragEndEvent) => {
-    const { active, over } = event;
-    if (!over || active.id === over.id) return;
-
-    const oldIndex = products.findIndex((p) => p._id === active.id);
-    const newIndex = products.findIndex((p) => p._id === over.id);
-    if (oldIndex === -1 || newIndex === -1) return;
-
-    const reordered = arrayMove(products, oldIndex, newIndex);
-    setProducts(reordered);
-
-    const res = await fetch("/api/admin/products/reorder", {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ ids: reordered.map((p) => p._id) }),
-    });
-    if (res.ok) {
-      toast.success("Product order updated");
-    } else {
-      toast.error("Failed to save order");
-      if (category) fetchProducts(category._id);
-    }
-  };
-
   const fetchCategory = async () => {
     const res = await fetch("/api/admin/products/category");
     const all: Category[] = await res.json();
@@ -288,11 +223,12 @@ export default function CategoryProductsPage() {
   };
 
   const loadAll = async () => {
+    const slug = params.category;
     const cat = await fetchCategory();
     if (cat) {
-      fetchSubCategories(cat._id);
-      fetchProducts(cat._id);
+      await Promise.all([fetchSubCategories(cat._id), fetchProducts(cat._id)]);
     }
+    setLoadedSlug(slug);
   };
 
   useEffect(() => {
@@ -349,210 +285,182 @@ export default function CategoryProductsPage() {
     }
   };
 
-  if (!category) {
+  if (!category || loadedSlug !== params.category) {
     return <AdminSkeleton variant="list" />;
   }
 
   return (
-    <div className="flex flex-col gap-5">
+    <div className="flex h-full min-h-0 flex-col gap-5">
       <AdminPageActions>
         <AdminVisitLink href={`/lighting?category=${params.category}`} />
       </AdminPageActions>
 
-      {/* Subcategories */}
-      <div className="bg-white border border-secondary rounded-[10px] p-5 flex flex-col gap-4">
-        <div className="flex items-center justify-between border-b border-secondary pb-3">
-          <Label className="!text-xl !font-semibold">
-            {category.title} Subcategories {`(${subCategories.length})`}
-          </Label>
-          <CustomButton
-            variant="3"
-            type="button"
-            text="Add Subcategory"
-            showIcon={false}
-            onClick={() => setSubCategoryDialog("new")}
-          />
-        </div>
-        {subCategories.length === 0 ? (
-          <p className="text-sm text-black/40">No subcategories added yet.</p>
-        ) : (
-          <DndContext
-            sensors={dndSensors}
-            collisionDetection={closestCenter}
-            onDragEnd={handleSubCategoryDragEnd}
-          >
-            <SortableContext
-              items={subCategories.map((s) => s._id)}
-              strategy={rectSortingStrategy}
-            >
-              <div className="grid grid-cols-2 2xl:grid-cols-3 gap-4">
-                {subCategories.map((sub) => (
-                  <SortableSubCategoryCard
-                    key={sub._id}
-                    subCategory={sub}
-                    onEdit={() => setSubCategoryDialog(sub)}
-                    onDelete={() =>
-                      setDeleteTarget({
-                        type: "subcategory",
-                        id: sub._id,
-                        label: sub.title,
-                      })
-                    }
-                  />
-                ))}
-              </div>
-            </SortableContext>
-          </DndContext>
-        )}
-      </div>
+      <AdminTabs
+        label={`${category.title} content`}
+        tabs={[
+          { ...TABS[0], count: products.length },
+          { ...TABS[1], count: subCategories.length },
+        ]}
+        active={activeTab}
+        onChange={setActiveTab}
+      />
 
-      {/* Products */}
-      <div className="bg-white border border-secondary rounded-[10px] p-5 flex flex-col gap-4">
-        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-secondary pb-3">
-          <Label className="!text-xl !font-semibold">
-            Products{" "}
-            {productSearch.trim()
-              ? `(${filteredProducts.length} of ${products.length})`
-              : `(${products.length})`}
-          </Label>
-          <div className="flex items-center gap-3 ml-auto">
-            <SearchInput
-              wrapperClassName="w-64"
-              value={productSearch}
-              onChange={(e) => setProductSearch(e.target.value)}
-              placeholder="Search name, code or sub category"
-            />
-            <CustomButton
-              variant="3"
-              type="button"
-              text="Add Product"
-              showIcon={false}
+      {activeTab === "products" && (
+        <ReorderableList
+          title={`${category.title} Products`}
+          noun="products"
+          items={products}
+          onItemsChange={setProducts}
+          searchPlaceholder="Search name, code or sub category"
+          getSearchValues={(product) => [
+            product.title,
+            product.productCode,
+            product.subCategory?.title,
+          ]}
+          reorderEndpoint="/api/admin/products/reorder"
+          onReorderFailed={() => fetchProducts(category._id)}
+          onRowClick={(product) =>
+            router.push(`/4dm1n-br1ght0n/products/${params.category}/${product._id}`)
+          }
+          headerActions={
+            <AdminButton
+              icon={Plus}
               onClick={() =>
                 router.push(`/4dm1n-br1ght0n/products/${params.category}/new`)
               }
-            />
-          </div>
-        </div>
-        <div className="grid grid-cols-1 gap-5">
-          {products.length === 0 && (
-            <p className="text-sm text-black/40">No products added yet.</p>
-          )}
-          {products.length > 0 && filteredProducts.length === 0 && (
-            <p className="text-sm text-black/40">
-              No products match &quot;{productSearch.trim()}&quot;.
-            </p>
-          )}
-          <DndContext
-            sensors={dndSensors}
-            collisionDetection={closestCenter}
-            onDragEnd={handleProductDragEnd}
-          >
-            <SortableContext
-              items={filteredProducts.map((p) => p._id)}
-              strategy={verticalListSortingStrategy}
             >
-              {filteredProducts.map((product) => (
-                <SortableProductRow
-                  key={product._id}
-                  id={product._id}
-                  dragDisabled={!!searchTerm}
+              Add Product
+            </AdminButton>
+          }
+          renderContent={(product) => (
+            <div className="flex flex-col items-start">
+              <span className="text-md font-itc-medium leading-tight">
+                {product.title || "Untitled Product"}
+              </span>
+              <span className="mt-0.5 text-[12px] leading-tight text-description-color font-itc-book">
+                {[product.productCode, product.subCategory?.title]
+                  .filter(Boolean)
+                  .join(" · ")}
+              </span>
+              {product.isHidden && (
+                <span className="mt-1.5 rounded border border-red-300 px-1.5 py-0.5 text-[10px] font-semibold uppercase text-red-500">
+                  Hidden
+                </span>
+              )}
+            </div>
+          )}
+          renderActions={(product) => (
+            <>
+              <div className="relative group mt-2">
+                <button
+                  type="button"
+                  className="cursor-pointer hover:scale-110 transition-all"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    window.open(
+                      `/lighting/${product.slug || slugify(product.title)}`,
+                      "_blank",
+                    );
+                  }}
                 >
-                  {(handle) => (
-                    <div
-                      className="flex items-center justify-between border border-secondary/60 rounded-md bg-white px-4 py-3 hover:shadow-sm transition-all cursor-pointer"
-                      onClick={() =>
-                        router.push(
-                          `/4dm1n-br1ght0n/products/${params.category}/${product._id}`,
-                        )
-                      }
-                    >
-                      <div className="flex items-center gap-4">
-                        <AdminRowNumber
-                          value={products.indexOf(product) + 1}
-                        />
-                        {handle}
-                        <span className="text-md font-itc-medium flex flex-col items-start gap-2">
-                          {product.title || "Untitled Product"}
-                          {product.subCategory && (
-                            <span className="text-sm text-description-color font-itc-book">
-                              {product.subCategory.title}
-                            </span>
-                          )}
-                          {product.isHidden && (
-                            <span className="text-[10px] uppercase font-semibold text-red-500 border border-red-300 rounded px-1.5 py-0.5">
-                              Hidden
-                            </span>
-                          )}
-                        </span>
-                      </div>
-                      <div className="flex items-center justify-center gap-4">
-                        <div className="relative group mt-2">
-                          <button
-                            type="button"
-                            className="cursor-pointer hover:scale-110 transition-all"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              window.open(
-                                `/lighting/${product.slug || slugify(product.title)}`,
-                                "_blank",
-                              );
-                            }}
-                          >
-                            <RiExternalLinkLine
-                              className="text-gray-500 hover:text-primary"
-                              size={22}
-                            />
-                          </button>
-                          <span
-                            className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1
-                    whitespace-nowrap rounded-md bg-primary px-2 py-2 text-[11px] text-white font-itc-medium
-                    opacity-0 invisible group-hover:opacity-100 group-hover:visible
-                    transition-opacity duration-400"
-                          >
-                            Visit page
-                          </span>
-                        </div>
-                        <button
-                          onClick={(e) => toggleHidden(e, product)}
-                          type="button"
-                          className="cursor-pointer hover:scale-110 transition-all"
-                          title={
-                            product.isHidden ? "Show product" : "Hide product"
-                          }
-                        >
-                          {product.isHidden ? (
-                            <RiEyeOffLine className="text-gray-500" size={22} />
-                          ) : (
-                            <RiEyeLine className="text-green-600" size={22} />
-                          )}
-                        </button>
-                        <button
-                          type="button"
-                          className="cursor-pointer hover:scale-110 transition-all"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setDeleteTarget({
-                              type: "product",
-                              id: product._id,
-                              label: product.title || "Untitled Product",
-                            });
-                          }}
-                          title="Delete product"
-                        >
-                          <RiDeleteBinLine
-                            className="text-red-400 hover:text-red-600"
-                            size={22}
-                          />
-                        </button>
-                      </div>
-                    </div>
-                  )}
-                </SortableProductRow>
-              ))}
-            </SortableContext>
-          </DndContext>
+                  <RiExternalLinkLine
+                    className="text-gray-500 hover:text-primary"
+                    size={22}
+                  />
+                </button>
+                <span
+                  className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1
+            whitespace-nowrap rounded-md bg-primary px-2 py-2 text-[11px] text-white font-itc-medium
+            opacity-0 invisible group-hover:opacity-100 group-hover:visible
+            transition-opacity duration-400"
+                >
+                  Visit page
+                </span>
+              </div>
+              <button
+                onClick={(e) => toggleHidden(e, product)}
+                type="button"
+                className="cursor-pointer hover:scale-110 transition-all"
+                title={product.isHidden ? "Show product" : "Hide product"}
+              >
+                {product.isHidden ? (
+                  <RiEyeOffLine className="text-gray-500" size={22} />
+                ) : (
+                  <RiEyeLine className="text-green-600" size={22} />
+                )}
+              </button>
+              <button
+                type="button"
+                className="cursor-pointer hover:scale-110 transition-all"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setDeleteTarget({
+                    type: "product",
+                    id: product._id,
+                    label: product.title || "Untitled Product",
+                  });
+                }}
+                title="Delete product"
+              >
+                <RiDeleteBinLine
+                  className="text-red-400 hover:text-red-600"
+                  size={22}
+                />
+              </button>
+            </>
+          )}
+        />
+      )}
+
+      {activeTab === "subcategories" && (
+        <div className="admin-list-scroll -mr-3 min-h-0 flex-1 overflow-y-auto pb-1 pr-3">
+          <AdminSectionCard
+            title={`${category.title} Subcategories`}
+            count={subCategories.length}
+            description="Drag to reorder. The order is used for the subcategory tabs on the website."
+            actions={
+              <AdminButton icon={Plus} onClick={() => setSubCategoryDialog("new")}>
+                Add Subcategory
+              </AdminButton>
+            }
+          >
+            {subCategories.length === 0 ? (
+              <p className="rounded-lg border border-dashed border-secondary/70 py-8 text-center text-sm text-description-color">
+                No subcategories added yet.
+              </p>
+            ) : (
+              <DndContext
+                sensors={dndSensors}
+                collisionDetection={closestCenter}
+                onDragEnd={handleSubCategoryDragEnd}
+              >
+                <SortableContext
+                  items={subCategories.map((s) => s._id)}
+                  strategy={rectSortingStrategy}
+                >
+                  <div className="grid grid-cols-2 gap-3 2xl:grid-cols-3">
+                    {subCategories.map((sub, index) => (
+                      <SortableSubCategoryCard
+                        key={sub._id}
+                        index={index}
+                        subCategory={sub}
+                        onEdit={() => setSubCategoryDialog(sub)}
+                        onDelete={() =>
+                          setDeleteTarget({
+                            type: "subcategory",
+                            id: sub._id,
+                            label: sub.title,
+                          })
+                        }
+                      />
+                    ))}
+                  </div>
+                </SortableContext>
+              </DndContext>
+            )}
+          </AdminSectionCard>
         </div>
-      </div>
+      )}
 
       {subCategoryDialog !== null && (
         <SubCategoryFormDialog
