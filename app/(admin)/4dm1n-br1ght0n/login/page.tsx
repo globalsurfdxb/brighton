@@ -78,16 +78,7 @@ export default function AdminLogin() {
 
       <div className="flex flex-1 items-center justify-center bg-cream-background px-4 py-12 sm:px-8 lg:bg-white">
         <div className="w-full max-w-[400px] rounded-2xl bg-white p-8 shadow-[0_8px_30px_rgba(0,0,0,0.06)] sm:p-10 lg:shadow-none">
-          <Image
-            src="/assets/logos/header-logo.svg"
-            alt="Brighton"
-            width={180}
-            height={24}
-            className="h-auto w-[140px]"
-            priority
-          />
-
-          <div className="mt-10">
+          <div>
             <h2 className="text-2xl font-semibold text-primary">
               Welcome back
             </h2>
